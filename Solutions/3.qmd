@@ -1,0 +1,176 @@
+# Environmental Data Analysis — New Practice Exercises
+
+## Exercise 1 — Statistical Populations and Sampling Units
+
+For each of the following research questions:
+
+1. Define an appropriate **statistical population**.
+2. Identify the **experimental/observational unit**.
+3. Suggest one possible method for collecting the data.
+
+a. What is the relationship between annual rainfall and crop yield for maize farms in southwestern Nigeria?
+
+b. Does the amount of urban tree cover influence average summer temperature in major African cities?
+
+c. What environmental factors affect fish abundance in coastal lagoons of West Africa?
+
+d. How does fertilizer application influence nitrate concentration in nearby groundwater wells?
+
+e. What is the relationship between traffic density and airborne particulate matter (PM2.5) near schools in urban areas?
+
+---
+
+## Exercise 2 — Identifying Data Types
+
+For each study below:
+
+* Determine the **type of data** (continuous, binary, count, proportion, time series, categorical, circular, etc.).
+* Identify the **dependent variable**.
+* Identify the **independent variable(s)**.
+* Define the **sampling unit**.
+* Define the **statistical population**.
+* State the **sample size**.
+
+a. Daily river discharge measurements were collected for 730 consecutive days from a watershed in Ghana.
+
+b. Researchers recorded whether or not 250 households recycled plastic waste during a one-month period.
+
+c. Soil moisture was measured every 5 meters along a 2 km transect in a forest reserve.
+
+d. Monthly mosquito counts were recorded at 15 wetlands over two years.
+
+e. Wind direction was recorded every hour at a coastal weather station for six months.
+
+---
+
+## Exercise 3 — Environmental Data Exploration
+
+Obtain a real environmental dataset from any public source (for example: climate, air pollution, soil, vegetation, rainfall, or biodiversity data).
+
+Answer the following:
+
+1. What is the source of the dataset?
+2. What variables are included?
+3. Which variables are quantitative and which are qualitative?
+4. Are there missing values?
+5. What type of statistical analyses might be appropriate for this dataset?
+
+---
+
+# R Programming Exercises
+
+## Exercise 4 — Basic Mathematical Operations
+
+Assign:
+
+```r
+x <- 5
+y <- 8
+```
+
+Compute the following:
+
+1. ( \ln(xy + 4) )
+2. ( \sqrt{x+y} + y^2 )
+3. ( \log_{10}\left(\frac{x+y}{3}\right) )
+4. ( e^{x-y} + 5^x )
+
+---
+
+## Exercise 5 — Working with Vectors
+
+Consider the vector:
+
+```r
+x <- c(12, 5, 8, 15, 7, 20, 11, 3)
+```
+
+1. Which values are greater than 10?
+2. Which values are equal to 7?
+3. Calculate the median of the vector.
+4. Calculate the standard deviation.
+5. Create a subvector containing values less than the mean.
+6. Find the minimum value in the subvector.
+
+---
+
+## Exercise 6 — Matrix Operations
+
+Create the matrix:
+
+```r
+A <- matrix(c(2,4,6,8,1,3,5,7), nrow = 2, byrow = TRUE)
+```
+
+1. Assign column names to the matrix.
+2. Multiply every element by 2 and store the result in matrix `B`.
+3. Subtract `A` from `B`.
+4. Add a third row `c(9,10,11,12)` to the matrix using `rbind()`.
+5. Extract the second column of the new matrix.
+
+---
+
+## Exercise 7 — Character Vectors and Strings
+
+1. Use `LETTERS` to obtain the 12th letter of the alphabet.
+2. Use code to obtain the first letter of the alphabet.
+3. Create the vectors:
+
+```r
+students <- c("Mary", "James", "Peter")
+courses <- c("Biology", "Statistics", "Geography")
+```
+
+4. Combine the vectors into a table using `cbind()`.
+5. Use `paste()` to create sentences like:
+
+```r
+"Mary studies Biology"
+```
+
+---
+
+## Exercise 8 — Data Frames
+
+Create the following vectors:
+
+```r
+city <- c("Lagos", "Abuja", "Ibadan")
+rainfall <- c(120, 98, 110)
+flood <- c(TRUE, FALSE, TRUE)
+```
+
+1. Create a data frame named `weather_df`.
+2. Display the structure of the data frame.
+3. Add a new column called `temperature`.
+4. Add a new row of observations.
+5. Produce a summary of the updated data frame.
+
+---
+
+## Exercise 9 — Built-in Dataset Practice
+
+Use the built-in dataset `mtcars`.
+
+1. Display the first 10 rows.
+2. Rename the variable `mpg` to `mileage`.
+3. Create a new variable converting mileage from miles per gallon to kilometers per liter.
+4. Identify the cars with mileage above the average.
+5. How many cars have more than 6 cylinders?
+6. Which car has the highest horsepower?
+
+---
+
+## Exercise 10 — Missing Values and Dates
+
+Import a CSV dataset named:
+
+```r
+daily_temperature.csv
+```
+
+1. Replace all values equal to `-999` with `NA`.
+2. Convert the `DATE` column to class `Date`.
+3. Count the number of missing observations.
+4. Remove rows containing missing values.
+5. Create a plot of temperature versus date.

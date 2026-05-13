@@ -1,0 +1,63 @@
+# Environmental Data Analysis: Homework 1
+
+---
+
+## Exercise 1 — Statistical Populations
+
+**a. Bark beetle & woodpecker fecundity (Greater Yellowstone)**
+- **Population:** All three-toed woodpecker breeding females in the Greater Yellowstone ecosystem during a bark beetle outbreak
+- **Sampling unit:** Individual breeding female woodpecker (paired with a local bark beetle abundance measure at her territory)
+
+**b. Green building design & awareness (Massachusetts)**
+- **Population:** All first-time home builders in Massachusetts
+- **Sampling unit:** Individual first-time home builder
+
+**c. Soil pH heterogeneity (Mount Toby State Forest)**
+- **Population:** All possible soil sampling locations within Mount Toby State Forest
+- **Sampling unit:** A soil sample at a defined location (e.g., a point on a grid or transect)
+
+**d. Tree infestation by Asian Longhorn Beetle (Worcester, MA)**
+- **Population:** All trees in the city of Worcester, MA
+- **Sampling unit:** Individual tree
+
+**e. Watershed imperviousness & base flow (southern New England)**
+- **Population:** All 3rd-order streams in southern New England
+- **Sampling unit:** Individual 3rd-order stream watershed
+
+---
+
+## Exercise 2 — Data Types & Structure
+
+**a. Wind direction on Mount Greylock**
+
+| Attribute | Answer |
+|---|---|
+| Data type | Circular |
+| Dependent variable | Wind direction |
+| Independent variable | None (single-variable test of randomness) |
+| Sampling unit | One hourly wind direction measurement |
+| Statistical population | All possible hourly wind directions at that station |
+| Sample size | n = 1,000 |
+
+**b. Soil pH variability (Mount Toby)**
+
+| Attribute | Answer |
+|---|---|
+| Data type | Continuous (with spatial/time-series structure along transect) |
+| Dependent variable | Soil pH |
+| Independent variable | Distance along transect (spatial position) |
+| Sampling unit | 1 m soil sample point |
+| Statistical population | All possible 1 m points along the transect across the forest |
+| Sample size | n = 1,000 (1 km ÷ 1 m intervals) |
+
+**c. Green building choice & awareness (Pioneer Valley)**
+
+| Attribute | Answer |
+|---|---|
+| Data type | Dependent = Binary (yes/no); Independent = Continuous/ordinal index |
+| Dependent variable | Use of green building practices (yes/no) |
+| Independent variable | Green building awareness index |
+| Sampling unit | Individual new home builder |
+| Statistical population | All new home builders in Massachusetts |
+| Sample size | n = 100 |
+

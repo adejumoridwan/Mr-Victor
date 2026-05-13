@@ -1,0 +1,164 @@
+---
+title: "2"
+format: html
+---
+
+# Environmental Data Analysis: Homework 2
+
+---
+
+## Exercise 1 — Basic Calculations (x = 3, y = 4)
+
+```r
+x <- 3
+y <- 4
+
+log(x + y)           # ln(x + y)
+x * y                # xy
+
+log10(x * y^2)       # log10(xy²)
+
+2 * x^(1/3) + y^(1/4)  # 2x^(1/3) + y^(1/4)
+
+10^(x - y) + exp(x * y)  # 10^(x-y) + exp(xy)
+```
+
+---
+
+## Exercise 2 — Vector Operations
+
+```r
+x <- c(4, 6, 5, 7, 10, 9, 4, 15)
+
+x < 7       # Returns logical vector: TRUE where elements < 7
+x == 7      # Returns logical vector: TRUE only where element equals 7
+x <- 7      # ASSIGNS 7 to x, overwriting the vector — don't do this if you want to keep x
+
+# Mean two ways
+mean(x)
+sum(x) / length(x)
+
+# Subvector of elements larger than the mean
+sub_x <- x[x > mean(x)]
+
+# Max of subvector
+max(sub_x)
+```
+
+> **Note:** `x = 7` and `x == 7` are very different — the first overwrites `x`, the second is a comparison.
+
+---
+
+## Exercise 3 — Matrix Operations
+
+```r
+A <- matrix(c(1,3,2,5,4,3,4,4), nrow = 2, ncol = 4)
+colnames(A) <- c("Col1", "Col2", "Col3", "Col4")
+
+B <- A + 3          # Add 3 to each element
+
+A + B               # Result: each element = original + (original+3) = 2*original + 3
+
+D <- cbind(A, c(1, 2))   # Add 5th column
+
+D[, 3]              # Get the third column of D
+```
+
+---
+
+## Exercise 4 — Character & String Operations
+
+```r
+LETTERS[18]         # 18th letter: "R"
+
+LETTERS[length(LETTERS)]   # Last letter: "Z"
+
+Names       <- c("John", "Andrew", "Thomas")
+Designation <- c("Manager", "Project Head", "Marketing Head")
+
+cbind(Names, Designation)   # Produces the desired matrix output
+
+friend <- c("Alice", "Bob")
+city   <- c("Chicago", "Rome")
+
+paste(friend, "lives", city)
+# [1] "Alice lives Chicago" "Bob lives Rome"
+```
+
+---
+
+## Exercise 5 — Data Frames
+
+```r
+names <- c("Bob", "Alice", "Jane")
+age   <- c(22, 65, 36)
+flag  <- c(FALSE, FALSE, TRUE)
+
+df <- data.frame(names, age, flag)
+summary(df)
+
+# Add a new column
+df$score <- c(88, 92, 75)
+summary(df)
+
+# Add a new row
+df <- rbind(df, data.frame(names="Tom", age=45, flag=TRUE, score=80))
+summary(df)
+```
+
+---
+
+## Exercise 6 — Air Quality Dataset
+
+```r
+data(airquality)
+
+# Create a Date column and drop Month and Day
+airquality$Date <- as.Date(paste("1973", airquality$Month, airquality$Day, sep = "-"))
+airquality$Month <- NULL
+airquality$Day   <- NULL
+
+# Rename Temp to Temperature and convert °F to °C
+names(airquality)[names(airquality) == "Temp"] <- "Temperature"
+airquality$Temperature <- round((airquality$Temperature - 32) * 5/9, 1)
+
+head(airquality)
+```
+
+---
+
+## Exercise 7 — Querying the Data Frame
+
+```r
+# Hottest and coldest dates
+airquality$Date[which.max(airquality$Temperature)]   # Hottest
+airquality$Date[which.min(airquality$Temperature)]   # Coldest
+
+# Days with above-average wind speed
+sum(airquality$Wind > mean(airquality$Wind, na.rm = TRUE), na.rm = TRUE)
+
+# Rows with no missing values
+sum(complete.cases(airquality))
+
+# Days with solar radiation > 300 Langleys
+airquality$Date[!is.na(airquality$Solar.R) & airquality$Solar.R > 300]
+```
+
+---
+
+## Exercise 8 — Importing & Cleaning External Data
+
+```r
+df <- read.csv("ncdc_galesburg_daily_climate.csv")
+
+# Replace -9999 with NA
+df[df == -9999] <- NA
+
+# Convert DATE to Date class
+df$DATE <- as.Date(as.character(df$DATE), format = "%Y%m%d")
+# Adjust format string to match actual format in the file, e.g. "%Y-%m-%d"
+
+head(df)
+```
+
+> **Tip:** Check the actual date format in your CSV with `head(df$DATE)` before choosing the `format=` argument for `as.Date()`.
