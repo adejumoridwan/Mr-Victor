@@ -191,4 +191,28 @@ airquality$Wind > mean(airquality$Wind)
 
 sum(airquality$Wind > mean(airquality$Wind))
 
+complete.cases(airquality)
+
+sum(complete.cases(airquality))
+
+airquality$Date[airquality$`Solar Radiation` > 300]
+
+airquality$Date[!is.na(airquality$`Solar Radiation`) &
+  airquality$`Solar Radiation` > 300]
+
+# Question 9
+
+climate <- read.csv("ncdc_galesburg_daily_climate.csv")
+
+View(climate)
+
+climate[climate == -9999] <- NA
+
+climate$DATE <- as.Date(as.character(climate$DATE), 
+                        format = 
+                          "%Y%m%d")
+
+
+
+
 
