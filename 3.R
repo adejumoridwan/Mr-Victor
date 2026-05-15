@@ -95,3 +95,19 @@ shapiro.test(log(as.numeric(sal$CWD)))
 
 shapiro.test(sqrt(as.numeric(sal$CWD)))
 
+## Question 7
+
+sal_scaled <- scale(stat_vars)
+
+sal_scaled
+
+colMeans(sal_scaled)
+
+# No, because the rows represent different observations
+# and not different variables. If it were to represent
+# different variables, then one can use row standardization
+
+
+
+
+
