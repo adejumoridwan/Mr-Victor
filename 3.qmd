@@ -1,6 +1,8 @@
 
 ## Question 1
 
+
+```{r}
 #a
 sal <- read.table("salamanders.txt")
 sal
@@ -24,9 +26,12 @@ sal <- sal[-1, ]
 
 
 View(sal)
+```
+
 
 ## Question 3
 
+```{r}
 # a
 
 std_dev <- sd(sal$CWD)
@@ -44,8 +49,11 @@ cv
 
 iqr <- IQR(sal$CWD)
 
+```
+
 # Question 4
 
+```{r}
 # a
 # ecdf graph
 plot(ecdf(as.numeric(sal$CWD)), 
@@ -67,13 +75,16 @@ plot(density(as.numeric(sal$CWD)),
      xlab = " CWD")
 
 # d
-boxplot(sal$CWD,
+boxplot(as.numeric(sal$CWD),
         main = "Boxplot of CWD",
         ylab = "CWD")
+
+```
 
 
 ## Question 5
 
+```{r}
 
 stat_vars <- sal[, c("abund", "fecund", "CWD")]
 
@@ -98,8 +109,11 @@ cor(stat_vars, method = "pearson")
 # spearman correlation matrix
 cor(stat_vars, method = "spearman")
 
+```
+
 # Question 6
 
+```{r}
 hist(as.numeric(sal$CWD))
 
 shapiro.test(as.numeric(sal$CWD))
@@ -112,14 +126,19 @@ shapiro.test(log(as.numeric(sal$CWD)))
 
 
 shapiro.test(sqrt(as.numeric(sal$CWD)))
+```
+
 
 ## Question 7
+```{r}
 
 sal_scaled <- scale(stat_vars)
 
 sal_scaled
 
 colMeans(sal_scaled)
+```
+
 
 # No, because the rows represent different observations
 # and not different variables. If it were to represent

@@ -16,6 +16,9 @@ table(rolls)
 
 # E(x) = 6000/6 = 1000
 
+# The expected value is 1000 which is close to what we
+# have on the frequency of the 6000 simulated dice rolls
+
 
 
 # c
@@ -32,7 +35,44 @@ p_more_1030
 set.seed(45)
 
 sim <- replicate(10000,sum(sample(1:6, 6000, replace = TRUE) == 1) > 1030)
-mean(sim)
+
+sum(sim)/10000
+
+set.seed(1)
+sum(sample(1:6, 6000, replace = TRUE) == 1)
+
+set.seed(2)
+sum(sample(1:6, 6000, replace = TRUE) == 1)
+
+## Wood frog larval abundance in vernal pools
+
+p = 0.3
+n = 10
+
+# a 
+dbinom(6, size = 10, prob = 0.3)
+
+#b
+pbinom(2, size = 10, prob = 0.3)
+
+#c
+pbinom(4, size = 10, lower.tail = FALSE, prob = 0.3)
+
+#d
+x <- 0:10
+
+plot(x, dbinom(x, size = 10, prob = 0.3), 
+     type = "b", col = "red", 
+     xlab = "No of sweeps with tadpoles",
+     ylab = "Probability",
+     main = "Binomial PMF: p=0.3 vs p=0.5")
+
+lines(x, dbinom(x, size = 10, prob = 0.5), 
+      type = "b", col = "blue")
+
+legend("topright", legend = c("p=0.3","p=0.5"), 
+       col = c("red","blue"), lty = 1)
+
 
 
 
