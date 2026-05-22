@@ -70,6 +70,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="a_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="a_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -82,846 +111,315 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>Now I have a good understanding of all the datasets. Let me write a comprehensive R solution for the entire homework.The script runs correctly. Let me now update the file with the two small fixes and re-run to confirm clean execution:The script runs cleanly end to end. Let me present the file and provide the complete written answers:Here is the complete solution with all R code and written answers.</p>
+<section id="homework-8-multiple-regression-soil-nitrogen-maui" class="level1">
+<h1>Homework 8: Multiple Regression — Soil Nitrogen (Maui)</h1>
 <hr>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">## ============================================================</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Homework 7: Hypothesis Testing — Complete R Solutions</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">## ============================================================</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># SECTION 1: COPPER CONCENTRATIONS</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>copper <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"EPA.09.Ex.16.4.copper.txt"</span>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(copper)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  Month   Well  Well.type Copper.ppb
-1     1 Well.1 Background        4.2
-2     2 Well.1 Background        5.8
-3     3 Well.1 Background       11.3
-4     4 Well.1 Background        7.0
-5     5 Well.1 Background        7.0
-6     6 Well.1 Background        8.2</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (a) Summary statistics by well type ---------------------------</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (a) Summary Statistics by Well Type ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (a) Summary Statistics by Well Type ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">by</span>(copper<span class="sc">$</span>Copper.ppb, copper<span class="sc">$</span>Well.type, summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>copper$Well.type: Background
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  4.200   6.250   7.600   8.142  10.400  11.500 
------------------------------------------------------------- 
-copper$Well.type: Compliance
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   9.40   11.20   15.30   14.87   17.23   21.50 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean, SD, n by group</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(copper<span class="sc">$</span>Copper.ppb, copper<span class="sc">$</span>Well.type, <span class="cf">function</span>(x)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">n =</span> <span class="fu">length</span>(x), <span class="at">mean =</span> <span class="fu">mean</span>(x), <span class="at">sd =</span> <span class="fu">sd</span>(x),</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> <span class="fu">median</span>(x), <span class="at">min =</span> <span class="fu">min</span>(x), <span class="at">max =</span> <span class="fu">max</span>(x)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>$Background
-        n      mean        sd    median       min       max 
-12.000000  8.141667  2.572745  7.600000  4.200000 11.500000 
-
-$Compliance
-       n     mean       sd   median      min      max 
- 6.00000 14.86667  4.59855 15.30000  9.40000 21.50000 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (b) Plots comparing compliance well vs combined background ----</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (b) Comparative Plots ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (b) Comparative Plots ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a grouped factor: "Background (combined)" vs "Compliance"</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>copper<span class="sc">$</span>group <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(copper<span class="sc">$</span>Well.type <span class="sc">==</span> <span class="st">"Compliance"</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Compliance (Well 3)"</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                       <span class="st">"Background (Wells 1+2)"</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Boxplot</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(Copper.ppb <span class="sc">~</span> group, <span class="at">data =</span> copper,</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Copper Concentrations by Well Type"</span>,</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"Copper (ppb)"</span>, <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"lightblue"</span>, <span class="st">"salmon"</span>),</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">""</span>)</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Stripchart (dotplot)</span></span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="fu">stripchart</span>(Copper.ppb <span class="sc">~</span> group, <span class="at">data =</span> copper,</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">method =</span> <span class="st">"jitter"</span>, <span class="at">vertical =</span> <span class="cn">TRUE</span>, <span class="at">pch =</span> <span class="dv">19</span>,</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>           <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"steelblue"</span>, <span class="st">"red3"</span>),</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">main =</span> <span class="st">"Copper: Individual Observations"</span>,</span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>           <span class="at">ylab =</span> <span class="st">"Copper (ppb)"</span>, <span class="at">xlab =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="a_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="do">## (c) Evidence of contamination? --------------------------------</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (c) Evidence of Contamination? ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (c) Evidence of Contamination? ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>background  <span class="ot">&lt;-</span> copper<span class="sc">$</span>Copper.ppb[copper<span class="sc">$</span>Well.type <span class="sc">==</span> <span class="st">"Background"</span>]</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>compliance  <span class="ot">&lt;-</span> copper<span class="sc">$</span>Copper.ppb[copper<span class="sc">$</span>Well.type <span class="sc">==</span> <span class="st">"Compliance"</span>]</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Two-sample t-test (one-sided: compliance &gt; background)</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>t_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(compliance, background, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Welch Two Sample t-test
-
-data:  compliance and background
-t = 3.331, df = 6.6139, p-value = 0.006833
-alternative hypothesis: true difference in means is greater than 0
-95 percent confidence interval:
- 2.866135      Inf
-sample estimates:
-mean of x mean of y 
-14.866667  8.141667 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Wilcoxon rank-sum test (non-parametric alternative)</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>w_result <span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>(compliance, background, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in wilcox.test.default(compliance, background, alternative =
-"greater"): cannot compute exact p-value with ties</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(w_result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Wilcoxon rank sum test with continuity correction
-
-data:  compliance and background
-W = 63.5, p-value = 0.005659
-alternative hypothesis: true location shift is greater than 0</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Conclusion: The compliance well mean ("</span>, <span class="fu">round</span>(<span class="fu">mean</span>(compliance), <span class="dv">2</span>),</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ppb) is notably higher than the background mean ("</span>,</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(<span class="fu">mean</span>(background), <span class="dv">2</span>), <span class="st">"ppb).</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Conclusion: The compliance well mean ( 14.87 ppb) is notably higher than the background mean ( 8.14 ppb).</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The one-sided t-test p-value ="</span>, <span class="fu">round</span>(t_result<span class="sc">$</span>p.value, <span class="dv">4</span>),</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"— strong evidence of contamination at alpha = 0.05.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>The one-sided t-test p-value = 0.0068 — strong evidence of contamination at alpha = 0.05.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (d) Normal probability plot for combined background wells -----</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (d) Normal Probability Plot: Background Wells Combined ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (d) Normal Probability Plot: Background Wells Combined ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(background,</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Normal Q-Q Plot: Combined Background Wells"</span>,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"steelblue"</span>)</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(background, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="a_files/figure-html/unnamed-chunk-1-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Shapiro-Wilk test</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>sw <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(background)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Shapiro-Wilk test: W ="</span>, <span class="fu">round</span>(sw<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p-value ="</span>, <span class="fu">round</span>(sw<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shapiro-Wilk test: W = 0.921 , p-value = 0.294 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Interpretation: p ="</span>, <span class="fu">round</span>(sw<span class="sc">$</span>p.value, <span class="dv">4</span>),</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"— fail to reject normality; background data are</span><span class="sc">\n</span><span class="st">"</span>,</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"consistent with a normal distribution.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Interpretation: p = 0.294 — fail to reject normality; background data are
- consistent with a normal distribution.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (e) Difference between the two background wells ---------------</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (e) Difference Between Background Wells ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (e) Difference Between Background Wells ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>well1 <span class="ot">&lt;-</span> copper<span class="sc">$</span>Copper.ppb[copper<span class="sc">$</span>Well <span class="sc">==</span> <span class="st">"Well.1"</span>]</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>well2 <span class="ot">&lt;-</span> copper<span class="sc">$</span>Copper.ppb[copper<span class="sc">$</span>Well <span class="sc">==</span> <span class="st">"Well.2"</span>]</span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Paired t-test (same months measured at both wells)</span></span>
-<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>pt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(well1, well2, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Paired t-test
-
-data:  well1 and well2
-t = -2.5751, df = 5, p-value = 0.04973
-alternative hypothesis: true mean difference is not equal to 0
-95 percent confidence interval:
- -3.563563075 -0.003103592
-sample estimates:
-mean difference 
-      -1.783333 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Independent t-test</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>it <span class="ot">&lt;-</span> <span class="fu">t.test</span>(well1, well2, <span class="at">paired =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(it)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Welch Two Sample t-test
-
-data:  well1 and well2
-t = -1.228, df = 9.9223, p-value = 0.2478
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
- -5.022520  1.455853
-sample estimates:
-mean of x mean of y 
- 7.250000  9.033333 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Well 1 mean:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(well1), <span class="dv">2</span>), <span class="st">"ppb</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Well 1 mean: 7.25 ppb</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Well 2 mean:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(well2), <span class="dv">2</span>), <span class="st">"ppb</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Well 2 mean: 9.03 ppb</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Paired t-test p-value:"</span>, <span class="fu">round</span>(pt<span class="sc">$</span>p.value, <span class="dv">4</span>),</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"— no significant difference between the two background wells"</span>,</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"(alpha = 0.05).</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Paired t-test p-value: 0.0497 — no significant difference between the two background wells (alpha = 0.05).</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="co"># SECTION 2: AIR QUALITY IN NEW YORK</span></span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">"airquality"</span>)</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a><span class="do">## (a) Compare ozone in May vs August ----------------------------</span></span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n\n</span><span class="st">=== AIR QUALITY: Ozone May vs August ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-
-=== AIR QUALITY: Ozone May vs August ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>may_ozone <span class="ot">&lt;-</span> airquality<span class="sc">$</span>Ozone[airquality<span class="sc">$</span>Month <span class="sc">==</span> <span class="dv">5</span>]</span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>aug_ozone <span class="ot">&lt;-</span> airquality<span class="sc">$</span>Ozone[airquality<span class="sc">$</span>Month <span class="sc">==</span> <span class="dv">8</span>]</span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove NAs</span></span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>may_ozone <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(may_ozone)</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>aug_ozone <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(aug_ozone)</span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"May   — n:"</span>, <span class="fu">length</span>(may_ozone), <span class="st">" mean:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(may_ozone), <span class="dv">2</span>),</span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">" sd:"</span>, <span class="fu">round</span>(<span class="fu">sd</span>(may_ozone), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>May   — n: 26  mean: 23.62  sd: 22.22 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"August — n:"</span>, <span class="fu">length</span>(aug_ozone), <span class="st">" mean:"</span>, <span class="fu">round</span>(<span class="fu">mean</span>(aug_ozone), <span class="dv">2</span>),</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" sd:"</span>, <span class="fu">round</span>(<span class="fu">sd</span>(aug_ozone), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>August — n: 26  mean: 59.96  sd: 39.68 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Normality checks</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>sw_may <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(may_ozone)</span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>sw_aug <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(aug_ozone)</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Shapiro-Wilk May: p ="</span>, <span class="fu">round</span>(sw_may<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shapiro-Wilk May: p = 0 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Shapiro-Wilk Aug: p ="</span>, <span class="fu">round</span>(sw_aug<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shapiro-Wilk Aug: p = 0.0903 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Both months are right-skewed; use Wilcoxon rank-sum test</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>wt <span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>(may_ozone, aug_ozone, <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in wilcox.test.default(may_ozone, aug_ozone, alternative =
-"two.sided"): cannot compute exact p-value with ties</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Wilcoxon rank-sum test p-value:"</span>, <span class="fu">round</span>(wt<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Wilcoxon rank-sum test p-value: 1e-04 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Also run t-test for comparison</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(may_ozone, aug_ozone)</span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Welch two-sample t-test p-value:"</span>, <span class="fu">round</span>(tt<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Welch two-sample t-test p-value: 2e-04 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualise</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(may_ozone, aug_ozone,</span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"May"</span>, <span class="st">"August"</span>),</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"lightgreen"</span>, <span class="st">"orange"</span>),</span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Ozone Concentration: May vs August"</span>,</span>
-<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"Ozone (ppb)"</span>)</span>
-<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Q-Q plots</span></span>
-<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(may_ozone, <span class="at">main =</span> <span class="st">"Q-Q: May Ozone"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"darkgreen"</span>)</span>
-<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(may_ozone, <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="a_files/figure-html/unnamed-chunk-1-3.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Conclusion: August has a significantly higher ozone concentration.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Conclusion: August has a significantly higher ozone concentration.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Both the Wilcoxon (p ="</span>, <span class="fu">round</span>(wt<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">") and Welch t-test (p ="</span>,</span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(tt<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">") reject H0 at alpha = 0.05.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Both the Wilcoxon (p = 1e-04 ) and Welch t-test (p = 2e-04 ) reject H0 at alpha = 0.05.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="co"># SECTION 3: LAKE ERIE</span></span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>lake1 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"LakeErie1.csv"</span>)</span>
-<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>lake2 <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"LakeErie2.csv"</span>)</span>
-<span id="cb64-7"><a href="#cb64-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-8"><a href="#cb64-8" aria-hidden="true" tabindex="-1"></a><span class="do">## (a) Graphics for normality of TP and chla --------------------</span></span>
-<span id="cb64-9"><a href="#cb64-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n\n</span><span class="st">=== LAKE ERIE: Normality Evaluation ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-
-=== LAKE ERIE: Normality Evaluation ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract non-missing TP and chla from lake1</span></span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>TP   <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(lake1<span class="sc">$</span>TP); TP <span class="ot">&lt;-</span> TP[TP <span class="sc">&gt;</span> <span class="dv">0</span>]</span>
-<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>chla <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(lake1<span class="sc">$</span>chla); chla <span class="ot">&lt;-</span> chla[chla <span class="sc">&gt;</span> <span class="dv">0</span>]</span>
-<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"TP:   n ="</span>, <span class="fu">length</span>(TP),   <span class="st">" mean ="</span>, <span class="fu">round</span>(<span class="fu">mean</span>(TP), <span class="dv">2</span>),</span>
-<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">" sd ="</span>, <span class="fu">round</span>(<span class="fu">sd</span>(TP), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>TP:   n = 651  mean = 58.24  sd = 87.76 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"chla: n ="</span>, <span class="fu">length</span>(chla), <span class="st">" mean ="</span>, <span class="fu">round</span>(<span class="fu">mean</span>(chla), <span class="dv">2</span>),</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">" sd ="</span>, <span class="fu">round</span>(<span class="fu">sd</span>(chla), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>chla: n = 96  mean = 4.87  sd = 4.33 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">3</span>))</span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Histograms</span></span>
-<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(TP,   <span class="at">breaks =</span> <span class="dv">30</span>, <span class="at">main =</span> <span class="st">"Histogram: Total Phosphorus (TP)"</span>,</span>
-<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"TP (µg/L)"</span>, <span class="at">col =</span> <span class="st">"lightblue"</span>)</span>
-<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(chla, <span class="at">breaks =</span> <span class="dv">30</span>, <span class="at">main =</span> <span class="st">"Histogram: Chlorophyll-a (chla)"</span>,</span>
-<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"chla (µg/L)"</span>, <span class="at">col =</span> <span class="st">"lightgreen"</span>)</span>
-<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Q-Q plots</span></span>
-<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(TP,   <span class="at">main =</span> <span class="st">"Q-Q Plot: TP"</span>,   <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"steelblue"</span>)</span>
-<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(TP,   <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(chla, <span class="at">main =</span> <span class="st">"Q-Q Plot: chla"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"darkgreen"</span>)</span>
-<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(chla, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-transformed Q-Q plots (often helpful for concentration data)</span></span>
-<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">log</span>(TP),   <span class="at">main =</span> <span class="st">"Q-Q Plot: log(TP)"</span>,   <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"steelblue"</span>)</span>
-<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(<span class="fu">log</span>(TP),   <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(<span class="fu">log</span>(chla), <span class="at">main =</span> <span class="st">"Q-Q Plot: log(chla)"</span>, <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"darkgreen"</span>)</span>
-<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(<span class="fu">log</span>(chla), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="a_files/figure-html/unnamed-chunk-1-4.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="do">## (b) Fit Gaussian distribution ---------------------------------</span></span>
-<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (b) Gaussian Fit ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (b) Gaussian Fit ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For TP</span></span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- TP ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>--- TP ---</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MLE mean (mu):    "</span>, <span class="fu">round</span>(<span class="fu">mean</span>(TP), <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>MLE mean (mu):     58.2431 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MLE sd   (sigma): "</span>, <span class="fu">round</span>(<span class="fu">sd</span>(TP) <span class="sc">*</span> <span class="fu">sqrt</span>((<span class="fu">length</span>(TP)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">/</span><span class="fu">length</span>(TP)), <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>MLE sd   (sigma):  87.6899 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For chla</span></span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"--- chla ---</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>--- chla ---</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MLE mean (mu):    "</span>, <span class="fu">round</span>(<span class="fu">mean</span>(chla), <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>MLE mean (mu):     4.8709 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"MLE sd   (sigma): "</span>, <span class="fu">round</span>(<span class="fu">sd</span>(chla) <span class="sc">*</span> <span class="fu">sqrt</span>((<span class="fu">length</span>(chla)<span class="sc">-</span><span class="dv">1</span>)<span class="sc">/</span><span class="fu">length</span>(chla)), <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>MLE sd   (sigma):  4.3108 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: FITDISTR from MASS gives formal MLE</span></span>
-<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a>fit_TP   <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(TP,   <span class="st">"normal"</span>)</span>
-<span id="cb85-4"><a href="#cb85-4" aria-hidden="true" tabindex="-1"></a>fit_chla <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(chla, <span class="st">"normal"</span>)</span>
-<span id="cb85-5"><a href="#cb85-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Formal MLE for TP  :</span><span class="sc">\n</span><span class="st">"</span>); <span class="fu">print</span>(fit_TP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Formal MLE for TP  :</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>     mean         sd    
-  58.243072   87.689870 
- ( 3.436837) ( 2.430211)</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Formal MLE for chla:</span><span class="sc">\n</span><span class="st">"</span>); <span class="fu">print</span>(fit_chla)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Formal MLE for chla:</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>     mean         sd    
-  4.8709375   4.3108159 
- (0.4399708) (0.3111063)</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Also fit log-normal (often better for environmental concentrations)</span></span>
-<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>fit_TP_ln   <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(TP,   <span class="st">"lognormal"</span>)</span>
-<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>fit_chla_ln <span class="ot">&lt;-</span> <span class="fu">fitdistr</span>(chla, <span class="st">"lognormal"</span>)</span>
-<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Log-normal MLE for TP  :</span><span class="sc">\n</span><span class="st">"</span>); <span class="fu">print</span>(fit_TP_ln)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Log-normal MLE for TP  :</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    meanlog       sdlog   
-  3.72443503   0.77176069 
- (0.03024769) (0.02138834)</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Log-normal MLE for chla:</span><span class="sc">\n</span><span class="st">"</span>); <span class="fu">print</span>(fit_chla_ln)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Log-normal MLE for chla:</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>    meanlog       sdlog   
-  1.30904132   0.73209483 
- (0.07471912) (0.05283439)</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (c) Goodness-of-fit tests -------------------------------------</span></span>
-<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (c) Goodness-of-Fit Tests ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (c) Goodness-of-Fit Tests ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb99"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kolmogorov-Smirnov test against fitted normal</span></span>
-<span id="cb99-2"><a href="#cb99-2" aria-hidden="true" tabindex="-1"></a>ks_TP <span class="ot">&lt;-</span> <span class="fu">ks.test</span>(TP, <span class="st">"pnorm"</span>,</span>
-<span id="cb99-3"><a href="#cb99-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">mean =</span> fit_TP<span class="sc">$</span>estimate[<span class="st">"mean"</span>],</span>
-<span id="cb99-4"><a href="#cb99-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sd   =</span> fit_TP<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in ks.test.default(TP, "pnorm", mean = fit_TP$estimate["mean"], : ties
-should not be present for the one-sample Kolmogorov-Smirnov test</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a>ks_chla <span class="ot">&lt;-</span> <span class="fu">ks.test</span>(chla, <span class="st">"pnorm"</span>,</span>
-<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">mean =</span> fit_chla<span class="sc">$</span>estimate[<span class="st">"mean"</span>],</span>
-<span id="cb101-3"><a href="#cb101-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">sd   =</span> fit_chla<span class="sc">$</span>estimate[<span class="st">"sd"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in ks.test.default(chla, "pnorm", mean = fit_chla$estimate["mean"], :
-ties should not be present for the one-sample Kolmogorov-Smirnov test</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"KS test TP   (vs Normal): D ="</span>, <span class="fu">round</span>(ks_TP<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(ks_TP<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>KS test TP   (vs Normal): D = 0.2802 , p = 0 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"KS test chla (vs Normal): D ="</span>, <span class="fu">round</span>(ks_chla<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(ks_chla<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>KS test chla (vs Normal): D = 0.1687 , p = 0.0085 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Shapiro-Wilk (limited to n &lt;= 5000; sample if needed)</span></span>
-<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
-<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a>sw_TP   <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(<span class="cf">if</span>(<span class="fu">length</span>(TP) <span class="sc">&gt;</span> <span class="dv">5000</span>) <span class="fu">sample</span>(TP, <span class="dv">5000</span>) <span class="cf">else</span> TP)</span>
-<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a>sw_chla <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(<span class="cf">if</span>(<span class="fu">length</span>(chla) <span class="sc">&gt;</span> <span class="dv">5000</span>) <span class="fu">sample</span>(chla, <span class="dv">5000</span>) <span class="cf">else</span> chla)</span>
-<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Shapiro-Wilk TP  : W ="</span>, <span class="fu">round</span>(sw_TP<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(sw_TP<span class="sc">$</span>p.value, <span class="dv">6</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shapiro-Wilk TP  : W = 0.3423 , p = 0 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Shapiro-Wilk chla: W ="</span>, <span class="fu">round</span>(sw_chla<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb109-2"><a href="#cb109-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(sw_chla<span class="sc">$</span>p.value, <span class="dv">6</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shapiro-Wilk chla: W = 0.7047 , p = 0 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Conclusion: Both tests reject normality for raw TP and chla."</span>,</span>
-<span id="cb111-2"><a href="#cb111-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">Concentration data typically follow a log-normal distribution.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Conclusion: Both tests reject normality for raw TP and chla. 
-Concentration data typically follow a log-normal distribution.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test log-normality</span></span>
-<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>sw_logTP   <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(<span class="fu">log</span>(TP))</span>
-<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>sw_logchla <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(<span class="fu">log</span>(chla))</span>
-<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Shapiro-Wilk log(TP)  : W ="</span>, <span class="fu">round</span>(sw_logTP<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(sw_logTP<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shapiro-Wilk log(TP)  : W = 0.9844 , p = 0 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb115"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Shapiro-Wilk log(chla): W ="</span>, <span class="fu">round</span>(sw_logchla<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb115-2"><a href="#cb115-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p ="</span>, <span class="fu">round</span>(sw_logchla<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Shapiro-Wilk log(chla): W = 0.9891 , p = 0.6233 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (d) Compare NOAA vs ODNR TP distributions (LakeErie2) ---------</span></span>
-<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (d) NOAA vs ODNR TP Distribution (LakeErie2) ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (d) NOAA vs ODNR TP Distribution (LakeErie2) ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a>noaa_TP  <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(lake2<span class="sc">$</span>TP[lake2<span class="sc">$</span>INSTITUTION <span class="sc">==</span> <span class="st">"NOAA"</span>])</span>
-<span id="cb119-2"><a href="#cb119-2" aria-hidden="true" tabindex="-1"></a>odnr_TP  <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(lake2<span class="sc">$</span>TP[lake2<span class="sc">$</span>INSTITUTION <span class="sc">==</span> <span class="st">"ODNR"</span>])</span>
-<span id="cb119-3"><a href="#cb119-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb119-4"><a href="#cb119-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"NOAA n ="</span>, <span class="fu">length</span>(noaa_TP), <span class="st">" mean ="</span>, <span class="fu">round</span>(<span class="fu">mean</span>(noaa_TP), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>NOAA n = 437  mean = 52.12 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"ODNR n ="</span>, <span class="fu">length</span>(odnr_TP), <span class="st">" mean ="</span>, <span class="fu">round</span>(<span class="fu">mean</span>(odnr_TP), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>ODNR n = 65  mean = 86.96 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb123"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb123-2"><a href="#cb123-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-3"><a href="#cb123-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Overlaid density plots</span></span>
-<span id="cb123-4"><a href="#cb123-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(noaa_TP, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">col =</span> <span class="st">"steelblue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>,</span>
-<span id="cb123-5"><a href="#cb123-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"TP Density: NOAA vs ODNR"</span>,</span>
-<span id="cb123-6"><a href="#cb123-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Total Phosphorus (µg/L)"</span>,</span>
-<span id="cb123-7"><a href="#cb123-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(<span class="fu">density</span>(noaa_TP)<span class="sc">$</span>y, <span class="fu">density</span>(odnr_TP)<span class="sc">$</span>y) <span class="sc">*</span> <span class="fl">1.1</span>))</span>
-<span id="cb123-8"><a href="#cb123-8" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(odnr_TP, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">col =</span> <span class="st">"darkorange"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
-<span id="cb123-9"><a href="#cb123-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"NOAA"</span>, <span class="st">"ODNR"</span>),</span>
-<span id="cb123-10"><a href="#cb123-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"steelblue"</span>, <span class="st">"darkorange"</span>), <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb123-11"><a href="#cb123-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb123-12"><a href="#cb123-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Boxplot comparison</span></span>
-<span id="cb123-13"><a href="#cb123-13" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(noaa_TP, odnr_TP,</span>
-<span id="cb123-14"><a href="#cb123-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"NOAA"</span>, <span class="st">"ODNR"</span>),</span>
-<span id="cb123-15"><a href="#cb123-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"steelblue"</span>, <span class="st">"darkorange"</span>),</span>
-<span id="cb123-16"><a href="#cb123-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Total Phosphorus by Institution"</span>,</span>
-<span id="cb123-17"><a href="#cb123-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"TP (µg/L)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="a_files/figure-html/unnamed-chunk-1-5.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb124-3"><a href="#cb124-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb124-4"><a href="#cb124-4" aria-hidden="true" tabindex="-1"></a><span class="do">## (e) Are the two distributions different? ----------------------</span></span>
-<span id="cb124-5"><a href="#cb124-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">=== (e) Testing NOAA vs ODNR Difference ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-=== (e) Testing NOAA vs ODNR Difference ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Wilcoxon rank-sum test (non-parametric; robust for skewed data)</span></span>
-<span id="cb126-2"><a href="#cb126-2" aria-hidden="true" tabindex="-1"></a>wt_lake <span class="ot">&lt;-</span> <span class="fu">wilcox.test</span>(noaa_TP, odnr_TP, <span class="at">alternative =</span> <span class="st">"two.sided"</span>)</span>
-<span id="cb126-3"><a href="#cb126-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Wilcoxon rank-sum test: W ="</span>, wt_lake<span class="sc">$</span>statistic,</span>
-<span id="cb126-4"><a href="#cb126-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p-value ="</span>, <span class="fu">round</span>(wt_lake<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Wilcoxon rank-sum test: W = 10732 , p-value = 0.0015 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Welch t-test</span></span>
-<span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a>tt_lake <span class="ot">&lt;-</span> <span class="fu">t.test</span>(noaa_TP, odnr_TP)</span>
-<span id="cb128-3"><a href="#cb128-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Welch t-test: t ="</span>, <span class="fu">round</span>(tt_lake<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb128-4"><a href="#cb128-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p-value ="</span>, <span class="fu">round</span>(tt_lake<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Welch t-test: t = -2.6324 , p-value = 0.0105 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="co"># KS two-sample test (tests both location AND shape)</span></span>
-<span id="cb130-2"><a href="#cb130-2" aria-hidden="true" tabindex="-1"></a>ks_lake <span class="ot">&lt;-</span> <span class="fu">ks.test</span>(noaa_TP, odnr_TP)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in ks.test.default(noaa_TP, odnr_TP): p-value will be approximate in
-the presence of ties</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"KS two-sample test: D ="</span>, <span class="fu">round</span>(ks_lake<span class="sc">$</span>statistic, <span class="dv">4</span>),</span>
-<span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">", p-value ="</span>, <span class="fu">round</span>(ks_lake<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>KS two-sample test: D = 0.2165 , p-value = 0.01 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb134"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb134-1"><a href="#cb134-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Conclusion: If p &lt; 0.05, the two distributions are significantly different.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Conclusion: If p &lt; 0.05, the two distributions are significantly different.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb136"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb136-1"><a href="#cb136-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The KS test is particularly informative as it detects any difference"</span>,</span>
-<span id="cb136-2"><a href="#cb136-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"in distribution shape, not just means.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>The KS test is particularly informative as it detects any difference in distribution shape, not just means.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb138"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb138-1"><a href="#cb138-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb138-2"><a href="#cb138-2" aria-hidden="true" tabindex="-1"></a><span class="co"># SECTION 4: URANIUM AND TOTAL DISSOLVED SOLIDS</span></span>
-<span id="cb138-3"><a href="#cb138-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ---------------------------------------------------------------</span></span>
-<span id="cb138-4"><a href="#cb138-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb138-5"><a href="#cb138-5" aria-hidden="true" tabindex="-1"></a>hh <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"hh.csv"</span>)</span>
-<span id="cb138-6"><a href="#cb138-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(hh) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"Uranium_ppb"</span>, <span class="st">"TDS_mgL"</span>)</span>
-<span id="cb138-7"><a href="#cb138-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(hh)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>  id Uranium_ppb TDS_mgL
-1  1      682.65  0.9315
-2  2     1240.81  6.8559
-3  3      819.12  1.9380
-4  4      538.35  0.4806
-5  5      303.76  0.2919
-6  6      607.75  1.1452</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb140"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb140-1"><a href="#cb140-1" aria-hidden="true" tabindex="-1"></a><span class="do">## (a) + (b) Correlation between uranium and TDS ----------------</span></span>
-<span id="cb140-2"><a href="#cb140-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n\n</span><span class="st">=== URANIUM &amp; TDS: Correlation Analysis ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-
-=== URANIUM &amp; TDS: Correlation Analysis ===</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb142"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb142-1"><a href="#cb142-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summary statistics</span></span>
-<span id="cb142-2"><a href="#cb142-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Uranium (ppb): mean ="</span>, <span class="fu">round</span>(<span class="fu">mean</span>(hh<span class="sc">$</span>Uranium_ppb), <span class="dv">2</span>),</span>
-<span id="cb142-3"><a href="#cb142-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">", sd ="</span>, <span class="fu">round</span>(<span class="fu">sd</span>(hh<span class="sc">$</span>Uranium_ppb), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Uranium (ppb): mean = 864.26 , sd = 281.91 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"TDS (mg/L):    mean ="</span>, <span class="fu">round</span>(<span class="fu">mean</span>(hh<span class="sc">$</span>TDS_mgL), <span class="dv">2</span>),</span>
-<span id="cb144-2"><a href="#cb144-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">", sd ="</span>, <span class="fu">round</span>(<span class="fu">sd</span>(hh<span class="sc">$</span>TDS_mgL), <span class="dv">2</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>TDS (mg/L):    mean = 3.47 , sd = 3.61 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb146"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb146-1"><a href="#cb146-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pearson correlation</span></span>
-<span id="cb146-2"><a href="#cb146-2" aria-hidden="true" tabindex="-1"></a>pearson <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(hh<span class="sc">$</span>Uranium_ppb, hh<span class="sc">$</span>TDS_mgL, <span class="at">method =</span> <span class="st">"pearson"</span>)</span>
-<span id="cb146-3"><a href="#cb146-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Pearson r  ="</span>, <span class="fu">round</span>(pearson<span class="sc">$</span>estimate, <span class="dv">4</span>),</span>
-<span id="cb146-4"><a href="#cb146-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">95% CI: ["</span>, <span class="fu">round</span>(pearson<span class="sc">$</span>conf.int[<span class="dv">1</span>], <span class="dv">4</span>), <span class="st">","</span>,</span>
-<span id="cb146-5"><a href="#cb146-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(pearson<span class="sc">$</span>conf.int[<span class="dv">2</span>], <span class="dv">4</span>), <span class="st">"]"</span>,</span>
-<span id="cb146-6"><a href="#cb146-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">p-value ="</span>, <span class="fu">round</span>(pearson<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Pearson r  = 0.6374 
-95% CI: [ 0.3055 , 0.8312 ] 
-p-value = 0.0011 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb148"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb148-1"><a href="#cb148-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Spearman correlation (rank-based, robust to non-normality)</span></span>
-<span id="cb148-2"><a href="#cb148-2" aria-hidden="true" tabindex="-1"></a>spearman <span class="ot">&lt;-</span> <span class="fu">cor.test</span>(hh<span class="sc">$</span>Uranium_ppb, hh<span class="sc">$</span>TDS_mgL, <span class="at">method =</span> <span class="st">"spearman"</span>)</span>
-<span id="cb148-3"><a href="#cb148-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Spearman rho ="</span>, <span class="fu">round</span>(spearman<span class="sc">$</span>estimate, <span class="dv">4</span>),</span>
-<span id="cb148-4"><a href="#cb148-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"</span><span class="sc">\n</span><span class="st">p-value ="</span>, <span class="fu">round</span>(spearman<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Spearman rho = 0.7164 
-p-value = 2e-04 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb150"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb150-1"><a href="#cb150-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Scatterplot with regression line</span></span>
-<span id="cb150-2"><a href="#cb150-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb150-3"><a href="#cb150-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-4"><a href="#cb150-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(hh<span class="sc">$</span>TDS_mgL, hh<span class="sc">$</span>Uranium_ppb,</span>
-<span id="cb150-5"><a href="#cb150-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Total Dissolved Solids (mg/L)"</span>,</span>
-<span id="cb150-6"><a href="#cb150-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Uranium (ppb)"</span>,</span>
-<span id="cb150-7"><a href="#cb150-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Uranium vs TDS"</span>,</span>
-<span id="cb150-8"><a href="#cb150-8" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"steelblue"</span>)</span>
-<span id="cb150-9"><a href="#cb150-9" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(Uranium_ppb <span class="sc">~</span> TDS_mgL, <span class="at">data =</span> hh),</span>
-<span id="cb150-10"><a href="#cb150-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb150-11"><a href="#cb150-11" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,</span>
-<span id="cb150-12"><a href="#cb150-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">paste0</span>(<span class="st">"r = "</span>, <span class="fu">round</span>(pearson<span class="sc">$</span>estimate, <span class="dv">3</span>)),</span>
-<span id="cb150-13"><a href="#cb150-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span>
-<span id="cb150-14"><a href="#cb150-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb150-15"><a href="#cb150-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Log-log plot (useful for environmental concentration data)</span></span>
-<span id="cb150-16"><a href="#cb150-16" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(hh<span class="sc">$</span>TDS_mgL), <span class="fu">log</span>(hh<span class="sc">$</span>Uranium_ppb),</span>
-<span id="cb150-17"><a href="#cb150-17" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"log(TDS)"</span>,</span>
-<span id="cb150-18"><a href="#cb150-18" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"log(Uranium)"</span>,</span>
-<span id="cb150-19"><a href="#cb150-19" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Uranium vs TDS (log scale)"</span>,</span>
-<span id="cb150-20"><a href="#cb150-20" aria-hidden="true" tabindex="-1"></a>     <span class="at">pch =</span> <span class="dv">19</span>, <span class="at">col =</span> <span class="st">"darkgreen"</span>)</span>
-<span id="cb150-21"><a href="#cb150-21" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="fu">lm</span>(<span class="fu">log</span>(Uranium_ppb) <span class="sc">~</span> <span class="fu">log</span>(TDS_mgL), <span class="at">data =</span> hh),</span>
-<span id="cb150-22"><a href="#cb150-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
-<span id="cb150-23"><a href="#cb150-23" aria-hidden="true" tabindex="-1"></a>log_r <span class="ot">&lt;-</span> <span class="fu">cor</span>(<span class="fu">log</span>(hh<span class="sc">$</span>TDS_mgL), <span class="fu">log</span>(hh<span class="sc">$</span>Uranium_ppb))</span>
-<span id="cb150-24"><a href="#cb150-24" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,</span>
-<span id="cb150-25"><a href="#cb150-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">paste0</span>(<span class="st">"r = "</span>, <span class="fu">round</span>(log_r, <span class="dv">3</span>)),</span>
-<span id="cb150-26"><a href="#cb150-26" aria-hidden="true" tabindex="-1"></a>       <span class="at">bty =</span> <span class="st">"n"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="a_files/figure-html/unnamed-chunk-1-6.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb151"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb151-1"><a href="#cb151-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
-<span id="cb151-2"><a href="#cb151-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb151-3"><a href="#cb151-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear regression for full description of relationship</span></span>
-<span id="cb151-4"><a href="#cb151-4" aria-hidden="true" tabindex="-1"></a>lm_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(Uranium_ppb <span class="sc">~</span> TDS_mgL, <span class="at">data =</span> hh)</span>
-<span id="cb151-5"><a href="#cb151-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Linear Regression Summary:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Linear Regression Summary:</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb153"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb153-1"><a href="#cb153-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">summary</span>(lm_fit))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = Uranium_ppb ~ TDS_mgL, data = hh)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--402.00 -156.50  -24.89  153.01  420.27 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)   691.22      65.06  10.625 6.64e-10 ***
-TDS_mgL        49.82      13.14   3.791  0.00107 ** 
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 222.3 on 21 degrees of freedom
-Multiple R-squared:  0.4063,    Adjusted R-squared:  0.378 
-F-statistic: 14.37 on 1 and 21 DF,  p-value: 0.00107</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb155"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb155-1"><a href="#cb155-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">(b) Relationship Strength:</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-(b) Relationship Strength:</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb157"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb157-1"><a href="#cb157-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Pearson r ="</span>, <span class="fu">round</span>(pearson<span class="sc">$</span>estimate, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Pearson r = 0.6374 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb159"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb159-1"><a href="#cb159-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"R-squared ="</span>, <span class="fu">round</span>(<span class="fu">summary</span>(lm_fit)<span class="sc">$</span>r.squared, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>R-squared = 0.4063 </code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb161"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb161-1"><a href="#cb161-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">abs</span>(pearson<span class="sc">$</span>estimate) <span class="sc">&gt;</span> <span class="fl">0.7</span>) {</span>
-<span id="cb161-2"><a href="#cb161-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Interpretation: STRONG positive correlation between uranium and TDS.</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb161-3"><a href="#cb161-3" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (<span class="fu">abs</span>(pearson<span class="sc">$</span>estimate) <span class="sc">&gt;</span> <span class="fl">0.4</span>) {</span>
-<span id="cb161-4"><a href="#cb161-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Interpretation: MODERATE positive correlation between uranium and TDS.</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb161-5"><a href="#cb161-5" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb161-6"><a href="#cb161-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Interpretation: WEAK correlation between uranium and TDS.</span><span class="sc">\n</span><span class="st">"</span>)</span>
-<span id="cb161-7"><a href="#cb161-7" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Interpretation: MODERATE positive correlation between uranium and TDS.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb163"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb163-1"><a href="#cb163-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"With p-value ="</span>, <span class="fu">round</span>(pearson<span class="sc">$</span>p.value, <span class="dv">4</span>), <span class="st">", the correlation is"</span>,</span>
-<span id="cb163-2"><a href="#cb163-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ifelse</span>(pearson<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>, <span class="st">"statistically significant"</span>, <span class="st">"not significant"</span>),</span>
-<span id="cb163-3"><a href="#cb163-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"at the 0.05 level.</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>With p-value = 0.0011 , the correlation is statistically significant at the 0.05 level.</code></pre>
-</div>
-</div>
-<section id="section-1-copper-concentrations" class="level2">
-<h2 class="anchored" data-anchor-id="section-1-copper-concentrations">Section 1 — Copper Concentrations</h2>
-<section id="a-summary-statistics-by-well-type" class="level3">
-<h3 class="anchored" data-anchor-id="a-summary-statistics-by-well-type">(a) Summary statistics by well type</h3>
-<div class="sourceCode" id="cb165"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb165-1"><a href="#cb165-1" aria-hidden="true" tabindex="-1"></a><span class="fu">by</span>(copper<span class="sc">$</span>Copper.ppb, copper<span class="sc">$</span>Well.type, summary)</span>
-<span id="cb165-2"><a href="#cb165-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tapply</span>(copper<span class="sc">$</span>Copper.ppb, copper<span class="sc">$</span>Well.type, <span class="cf">function</span>(x)</span>
-<span id="cb165-3"><a href="#cb165-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(<span class="at">n=</span><span class="fu">length</span>(x), <span class="at">mean=</span><span class="fu">mean</span>(x), <span class="at">sd=</span><span class="fu">sd</span>(x), <span class="at">median=</span><span class="fu">median</span>(x), <span class="at">min=</span><span class="fu">min</span>(x), <span class="at">max=</span><span class="fu">max</span>(x)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The background wells combined have a mean of <strong>8.14 ppb</strong> and the compliance well has a mean of <strong>14.87 ppb</strong>.</p>
-</section>
-<section id="b-comparative-plots" class="level3">
-<h3 class="anchored" data-anchor-id="b-comparative-plots">(b) Comparative plots</h3>
-<p>A boxplot and stripchart comparing the compliance well against both background wells combined visually show that compliance readings are shifted upward and trend higher over time.</p>
-</section>
-<section id="c-evidence-of-contamination" class="level3">
-<h3 class="anchored" data-anchor-id="c-evidence-of-contamination">(c) Evidence of contamination?</h3>
-<div class="sourceCode" id="cb166"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb166-1"><a href="#cb166-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(compliance, background, <span class="at">alternative =</span> <span class="st">"greater"</span>)   <span class="co"># t = 3.33, p = 0.0068</span></span>
-<span id="cb166-2"><a href="#cb166-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(compliance, background, <span class="at">alternative =</span> <span class="st">"greater"</span>)  <span class="co"># W = 63.5, p = 0.0057</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Yes — strong evidence of contamination.</strong> Both the one-sided Welch t-test (p = 0.0068) and Wilcoxon rank-sum test (p = 0.0057) reject H₀ at α = 0.05. The compliance well mean (14.87 ppb) is nearly double the background mean (8.14 ppb), and the compliance readings increase across months while background readings stay relatively stable.</p>
-</section>
-<section id="d-normal-probability-plot-for-background-wells" class="level3">
-<h3 class="anchored" data-anchor-id="d-normal-probability-plot-for-background-wells">(d) Normal probability plot for background wells</h3>
-<div class="sourceCode" id="cb167"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb167-1"><a href="#cb167-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(background); <span class="fu">qqline</span>(background)</span>
-<span id="cb167-2"><a href="#cb167-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(background)  <span class="co"># W = 0.921, p = 0.294</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>The Q-Q plot shows points close to the reference line with no systematic departures. The Shapiro-Wilk test gives p = 0.294, so we <strong>fail to reject normality</strong> — the combined background data are adequately modeled by a normal distribution.</p>
-</section>
-<section id="e-difference-between-the-two-background-wells" class="level3">
-<h3 class="anchored" data-anchor-id="e-difference-between-the-two-background-wells">(e) Difference between the two background wells</h3>
-<div class="sourceCode" id="cb168"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb168-1"><a href="#cb168-1" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(well1, well2, <span class="at">paired =</span> <span class="cn">TRUE</span>)    <span class="co"># t = −2.575, p = 0.0497</span></span>
-<span id="cb168-2"><a href="#cb168-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(well1, well2, <span class="at">paired =</span> <span class="cn">FALSE</span>)   <span class="co"># t = −1.228, p = 0.248</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Well 1 mean = 7.25 ppb; Well 2 mean = 9.03 ppb. The <strong>paired</strong> t-test (same months) gives p = 0.0497 — borderline significant. However, the independent t-test gives p = 0.248. The paired result is marginally significant but practically the difference is small relative to the spread, and both wells are well below the compliance well. For monitoring purposes, the wells can reasonably be <strong>pooled as background</strong>, though the small paired difference warrants noting.</p>
+<section id="a-global-model" class="level2">
+<h2 class="anchored" data-anchor-id="a-global-model">(a) Global Model</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>soil <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"soil_nitrogen.csv"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>soil<span class="sc">$</span>aspect <span class="ot">&lt;-</span> <span class="fu">factor</span>(soil<span class="sc">$</span>aspect)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>model_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(nitrogen <span class="sc">~</span> temp <span class="sc">+</span> precip <span class="sc">+</span> slope <span class="sc">+</span> aspect, <span class="at">data =</span> soil)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_full)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(s)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Residual variance sigma^2:"</span>, s<span class="sc">$</span>sigma<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Summary Table:</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Estimate</th>
+<th>Std. Error</th>
+<th>t value</th>
+<th>Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td>47.6335</td>
+<td>2.4728</td>
+<td>19.263</td>
+<td>&lt; 2e-16 ***</td>
+</tr>
+<tr class="even">
+<td>temp</td>
+<td>0.0374</td>
+<td>0.0929</td>
+<td>0.402</td>
+<td>0.690</td>
+</tr>
+<tr class="odd">
+<td>precip</td>
+<td>0.1130</td>
+<td>0.0105</td>
+<td>10.726</td>
+<td>9.23e-13 ***</td>
+</tr>
+<tr class="even">
+<td>slope</td>
+<td>−0.7830</td>
+<td>0.0603</td>
+<td>−12.987</td>
+<td>3.76e-15 ***</td>
+</tr>
+<tr class="odd">
+<td>aspectS</td>
+<td>1.2527</td>
+<td>0.5280</td>
+<td>2.372</td>
+<td>0.0231 *</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Multiple R²</strong> = 0.9075</li>
+<li><strong>Adjusted R²</strong> = 0.8972</li>
+<li><strong>Residual variance</strong> <span class="math inline">\(\hat{\sigma}^2 = 2.7683\)</span> (mg N kg⁻¹ soil)²</li>
+</ul>
 <hr>
 </section>
-</section>
-<section id="section-2-air-quality-in-new-york" class="level2">
-<h2 class="anchored" data-anchor-id="section-2-air-quality-in-new-york">Section 2 — Air Quality in New York</h2>
-<section id="a-ozone-in-may-vs-august" class="level3">
-<h3 class="anchored" data-anchor-id="a-ozone-in-may-vs-august">(a) Ozone in May vs August</h3>
-<div class="sourceCode" id="cb169"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb169-1"><a href="#cb169-1" aria-hidden="true" tabindex="-1"></a>may_ozone <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(airquality<span class="sc">$</span>Ozone[airquality<span class="sc">$</span>Month <span class="sc">==</span> <span class="dv">5</span>])   <span class="co"># n=26, mean=23.6</span></span>
-<span id="cb169-2"><a href="#cb169-2" aria-hidden="true" tabindex="-1"></a>aug_ozone <span class="ot">&lt;-</span> <span class="fu">na.omit</span>(airquality<span class="sc">$</span>Ozone[airquality<span class="sc">$</span>Month <span class="sc">==</span> <span class="dv">8</span>])   <span class="co"># n=26, mean=60.0</span></span>
-<span id="cb169-3"><a href="#cb169-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb169-4"><a href="#cb169-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(may_ozone)  <span class="co"># p ≈ 0 (non-normal, right-skewed)</span></span>
-<span id="cb169-5"><a href="#cb169-5" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(may_ozone, aug_ozone)   <span class="co"># p = 0.0001</span></span>
-<span id="cb169-6"><a href="#cb169-6" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(may_ozone, aug_ozone)        <span class="co"># p = 0.0002</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>There is a highly significant difference.</strong> August ozone (mean ≈ 60 ppb) is more than twice May ozone (mean ≈ 24 ppb). Since May ozone is non-normally distributed, the Wilcoxon rank-sum test is the most appropriate test; it gives p &lt; 0.001. The Welch t-test agrees (p = 0.0002). We firmly reject H₀ at any conventional level. Higher summer temperatures and stronger sunlight drive photochemical ozone production in August.</p>
+<section id="b-significance-of-coefficients" class="level2">
+<h2 class="anchored" data-anchor-id="b-significance-of-coefficients">(b) Significance of Coefficients</h2>
+<ul>
+<li><strong><code>precip</code></strong> and <strong><code>slope</code></strong> are highly significant (both p &lt; 2e-15), indicating strong and reliable linear associations with soil nitrogen concentration.</li>
+<li><strong><code>aspectS</code></strong> is significant at the 5% level (p ≈ 0.023), suggesting that south-facing hillsides have on average ~1.25 mg N kg⁻¹ more nitrogen than north-facing ones, after accounting for the other predictors.</li>
+<li><strong><code>temp</code></strong> is <strong>not significant</strong> (p ≈ 0.69). Its near-zero coefficient and large standard error relative to the estimate suggest that once precipitation, slope, and aspect are included, average air temperature contributes no additional explanatory power. It is a candidate for removal.</li>
+</ul>
 <hr>
 </section>
-</section>
-<section id="section-3-lake-erie" class="level2">
-<h2 class="anchored" data-anchor-id="section-3-lake-erie">Section 3 — Lake Erie</h2>
-<section id="a-graphics-for-normality" class="level3">
-<h3 class="anchored" data-anchor-id="a-graphics-for-normality">(a) Graphics for normality</h3>
-<p>Histograms of raw TP and chla show strong right skew. The Q-Q plots deviate substantially from the reference line, indicating non-normality. Log-transformed Q-Q plots are much straighter — especially for chla — suggesting a log-normal distribution fits better.</p>
-</section>
-<section id="b-gaussian-fit" class="level3">
-<h3 class="anchored" data-anchor-id="b-gaussian-fit">(b) Gaussian fit</h3>
-<div class="sourceCode" id="cb170"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb170-1"><a href="#cb170-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb170-2"><a href="#cb170-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fitdistr</span>(TP,   <span class="st">"normal"</span>)    <span class="co"># mu = 58.24, sigma = 87.61</span></span>
-<span id="cb170-3"><a href="#cb170-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fitdistr</span>(chla, <span class="st">"normal"</span>)    <span class="co"># mu = 4.87,  sigma = 4.31</span></span>
-<span id="cb170-4"><a href="#cb170-4" aria-hidden="true" tabindex="-1"></a><span class="fu">fitdistr</span>(TP,   <span class="st">"lognormal"</span>) <span class="co"># meanlog = 3.36, sdlog = 1.06</span></span>
-<span id="cb170-5"><a href="#cb170-5" aria-hidden="true" tabindex="-1"></a><span class="fu">fitdistr</span>(chla, <span class="st">"lognormal"</span>) <span class="co"># meanlog = 1.39, sdlog = 0.75</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="c-goodness-of-fit-tests" class="level3">
-<h3 class="anchored" data-anchor-id="c-goodness-of-fit-tests">(c) Goodness-of-fit tests</h3>
-<div class="sourceCode" id="cb171"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb171-1"><a href="#cb171-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(TP,   <span class="st">"pnorm"</span>, ...)  <span class="co"># D = 0.280, p ≈ 0</span></span>
-<span id="cb171-2"><a href="#cb171-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(chla, <span class="st">"pnorm"</span>, ...)  <span class="co"># D = 0.169, p = 0.009</span></span>
-<span id="cb171-3"><a href="#cb171-3" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(TP)              <span class="co"># p ≈ 0</span></span>
-<span id="cb171-4"><a href="#cb171-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">log</span>(chla))       <span class="co"># p = 0.623 ✓</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Both KS and Shapiro-Wilk strongly reject normality for raw TP and chla. After log-transformation, <strong>log(chla) passes</strong> the Shapiro-Wilk test (p = 0.623). TP remains somewhat non-normal even on the log scale given the very large n = 651 (the test has high power). Visually, a log-normal model is a much better fit for both variables.</p>
-</section>
-<section id="d-graphical-comparison-of-noaa-vs-odnr-lakeerie2" class="level3">
-<h3 class="anchored" data-anchor-id="d-graphical-comparison-of-noaa-vs-odnr-lakeerie2">(d) Graphical comparison of NOAA vs ODNR (LakeErie2)</h3>
-<p>Overlaid density plots and a side-by-side boxplot show that ODNR samples (mean ≈ 87 µg/L) tend to have higher TP values than NOAA samples (mean ≈ 52 µg/L), and ODNR shows a wider spread with a heavier upper tail.</p>
-</section>
-<section id="e-are-the-two-distributions-different" class="level3">
-<h3 class="anchored" data-anchor-id="e-are-the-two-distributions-different">(e) Are the two distributions different?</h3>
-<div class="sourceCode" id="cb172"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb172-1"><a href="#cb172-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(noaa_TP, odnr_TP)   <span class="co"># W = 10732, p = 0.0015</span></span>
-<span id="cb172-2"><a href="#cb172-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(noaa_TP, odnr_TP)        <span class="co"># t = −2.63,  p = 0.0105</span></span>
-<span id="cb172-3"><a href="#cb172-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(noaa_TP, odnr_TP)       <span class="co"># D = 0.217,  p = 0.010</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Yes — the two distributions are significantly different</strong> (all tests p &lt; 0.05). The ODNR measurements are systematically higher than NOAA’s. This could reflect sampling location (ODNR may sample nearshore/shallower sites with higher nutrient loading), seasonal timing, or methodological differences between institutions.</p>
+<section id="c-residual-diagnostics" class="level2">
+<h2 class="anchored" data-anchor-id="c-residual-diagnostics">(c) Residual Diagnostics</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Diagnostic plots</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_full)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Formal normality test</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">residuals</span>(model_full))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Shapiro-Wilk test:</strong> W = 0.987, p-value = 0.914</p>
+<p>The residual diagnostics show:</p>
+<ul>
+<li><strong>Residuals vs Fitted:</strong> Points are scattered randomly around zero with no obvious curvature, consistent with linearity and homoscedasticity.</li>
+<li><strong>Normal Q-Q:</strong> Points follow the diagonal closely, with only minor deviation in the tails.</li>
+<li><strong>Scale-Location:</strong> The spread of standardized residuals appears roughly constant across fitted values — no strong evidence of heteroscedasticity.</li>
+<li><strong>Residuals vs Leverage:</strong> No points fall outside Cook’s distance contours; no unduly influential observations.</li>
+<li>The <strong>Shapiro-Wilk test</strong> (p = 0.914) gives no evidence against normality of errors.</li>
+</ul>
+<p>Overall, the residuals appear consistent with the assumption <span class="math inline">\(\varepsilon_i \sim \mathcal{N}(0, \sigma^2)\)</span>.</p>
 <hr>
 </section>
+<section id="d-is-this-a-reasonable-model" class="level2">
+<h2 class="anchored" data-anchor-id="d-is-this-a-reasonable-model">(d) Is This a Reasonable Model?</h2>
+<p>Yes, this appears to be a <strong>reasonable model</strong> for several reasons:</p>
+<ol type="1">
+<li>The model explains ~91% of the variance in soil nitrogen (R² = 0.9075), which is a very strong fit for ecological field data.</li>
+<li>Residual diagnostics (Q-Q plot, Shapiro-Wilk) support the normality assumption.</li>
+<li>There are no severe leverage or influence issues.</li>
+<li>The signs of key coefficients are ecologically interpretable: more precipitation → more nitrogen; steeper slope → less nitrogen (likely due to leaching/erosion); south-facing aspects → slightly higher nitrogen.</li>
+</ol>
+<p>However, <code>temp</code> is clearly non-significant and inflates model complexity without improving fit. A model without <code>temp</code> (see part f) is equally reasonable and more parsimonious.</p>
+<hr>
 </section>
-<section id="section-4-uranium-and-total-dissolved-solids" class="level2">
-<h2 class="anchored" data-anchor-id="section-4-uranium-and-total-dissolved-solids">Section 4 — Uranium and Total Dissolved Solids</h2>
-<section id="a-are-uranium-and-tds-correlated" class="level3">
-<h3 class="anchored" data-anchor-id="a-are-uranium-and-tds-correlated">(a) Are uranium and TDS correlated?</h3>
-<div class="sourceCode" id="cb173"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb173-1"><a href="#cb173-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(hh<span class="sc">$</span>Uranium_ppb, hh<span class="sc">$</span>TDS_mgL, <span class="at">method =</span> <span class="st">"pearson"</span>)   <span class="co"># r = 0.637, p &lt; 0.001</span></span>
-<span id="cb173-2"><a href="#cb173-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(hh<span class="sc">$</span>Uranium_ppb, hh<span class="sc">$</span>TDS_mgL, <span class="at">method =</span> <span class="st">"spearman"</span>)  <span class="co"># ρ = 0.716, p &lt; 0.001</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Yes — uranium and TDS are significantly positively correlated.</strong> Both Pearson (r = 0.637) and Spearman (ρ = 0.716) are statistically significant (p &lt; 0.001).</p>
+<section id="e-all-16-models-aic-aicc-and-bic" class="level2">
+<h2 class="anchored" data-anchor-id="e-all-16-models-aic-aicc-and-bic">(e) All 16 Models — AIC, AICc, and BIC</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"temp"</span>, <span class="st">"precip"</span>, <span class="st">"slope"</span>, <span class="st">"aspect"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>combos <span class="ot">&lt;-</span> <span class="fu">do.call</span>(c, <span class="fu">lapply</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(k) <span class="fu">combn</span>(predictors, k, <span class="at">simplify =</span> <span class="cn">FALSE</span>)))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(combos)) {</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  vars <span class="ot">&lt;-</span> combos[[i]]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  form <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">length</span>(vars) <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">as.formula</span>(<span class="st">"nitrogen ~ 1"</span>) <span class="cf">else</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">"nitrogen ~"</span>, <span class="fu">paste</span>(vars, <span class="at">collapse =</span> <span class="st">" + "</span>)))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">lm</span>(form, <span class="at">data =</span> soil)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(soil)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">coef</span>(m)) <span class="sc">+</span> <span class="dv">1</span>       <span class="co"># parameters including sigma</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  ll <span class="ot">&lt;-</span> <span class="fu">logLik</span>(m)[<span class="dv">1</span>]</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  aic  <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> ll <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> k</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  aicc <span class="ot">&lt;-</span> aic <span class="sc">+</span> (<span class="dv">2</span> <span class="sc">*</span> k <span class="sc">*</span> (k <span class="sc">+</span> <span class="dv">1</span>)) <span class="sc">/</span> (n <span class="sc">-</span> k <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  bic  <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> ll <span class="sc">+</span> <span class="fu">log</span>(n) <span class="sc">*</span> k</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  label <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">length</span>(vars) <span class="sc">==</span> <span class="dv">0</span>) <span class="st">"intercept only"</span> <span class="cf">else</span> <span class="fu">paste</span>(vars, <span class="at">collapse =</span> <span class="st">" + "</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(results, <span class="fu">data.frame</span>(<span class="at">Model =</span> label, <span class="at">K =</span> k,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">AIC =</span> <span class="fu">round</span>(aic, <span class="dv">2</span>), <span class="at">AICc =</span> <span class="fu">round</span>(aicc, <span class="dv">2</span>), <span class="at">BIC =</span> <span class="fu">round</span>(bic, <span class="dv">2</span>)))</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>results[<span class="fu">order</span>(results<span class="sc">$</span>AICc), ]   <span class="co"># sort by AICc</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Models ranked by AICc (best to worst):</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Rank</th>
+<th>Model</th>
+<th>K</th>
+<th>AIC</th>
+<th>AICc</th>
+<th>BIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>precip + slope + aspect</td>
+<td>5</td>
+<td>162.95</td>
+<td>164.67</td>
+<td>171.52</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>temp + precip + slope + aspect</td>
+<td>6</td>
+<td>164.77</td>
+<td>167.24</td>
+<td>175.05</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>precip + slope</td>
+<td>4</td>
+<td>166.81</td>
+<td>167.92</td>
+<td>173.66</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>temp + precip + slope</td>
+<td>5</td>
+<td>168.72</td>
+<td>170.44</td>
+<td>177.29</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>slope + aspect</td>
+<td>4</td>
+<td>220.46</td>
+<td>221.57</td>
+<td>227.31</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>slope</td>
+<td>3</td>
+<td>221.09</td>
+<td>221.74</td>
+<td>226.23</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>temp + aspect</td>
+<td>4</td>
+<td>256.03</td>
+<td>257.14</td>
+<td>262.88</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key observations:</strong></p>
+<ul>
+<li>All three criteria (AIC, AICc, BIC) agree that <strong><code>precip + slope + aspect</code></strong> is the top-ranked model.</li>
+<li>The full model (rank 2 by AIC, rank 2 by AICc) is penalised enough by its extra <code>temp</code> parameter to fall behind the 3-predictor model once small-sample correction is applied.</li>
+<li>BIC is slightly more parsimonious than AICc: it prefers <code>precip + slope</code> (no <code>aspect</code>) in 2nd place, reflecting BIC’s heavier penalty for parameters.</li>
+<li>All models without <code>precip</code> and <code>slope</code> perform drastically worse (ΔAICc &gt; 55), confirming these two predictors carry most of the explanatory signal.</li>
+</ul>
+<hr>
 </section>
-<section id="b-strength-of-the-relationship" class="level3">
-<h3 class="anchored" data-anchor-id="b-strength-of-the-relationship">(b) Strength of the relationship</h3>
-<p>The Pearson r = <strong>0.637</strong> indicates a <strong>moderate-to-strong positive linear relationship</strong>. The regression R² = 0.406, meaning TDS explains about <strong>41% of the variance</strong> in uranium concentration. The Spearman ρ = 0.716 (slightly higher) suggests the monotone relationship on the original or log scale is even stronger. In environmental terms, both uranium and TDS tend to increase together in groundwater — likely driven by the same geological factors (mineral dissolution, evaporative concentration) that enrich both uranium and dissolved solids.</p>
+<section id="f-stepwise-selection" class="level2">
+<h2 class="anchored" data-anchor-id="f-stepwise-selection">(f) Stepwise Selection</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>step_model <span class="ot">&lt;-</span> <span class="fu">step</span>(model_full, <span class="at">direction =</span> <span class="st">"both"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(step_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Stepwise trace:</strong></p>
+<p>Starting from the full model (AIC = 46.42 on the deviance scale used by <code>step()</code>):</p>
+<ol type="1">
+<li>Dropping <code>temp</code> reduces AIC to 44.60 → accepted.</li>
+<li>No further removal (dropping <code>aspect</code>, <code>precip</code>, or <code>slope</code> all increase AIC substantially).</li>
+</ol>
+<p><strong>Selected model:</strong> <code>nitrogen ~ precip + slope + aspect</code></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Estimate</th>
+<th>Std. Error</th>
+<th>t value</th>
+<th>Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(Intercept)</td>
+<td>48.3103</td>
+<td>1.7906</td>
+<td>26.980</td>
+<td>&lt; 2e-16 ***</td>
+</tr>
+<tr class="even">
+<td>precip</td>
+<td>0.1136</td>
+<td>0.0103</td>
+<td>10.998</td>
+<td>3.23e-13 ***</td>
+</tr>
+<tr class="odd">
+<td>slope</td>
+<td>−0.7809</td>
+<td>0.0594</td>
+<td>−13.153</td>
+<td>1.61e-15 ***</td>
+</tr>
+<tr class="even">
+<td>aspectS</td>
+<td>1.2426</td>
+<td>0.5214</td>
+<td>2.383</td>
+<td>0.0224 *</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Multiple R²</strong> = 0.9071</li>
+<li><strong>Adjusted R²</strong> = 0.8995</li>
+<li><strong>Residual standard error</strong> = 1.645 on 37 df</li>
+</ul>
+<p>The stepwise procedure converges on the same model identified as best by AIC/AICc model comparison — removing <code>temp</code> yields a more parsimonious model with essentially identical R².</p>
+<hr>
+</section>
+<section id="g-prediction-for-molokai" class="level2">
+<h2 class="anchored" data-anchor-id="g-prediction-for-molokai">(g) Prediction for Moloka’i</h2>
+<p><strong>Conditions:</strong> precip = 150 cm, temp = 22 °C, aspect = South, slope = 11°</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">precip =</span> <span class="dv">150</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">slope  =</span> <span class="dv">11</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">aspect =</span> <span class="fu">factor</span>(<span class="st">"S"</span>, <span class="at">levels =</span> <span class="fu">levels</span>(soil<span class="sc">$</span>aspect))</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(step_model, <span class="at">newdata =</span> new_data, <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Results:</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Fit (mg N kg⁻¹)</th>
+<th>95% Prediction Interval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>57.999</strong></td>
+<td>[54.59, 61.41]</td>
+</tr>
+</tbody>
+</table>
+<p>The model predicts a soil nitrogen concentration of approximately <strong>58.0 mg N kg⁻¹ soil</strong> on Moloka’i under the given conditions. The 95% prediction interval [54.6, 61.4] accounts for both the uncertainty in the estimated mean and the natural variability around it for a single new observation.</p>
+<blockquote class="blockquote">
+<p><strong>Note:</strong> This prediction involves some extrapolation — Moloka’i is a different island and the model was fit on Maui data only. The prediction should be interpreted with appropriate caution.</p>
+</blockquote>
 </section>
 </section>
 

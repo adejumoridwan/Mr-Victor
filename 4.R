@@ -74,5 +74,144 @@ legend("topright", legend = c("p=0.3","p=0.5"),
        col = c("red","blue"), lty = 1)
 
 
+## Gamma Distribution
+
+
+sample_a <- rgamma(10, shape = 3, scale = 2)
+
+sample_a
+
+hist(sample_a)
+
+sample_b <- rgamma(20, shape = 3, scale = 2)
+
+sample_b
+
+hist(sample_b)
+
+
+sample_c <- rgamma(100, shape = 3, scale = 2)
+
+sample_c
+
+hist(sample_c)
+
+sample_d <- rgamma(1000, shape = 3, scale = 2)
+
+sample_d
+
+hist(sample_d)
+
+lines(0:999, rgamma(1000, shape = 3, scale = 2))
+
+## Arsenic
+
+# Expectation in statistics means "mean"
+# In the normal distribution the mean = median = mode
+
+mean <- 5
+s_d <- 1
+
+# X ~ N(mu, sigma^2)
+
+# SE = sigma^2/n
+
+# X ~ N(5, 1/4)
+
+# X ~ N(5, 0.25)
+
+#b
+
+pnorm(7, mean = 5, sd = 1, 
+      lower.tail = FALSE)
+
+pnorm(7, mean = 5, sd = sqrt(0.25), 
+      lower.tail = FALSE)
+
+
+plot(0:10, pnorm(0:10, mean = 5, sd = 1, 
+                 lower.tail = FALSE),
+     col = "blue", type = "l")
+
+lines(0:10, pnorm(0:10, mean = 5, sd = 0.5, 
+                  lower.tail = FALSE),
+      col = "red")
+
+## Groundwater
+
+
+mean <- 20
+s_d <- 5
+
+pnorm(30, mean = 20, sd = 1, lower.tail = FALSE)
+
+#a
+## Regulation
+
+n <- 365
+p <- 1/365
+
+
+# For binomial distribution: Mean = np, SD = np(1-p)
+expectation <- n*p
+expectation
+
+#b
+# Yes the distribution of emissions satisfy the regulation?
+
+#c
+x <- 2
+n <- 365
+p <- 1/365
+
+pbinom(1, size = n, prob = p, lower.tail = F)
+
+
+## Poisson Distribution
+
+# The only parameter of a poisson distribution "lambda"
+# lambda = np
+
+lambda <- 1
+
+
+ppois(1, lambda = 1, lower.tail = FALSE)
+
+## Uniform and Beta Distribution
+
+plot(0:1, dbeta(0:1,shape1 = 1, shape2 = 1), 
+     type = "l", col = "blue")
+
+
+lines(0:1, dunif(0:1), col = "red")
+
+## Exponential Distribution
+
+
+# a
+# P(Y = 0.5) = 0
+
+#b
+pexp(1, rate = 2, lower.tail = FALSE)
+
+#c
+
+# Undefined because -1 is less than our range which is [0,infiniti]
+
+#d
+
+# Undefined because 0.2 is less than 0.7
+
+#c
+
+
+
+
+
+
+
+
+
+
 
 

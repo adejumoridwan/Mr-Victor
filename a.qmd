@@ -1,524 +1,180 @@
-Now I have a good understanding of all the datasets. Let me write a comprehensive R solution for the entire homework.The script runs correctly. Let me now update the file with the two small fixes and re-run to confirm clean execution:The script runs cleanly end to end. Let me present the file and provide the complete written answers:Here is the complete solution with all R code and written answers.
+# Homework 8: Multiple Regression — Soil Nitrogen (Maui)
 
 ---
 
-```{r}
-## ============================================================
-## Homework 7: Hypothesis Testing — Complete R Solutions
-## ============================================================
+## (a) Global Model
 
-# ---------------------------------------------------------------
-# SECTION 1: COPPER CONCENTRATIONS
-# ---------------------------------------------------------------
+```r
+soil <- read.csv("soil_nitrogen.csv")
+soil$aspect <- factor(soil$aspect)
 
-copper <- read.csv("EPA.09.Ex.16.4.copper.txt")
-head(copper)
+model_full <- lm(nitrogen ~ temp + precip + slope + aspect, data = soil)
+s <- summary(model_full)
+print(s)
+cat("Residual variance sigma^2:", s$sigma^2)
+```
 
-## (a) Summary statistics by well type ---------------------------
-cat("\n=== (a) Summary Statistics by Well Type ===\n")
-by(copper$Copper.ppb, copper$Well.type, summary)
+**Summary Table:**
 
-# Mean, SD, n by group
-tapply(copper$Copper.ppb, copper$Well.type, function(x)
-  c(n = length(x), mean = mean(x), sd = sd(x),
-    median = median(x), min = min(x), max = max(x)))
+| Term        | Estimate | Std. Error | t value | Pr(>\|t\|) |
+|-------------|----------|------------|---------|------------|
+| (Intercept) | 47.6335  | 2.4728     | 19.263  | < 2e-16 *** |
+| temp        | 0.0374   | 0.0929     | 0.402   | 0.690       |
+| precip      | 0.1130   | 0.0105     | 10.726  | 9.23e-13 *** |
+| slope       | −0.7830  | 0.0603     | −12.987 | 3.76e-15 *** |
+| aspectS     | 1.2527   | 0.5280     | 2.372   | 0.0231 *    |
 
+- **Multiple R²** = 0.9075
+- **Adjusted R²** = 0.8972
+- **Residual variance** $\hat{\sigma}^2 = 2.7683$ (mg N kg⁻¹ soil)²
 
-## (b) Plots comparing compliance well vs combined background ----
-cat("\n=== (b) Comparative Plots ===\n")
+---
 
-# Create a grouped factor: "Background (combined)" vs "Compliance"
-copper$group <- ifelse(copper$Well.type == "Compliance",
-                       "Compliance (Well 3)",
-                       "Background (Wells 1+2)")
+## (b) Significance of Coefficients
 
-par(mfrow = c(1, 2))
+- **`precip`** and **`slope`** are highly significant (both p < 2e-15), indicating strong and reliable linear associations with soil nitrogen concentration.
+- **`aspectS`** is significant at the 5% level (p ≈ 0.023), suggesting that south-facing hillsides have on average ~1.25 mg N kg⁻¹ more nitrogen than north-facing ones, after accounting for the other predictors.
+- **`temp`** is **not significant** (p ≈ 0.69). Its near-zero coefficient and large standard error relative to the estimate suggest that once precipitation, slope, and aspect are included, average air temperature contributes no additional explanatory power. It is a candidate for removal.
 
-# Boxplot
-boxplot(Copper.ppb ~ group, data = copper,
-        main = "Copper Concentrations by Well Type",
-        ylab = "Copper (ppb)", col = c("lightblue", "salmon"),
-        xlab = "")
+---
 
-# Stripchart (dotplot)
-stripchart(Copper.ppb ~ group, data = copper,
-           method = "jitter", vertical = TRUE, pch = 19,
-           col = c("steelblue", "red3"),
-           main = "Copper: Individual Observations",
-           ylab = "Copper (ppb)", xlab = "")
+## (c) Residual Diagnostics
 
-par(mfrow = c(1, 1))
+```r
+# Diagnostic plots
+par(mfrow = c(2, 2))
+plot(model_full)
 
+# Formal normality test
+shapiro.test(residuals(model_full))
+```
 
-## (c) Evidence of contamination? --------------------------------
-cat("\n=== (c) Evidence of Contamination? ===\n")
+**Shapiro-Wilk test:** W = 0.987, p-value = 0.914
 
-background  <- copper$Copper.ppb[copper$Well.type == "Background"]
-compliance  <- copper$Copper.ppb[copper$Well.type == "Compliance"]
+The residual diagnostics show:
 
-# Two-sample t-test (one-sided: compliance > background)
-t_result <- t.test(compliance, background, alternative = "greater")
-print(t_result)
+- **Residuals vs Fitted:** Points are scattered randomly around zero with no obvious curvature, consistent with linearity and homoscedasticity.
+- **Normal Q-Q:** Points follow the diagonal closely, with only minor deviation in the tails.
+- **Scale-Location:** The spread of standardized residuals appears roughly constant across fitted values — no strong evidence of heteroscedasticity.
+- **Residuals vs Leverage:** No points fall outside Cook's distance contours; no unduly influential observations.
+- The **Shapiro-Wilk test** (p = 0.914) gives no evidence against normality of errors.
 
-# Wilcoxon rank-sum test (non-parametric alternative)
-w_result <- wilcox.test(compliance, background, alternative = "greater")
-print(w_result)
+Overall, the residuals appear consistent with the assumption $\varepsilon_i \sim \mathcal{N}(0, \sigma^2)$.
 
-cat("\nConclusion: The compliance well mean (", round(mean(compliance), 2),
-    "ppb) is notably higher than the background mean (",
-    round(mean(background), 2), "ppb).\n")
-cat("The one-sided t-test p-value =", round(t_result$p.value, 4),
-    "— strong evidence of contamination at alpha = 0.05.\n")
+---
 
+## (d) Is This a Reasonable Model?
 
-## (d) Normal probability plot for combined background wells -----
-cat("\n=== (d) Normal Probability Plot: Background Wells Combined ===\n")
+Yes, this appears to be a **reasonable model** for several reasons:
 
-qqnorm(background,
-       main = "Normal Q-Q Plot: Combined Background Wells",
-       pch = 19, col = "steelblue")
-qqline(background, col = "red", lwd = 2)
+1. The model explains ~91% of the variance in soil nitrogen (R² = 0.9075), which is a very strong fit for ecological field data.
+2. Residual diagnostics (Q-Q plot, Shapiro-Wilk) support the normality assumption.
+3. There are no severe leverage or influence issues.
+4. The signs of key coefficients are ecologically interpretable: more precipitation → more nitrogen; steeper slope → less nitrogen (likely due to leaching/erosion); south-facing aspects → slightly higher nitrogen.
 
-# Shapiro-Wilk test
-sw <- shapiro.test(background)
-cat("Shapiro-Wilk test: W =", round(sw$statistic, 4),
-    ", p-value =", round(sw$p.value, 4), "\n")
-cat("Interpretation: p =", round(sw$p.value, 4),
-    "— fail to reject normality; background data are\n",
-    "consistent with a normal distribution.\n")
+However, `temp` is clearly non-significant and inflates model complexity without improving fit. A model without `temp` (see part f) is equally reasonable and more parsimonious.
 
+---
 
-## (e) Difference between the two background wells ---------------
-cat("\n=== (e) Difference Between Background Wells ===\n")
+## (e) All 16 Models — AIC, AICc, and BIC
 
-well1 <- copper$Copper.ppb[copper$Well == "Well.1"]
-well2 <- copper$Copper.ppb[copper$Well == "Well.2"]
+```r
+predictors <- c("temp", "precip", "slope", "aspect")
+combos <- do.call(c, lapply(0:4, function(k) combn(predictors, k, simplify = FALSE)))
 
-# Paired t-test (same months measured at both wells)
-pt <- t.test(well1, well2, paired = TRUE)
-print(pt)
-
-# Independent t-test
-it <- t.test(well1, well2, paired = FALSE)
-print(it)
-
-cat("Well 1 mean:", round(mean(well1), 2), "ppb\n")
-cat("Well 2 mean:", round(mean(well2), 2), "ppb\n")
-cat("Paired t-test p-value:", round(pt$p.value, 4),
-    "— no significant difference between the two background wells",
-    "(alpha = 0.05).\n")
-
-
-# ---------------------------------------------------------------
-# SECTION 2: AIR QUALITY IN NEW YORK
-# ---------------------------------------------------------------
-
-data("airquality")
-
-## (a) Compare ozone in May vs August ----------------------------
-cat("\n\n=== AIR QUALITY: Ozone May vs August ===\n")
-
-may_ozone <- airquality$Ozone[airquality$Month == 5]
-aug_ozone <- airquality$Ozone[airquality$Month == 8]
-
-# Remove NAs
-may_ozone <- na.omit(may_ozone)
-aug_ozone <- na.omit(aug_ozone)
-
-cat("May   — n:", length(may_ozone), " mean:", round(mean(may_ozone), 2),
-    " sd:", round(sd(may_ozone), 2), "\n")
-cat("August — n:", length(aug_ozone), " mean:", round(mean(aug_ozone), 2),
-    " sd:", round(sd(aug_ozone), 2), "\n")
-
-# Normality checks
-sw_may <- shapiro.test(may_ozone)
-sw_aug <- shapiro.test(aug_ozone)
-cat("Shapiro-Wilk May: p =", round(sw_may$p.value, 4), "\n")
-cat("Shapiro-Wilk Aug: p =", round(sw_aug$p.value, 4), "\n")
-
-# Both months are right-skewed; use Wilcoxon rank-sum test
-wt <- wilcox.test(may_ozone, aug_ozone, alternative = "two.sided")
-cat("\nWilcoxon rank-sum test p-value:", round(wt$p.value, 4), "\n")
-
-# Also run t-test for comparison
-tt <- t.test(may_ozone, aug_ozone)
-cat("Welch two-sample t-test p-value:", round(tt$p.value, 4), "\n")
-
-# Visualise
-par(mfrow = c(1, 2))
-boxplot(may_ozone, aug_ozone,
-        names = c("May", "August"),
-        col = c("lightgreen", "orange"),
-        main = "Ozone Concentration: May vs August",
-        ylab = "Ozone (ppb)")
-
-# Q-Q plots
-qqnorm(may_ozone, main = "Q-Q: May Ozone", pch = 19, col = "darkgreen")
-qqline(may_ozone, col = "red")
-par(mfrow = c(1, 1))
-
-cat("\nConclusion: August has a significantly higher ozone concentration.\n")
-cat("Both the Wilcoxon (p =", round(wt$p.value, 4), ") and Welch t-test (p =",
-    round(tt$p.value, 4), ") reject H0 at alpha = 0.05.\n")
-
-
-# ---------------------------------------------------------------
-# SECTION 3: LAKE ERIE
-# ---------------------------------------------------------------
-
-lake1 <- read.csv("LakeErie1.csv")
-lake2 <- read.csv("LakeErie2.csv")
-
-## (a) Graphics for normality of TP and chla --------------------
-cat("\n\n=== LAKE ERIE: Normality Evaluation ===\n")
-
-# Extract non-missing TP and chla from lake1
-TP   <- na.omit(lake1$TP); TP <- TP[TP > 0]
-chla <- na.omit(lake1$chla); chla <- chla[chla > 0]
-
-cat("TP:   n =", length(TP),   " mean =", round(mean(TP), 2),
-    " sd =", round(sd(TP), 2), "\n")
-cat("chla: n =", length(chla), " mean =", round(mean(chla), 2),
-    " sd =", round(sd(chla), 2), "\n")
-
-par(mfrow = c(2, 3))
-
-# Histograms
-hist(TP,   breaks = 30, main = "Histogram: Total Phosphorus (TP)",
-     xlab = "TP (µg/L)", col = "lightblue")
-hist(chla, breaks = 30, main = "Histogram: Chlorophyll-a (chla)",
-     xlab = "chla (µg/L)", col = "lightgreen")
-
-# Q-Q plots
-qqnorm(TP,   main = "Q-Q Plot: TP",   pch = 19, col = "steelblue")
-qqline(TP,   col = "red", lwd = 2)
-qqnorm(chla, main = "Q-Q Plot: chla", pch = 19, col = "darkgreen")
-qqline(chla, col = "red", lwd = 2)
-
-# Log-transformed Q-Q plots (often helpful for concentration data)
-qqnorm(log(TP),   main = "Q-Q Plot: log(TP)",   pch = 19, col = "steelblue")
-qqline(log(TP),   col = "red", lwd = 2)
-qqnorm(log(chla), main = "Q-Q Plot: log(chla)", pch = 19, col = "darkgreen")
-qqline(log(chla), col = "red", lwd = 2)
-
-par(mfrow = c(1, 1))
-
-
-## (b) Fit Gaussian distribution ---------------------------------
-cat("\n=== (b) Gaussian Fit ===\n")
-
-# For TP
-cat("--- TP ---\n")
-cat("MLE mean (mu):    ", round(mean(TP), 4), "\n")
-cat("MLE sd   (sigma): ", round(sd(TP) * sqrt((length(TP)-1)/length(TP)), 4), "\n")
-
-# For chla
-cat("--- chla ---\n")
-cat("MLE mean (mu):    ", round(mean(chla), 4), "\n")
-cat("MLE sd   (sigma): ", round(sd(chla) * sqrt((length(chla)-1)/length(chla)), 4), "\n")
-
-# Note: FITDISTR from MASS gives formal MLE
-library(MASS)
-fit_TP   <- fitdistr(TP,   "normal")
-fit_chla <- fitdistr(chla, "normal")
-cat("\nFormal MLE for TP  :\n"); print(fit_TP)
-cat("\nFormal MLE for chla:\n"); print(fit_chla)
-
-# Also fit log-normal (often better for environmental concentrations)
-fit_TP_ln   <- fitdistr(TP,   "lognormal")
-fit_chla_ln <- fitdistr(chla, "lognormal")
-cat("\nLog-normal MLE for TP  :\n"); print(fit_TP_ln)
-cat("\nLog-normal MLE for chla:\n"); print(fit_chla_ln)
-
-
-## (c) Goodness-of-fit tests -------------------------------------
-cat("\n=== (c) Goodness-of-Fit Tests ===\n")
-
-# Kolmogorov-Smirnov test against fitted normal
-ks_TP <- ks.test(TP, "pnorm",
-                 mean = fit_TP$estimate["mean"],
-                 sd   = fit_TP$estimate["sd"])
-ks_chla <- ks.test(chla, "pnorm",
-                   mean = fit_chla$estimate["mean"],
-                   sd   = fit_chla$estimate["sd"])
-
-cat("KS test TP   (vs Normal): D =", round(ks_TP$statistic, 4),
-    ", p =", round(ks_TP$p.value, 4), "\n")
-cat("KS test chla (vs Normal): D =", round(ks_chla$statistic, 4),
-    ", p =", round(ks_chla$p.value, 4), "\n")
-
-# Shapiro-Wilk (limited to n <= 5000; sample if needed)
-set.seed(42)
-sw_TP   <- shapiro.test(if(length(TP) > 5000) sample(TP, 5000) else TP)
-sw_chla <- shapiro.test(if(length(chla) > 5000) sample(chla, 5000) else chla)
-
-cat("Shapiro-Wilk TP  : W =", round(sw_TP$statistic, 4),
-    ", p =", round(sw_TP$p.value, 6), "\n")
-cat("Shapiro-Wilk chla: W =", round(sw_chla$statistic, 4),
-    ", p =", round(sw_chla$p.value, 6), "\n")
-
-cat("\nConclusion: Both tests reject normality for raw TP and chla.",
-    "\nConcentration data typically follow a log-normal distribution.\n")
-
-# Test log-normality
-sw_logTP   <- shapiro.test(log(TP))
-sw_logchla <- shapiro.test(log(chla))
-cat("Shapiro-Wilk log(TP)  : W =", round(sw_logTP$statistic, 4),
-    ", p =", round(sw_logTP$p.value, 4), "\n")
-cat("Shapiro-Wilk log(chla): W =", round(sw_logchla$statistic, 4),
-    ", p =", round(sw_logchla$p.value, 4), "\n")
-
-
-## (d) Compare NOAA vs ODNR TP distributions (LakeErie2) ---------
-cat("\n=== (d) NOAA vs ODNR TP Distribution (LakeErie2) ===\n")
-
-noaa_TP  <- na.omit(lake2$TP[lake2$INSTITUTION == "NOAA"])
-odnr_TP  <- na.omit(lake2$TP[lake2$INSTITUTION == "ODNR"])
-
-cat("NOAA n =", length(noaa_TP), " mean =", round(mean(noaa_TP), 2), "\n")
-cat("ODNR n =", length(odnr_TP), " mean =", round(mean(odnr_TP), 2), "\n")
-
-par(mfrow = c(1, 2))
-
-# Overlaid density plots
-plot(density(noaa_TP, na.rm = TRUE), col = "steelblue", lwd = 2,
-     main = "TP Density: NOAA vs ODNR",
-     xlab = "Total Phosphorus (µg/L)",
-     ylim = c(0, max(density(noaa_TP)$y, density(odnr_TP)$y) * 1.1))
-lines(density(odnr_TP, na.rm = TRUE), col = "darkorange", lwd = 2, lty = 2)
-legend("topright", legend = c("NOAA", "ODNR"),
-       col = c("steelblue", "darkorange"), lwd = 2, lty = c(1, 2))
-
-# Boxplot comparison
-boxplot(noaa_TP, odnr_TP,
-        names = c("NOAA", "ODNR"),
-        col = c("steelblue", "darkorange"),
-        main = "Total Phosphorus by Institution",
-        ylab = "TP (µg/L)")
-
-par(mfrow = c(1, 1))
-
-
-## (e) Are the two distributions different? ----------------------
-cat("\n=== (e) Testing NOAA vs ODNR Difference ===\n")
-
-# Wilcoxon rank-sum test (non-parametric; robust for skewed data)
-wt_lake <- wilcox.test(noaa_TP, odnr_TP, alternative = "two.sided")
-cat("Wilcoxon rank-sum test: W =", wt_lake$statistic,
-    ", p-value =", round(wt_lake$p.value, 4), "\n")
-
-# Welch t-test
-tt_lake <- t.test(noaa_TP, odnr_TP)
-cat("Welch t-test: t =", round(tt_lake$statistic, 4),
-    ", p-value =", round(tt_lake$p.value, 4), "\n")
-
-# KS two-sample test (tests both location AND shape)
-ks_lake <- ks.test(noaa_TP, odnr_TP)
-cat("KS two-sample test: D =", round(ks_lake$statistic, 4),
-    ", p-value =", round(ks_lake$p.value, 4), "\n")
-
-cat("\nConclusion: If p < 0.05, the two distributions are significantly different.\n")
-cat("The KS test is particularly informative as it detects any difference",
-    "in distribution shape, not just means.\n")
-
-
-# ---------------------------------------------------------------
-# SECTION 4: URANIUM AND TOTAL DISSOLVED SOLIDS
-# ---------------------------------------------------------------
-
-hh <- read.csv("hh.csv")
-colnames(hh) <- c("id", "Uranium_ppb", "TDS_mgL")
-head(hh)
-
-## (a) + (b) Correlation between uranium and TDS ----------------
-cat("\n\n=== URANIUM & TDS: Correlation Analysis ===\n")
-
-# Summary statistics
-cat("Uranium (ppb): mean =", round(mean(hh$Uranium_ppb), 2),
-    ", sd =", round(sd(hh$Uranium_ppb), 2), "\n")
-cat("TDS (mg/L):    mean =", round(mean(hh$TDS_mgL), 2),
-    ", sd =", round(sd(hh$TDS_mgL), 2), "\n")
-
-# Pearson correlation
-pearson <- cor.test(hh$Uranium_ppb, hh$TDS_mgL, method = "pearson")
-cat("\nPearson r  =", round(pearson$estimate, 4),
-    "\n95% CI: [", round(pearson$conf.int[1], 4), ",",
-    round(pearson$conf.int[2], 4), "]",
-    "\np-value =", round(pearson$p.value, 4), "\n")
-
-# Spearman correlation (rank-based, robust to non-normality)
-spearman <- cor.test(hh$Uranium_ppb, hh$TDS_mgL, method = "spearman")
-cat("\nSpearman rho =", round(spearman$estimate, 4),
-    "\np-value =", round(spearman$p.value, 4), "\n")
-
-# Scatterplot with regression line
-par(mfrow = c(1, 2))
-
-plot(hh$TDS_mgL, hh$Uranium_ppb,
-     xlab = "Total Dissolved Solids (mg/L)",
-     ylab = "Uranium (ppb)",
-     main = "Uranium vs TDS",
-     pch = 19, col = "steelblue")
-abline(lm(Uranium_ppb ~ TDS_mgL, data = hh),
-       col = "red", lwd = 2)
-legend("topleft",
-       legend = paste0("r = ", round(pearson$estimate, 3)),
-       bty = "n")
-
-# Log-log plot (useful for environmental concentration data)
-plot(log(hh$TDS_mgL), log(hh$Uranium_ppb),
-     xlab = "log(TDS)",
-     ylab = "log(Uranium)",
-     main = "Uranium vs TDS (log scale)",
-     pch = 19, col = "darkgreen")
-abline(lm(log(Uranium_ppb) ~ log(TDS_mgL), data = hh),
-       col = "red", lwd = 2)
-log_r <- cor(log(hh$TDS_mgL), log(hh$Uranium_ppb))
-legend("topleft",
-       legend = paste0("r = ", round(log_r, 3)),
-       bty = "n")
-
-par(mfrow = c(1, 1))
-
-# Linear regression for full description of relationship
-lm_fit <- lm(Uranium_ppb ~ TDS_mgL, data = hh)
-cat("\nLinear Regression Summary:\n")
-print(summary(lm_fit))
-
-cat("\n(b) Relationship Strength:\n")
-cat("Pearson r =", round(pearson$estimate, 4), "\n")
-cat("R-squared =", round(summary(lm_fit)$r.squared, 4), "\n")
-
-if (abs(pearson$estimate) > 0.7) {
-  cat("Interpretation: STRONG positive correlation between uranium and TDS.\n")
-} else if (abs(pearson$estimate) > 0.4) {
-  cat("Interpretation: MODERATE positive correlation between uranium and TDS.\n")
-} else {
-  cat("Interpretation: WEAK correlation between uranium and TDS.\n")
+results <- data.frame()
+for (i in seq_along(combos)) {
+  vars <- combos[[i]]
+  form <- if (length(vars) == 0) as.formula("nitrogen ~ 1") else
+    as.formula(paste("nitrogen ~", paste(vars, collapse = " + ")))
+  m <- lm(form, data = soil)
+  n <- nrow(soil)
+  k <- length(coef(m)) + 1       # parameters including sigma
+  ll <- logLik(m)[1]
+  aic  <- -2 * ll + 2 * k
+  aicc <- aic + (2 * k * (k + 1)) / (n - k - 1)
+  bic  <- -2 * ll + log(n) * k
+  label <- if (length(vars) == 0) "intercept only" else paste(vars, collapse = " + ")
+  results <- rbind(results, data.frame(Model = label, K = k,
+                   AIC = round(aic, 2), AICc = round(aicc, 2), BIC = round(bic, 2)))
 }
 
-cat("With p-value =", round(pearson$p.value, 4), ", the correlation is",
-    ifelse(pearson$p.value < 0.05, "statistically significant", "not significant"),
-    "at the 0.05 level.\n")
+results[order(results$AICc), ]   # sort by AICc
 ```
 
+**Models ranked by AICc (best to worst):**
 
-## Section 1 — Copper Concentrations
+| Rank | Model                          | K | AIC    | AICc   | BIC    |
+|------|--------------------------------|---|--------|--------|--------|
+| 1    | precip + slope + aspect        | 5 | 162.95 | 164.67 | 171.52 |
+| 2    | temp + precip + slope + aspect | 6 | 164.77 | 167.24 | 175.05 |
+| 3    | precip + slope                 | 4 | 166.81 | 167.92 | 173.66 |
+| 4    | temp + precip + slope          | 5 | 168.72 | 170.44 | 177.29 |
+| 5    | slope + aspect                 | 4 | 220.46 | 221.57 | 227.31 |
+| 6    | slope                          | 3 | 221.09 | 221.74 | 226.23 |
+| …    | …                              | … | …      | …      | …      |
+| 16   | temp + aspect                  | 4 | 256.03 | 257.14 | 262.88 |
 
-### (a) Summary statistics by well type
+**Key observations:**
 
-```r
-by(copper$Copper.ppb, copper$Well.type, summary)
-tapply(copper$Copper.ppb, copper$Well.type, function(x)
-  c(n=length(x), mean=mean(x), sd=sd(x), median=median(x), min=min(x), max=max(x)))
-```
-
-The background wells combined have a mean of **8.14 ppb** and the compliance well has a mean of **14.87 ppb**.
-
-### (b) Comparative plots
-
-A boxplot and stripchart comparing the compliance well against both background wells combined visually show that compliance readings are shifted upward and trend higher over time.
-
-### (c) Evidence of contamination?
-
-```r
-t.test(compliance, background, alternative = "greater")   # t = 3.33, p = 0.0068
-wilcox.test(compliance, background, alternative = "greater")  # W = 63.5, p = 0.0057
-```
-
-**Yes — strong evidence of contamination.** Both the one-sided Welch t-test (p = 0.0068) and Wilcoxon rank-sum test (p = 0.0057) reject H₀ at α = 0.05. The compliance well mean (14.87 ppb) is nearly double the background mean (8.14 ppb), and the compliance readings increase across months while background readings stay relatively stable.
-
-### (d) Normal probability plot for background wells
-
-```r
-qqnorm(background); qqline(background)
-shapiro.test(background)  # W = 0.921, p = 0.294
-```
-
-The Q-Q plot shows points close to the reference line with no systematic departures. The Shapiro-Wilk test gives p = 0.294, so we **fail to reject normality** — the combined background data are adequately modeled by a normal distribution.
-
-### (e) Difference between the two background wells
-
-```r
-t.test(well1, well2, paired = TRUE)    # t = −2.575, p = 0.0497
-t.test(well1, well2, paired = FALSE)   # t = −1.228, p = 0.248
-```
-
-Well 1 mean = 7.25 ppb; Well 2 mean = 9.03 ppb. The **paired** t-test (same months) gives p = 0.0497 — borderline significant. However, the independent t-test gives p = 0.248. The paired result is marginally significant but practically the difference is small relative to the spread, and both wells are well below the compliance well. For monitoring purposes, the wells can reasonably be **pooled as background**, though the small paired difference warrants noting.
+- All three criteria (AIC, AICc, BIC) agree that **`precip + slope + aspect`** is the top-ranked model.
+- The full model (rank 2 by AIC, rank 2 by AICc) is penalised enough by its extra `temp` parameter to fall behind the 3-predictor model once small-sample correction is applied.
+- BIC is slightly more parsimonious than AICc: it prefers `precip + slope` (no `aspect`) in 2nd place, reflecting BIC's heavier penalty for parameters.
+- All models without `precip` and `slope` perform drastically worse (ΔAICc > 55), confirming these two predictors carry most of the explanatory signal.
 
 ---
 
-## Section 2 — Air Quality in New York
-
-### (a) Ozone in May vs August
+## (f) Stepwise Selection
 
 ```r
-may_ozone <- na.omit(airquality$Ozone[airquality$Month == 5])   # n=26, mean=23.6
-aug_ozone <- na.omit(airquality$Ozone[airquality$Month == 8])   # n=26, mean=60.0
-
-shapiro.test(may_ozone)  # p ≈ 0 (non-normal, right-skewed)
-wilcox.test(may_ozone, aug_ozone)   # p = 0.0001
-t.test(may_ozone, aug_ozone)        # p = 0.0002
+step_model <- step(model_full, direction = "both")
+summary(step_model)
 ```
 
-**There is a highly significant difference.** August ozone (mean ≈ 60 ppb) is more than twice May ozone (mean ≈ 24 ppb). Since May ozone is non-normally distributed, the Wilcoxon rank-sum test is the most appropriate test; it gives p < 0.001. The Welch t-test agrees (p = 0.0002). We firmly reject H₀ at any conventional level. Higher summer temperatures and stronger sunlight drive photochemical ozone production in August.
+**Stepwise trace:**
+
+Starting from the full model (AIC = 46.42 on the deviance scale used by `step()`):
+
+1. Dropping `temp` reduces AIC to 44.60 → accepted.
+2. No further removal (dropping `aspect`, `precip`, or `slope` all increase AIC substantially).
+
+**Selected model:** `nitrogen ~ precip + slope + aspect`
+
+| Term        | Estimate | Std. Error | t value | Pr(>\|t\|) |
+|-------------|----------|------------|---------|------------|
+| (Intercept) | 48.3103  | 1.7906     | 26.980  | < 2e-16 *** |
+| precip      | 0.1136   | 0.0103     | 10.998  | 3.23e-13 *** |
+| slope       | −0.7809  | 0.0594     | −13.153 | 1.61e-15 *** |
+| aspectS     | 1.2426   | 0.5214     | 2.383   | 0.0224 *    |
+
+- **Multiple R²** = 0.9071
+- **Adjusted R²** = 0.8995
+- **Residual standard error** = 1.645 on 37 df
+
+The stepwise procedure converges on the same model identified as best by AIC/AICc model comparison — removing `temp` yields a more parsimonious model with essentially identical R².
 
 ---
 
-## Section 3 — Lake Erie
+## (g) Prediction for Moloka'i
 
-### (a) Graphics for normality
-
-Histograms of raw TP and chla show strong right skew. The Q-Q plots deviate substantially from the reference line, indicating non-normality. Log-transformed Q-Q plots are much straighter — especially for chla — suggesting a log-normal distribution fits better.
-
-### (b) Gaussian fit
+**Conditions:** precip = 150 cm, temp = 22 °C, aspect = South, slope = 11°
 
 ```r
-library(MASS)
-fitdistr(TP,   "normal")    # mu = 58.24, sigma = 87.61
-fitdistr(chla, "normal")    # mu = 4.87,  sigma = 4.31
-fitdistr(TP,   "lognormal") # meanlog = 3.36, sdlog = 1.06
-fitdistr(chla, "lognormal") # meanlog = 1.39, sdlog = 0.75
+new_data <- data.frame(
+  precip = 150,
+  slope  = 11,
+  aspect = factor("S", levels = levels(soil$aspect))
+)
+
+predict(step_model, newdata = new_data, interval = "prediction", level = 0.95)
 ```
 
-### (c) Goodness-of-fit tests
+**Results:**
 
-```r
-ks.test(TP,   "pnorm", ...)  # D = 0.280, p ≈ 0
-ks.test(chla, "pnorm", ...)  # D = 0.169, p = 0.009
-shapiro.test(TP)              # p ≈ 0
-shapiro.test(log(chla))       # p = 0.623 ✓
-```
+| Fit (mg N kg⁻¹) | 95% Prediction Interval |
+|-----------------|-------------------------|
+| **57.999**      | [54.59,  61.41]         |
 
-Both KS and Shapiro-Wilk strongly reject normality for raw TP and chla. After log-transformation, **log(chla) passes** the Shapiro-Wilk test (p = 0.623). TP remains somewhat non-normal even on the log scale given the very large n = 651 (the test has high power). Visually, a log-normal model is a much better fit for both variables.
+The model predicts a soil nitrogen concentration of approximately **58.0 mg N kg⁻¹ soil** on Moloka'i under the given conditions. The 95% prediction interval [54.6, 61.4] accounts for both the uncertainty in the estimated mean and the natural variability around it for a single new observation.
 
-### (d) Graphical comparison of NOAA vs ODNR (LakeErie2)
-
-Overlaid density plots and a side-by-side boxplot show that ODNR samples (mean ≈ 87 µg/L) tend to have higher TP values than NOAA samples (mean ≈ 52 µg/L), and ODNR shows a wider spread with a heavier upper tail.
-
-### (e) Are the two distributions different?
-
-```r
-wilcox.test(noaa_TP, odnr_TP)   # W = 10732, p = 0.0015
-t.test(noaa_TP, odnr_TP)        # t = −2.63,  p = 0.0105
-ks.test(noaa_TP, odnr_TP)       # D = 0.217,  p = 0.010
-```
-
-**Yes — the two distributions are significantly different** (all tests p < 0.05). The ODNR measurements are systematically higher than NOAA's. This could reflect sampling location (ODNR may sample nearshore/shallower sites with higher nutrient loading), seasonal timing, or methodological differences between institutions.
-
----
-
-## Section 4 — Uranium and Total Dissolved Solids
-
-### (a) Are uranium and TDS correlated?
-
-```r
-cor.test(hh$Uranium_ppb, hh$TDS_mgL, method = "pearson")   # r = 0.637, p < 0.001
-cor.test(hh$Uranium_ppb, hh$TDS_mgL, method = "spearman")  # ρ = 0.716, p < 0.001
-```
-
-**Yes — uranium and TDS are significantly positively correlated.** Both Pearson (r = 0.637) and Spearman (ρ = 0.716) are statistically significant (p < 0.001).
-
-### (b) Strength of the relationship
-
-The Pearson r = **0.637** indicates a **moderate-to-strong positive linear relationship**. The regression R² = 0.406, meaning TDS explains about **41% of the variance** in uranium concentration. The Spearman ρ = 0.716 (slightly higher) suggests the monotone relationship on the original or log scale is even stronger. In environmental terms, both uranium and TDS tend to increase together in groundwater — likely driven by the same geological factors (mineral dissolution, evaporative concentration) that enrich both uranium and dissolved solids.
+> **Note:** This prediction involves some extrapolation — Moloka'i is a different island and the model was fit on Maui data only. The prediction should be interpreted with appropriate caution.
