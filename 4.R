@@ -203,12 +203,18 @@ pexp(1, rate = 2, lower.tail = FALSE)
 # Undefined because 0.2 is less than 0.7
 
 #c
+pexp(0.6, rate = 2) - pexp(0.1, rate = 2)
 
 
+## Species Dispersal
+
+dgeom(2, prob = 0.17)
 
 
+## Glaucouse winged gull
 
 
+dnbinom(1, size = 3, prob = 0.76)
 
 
 
