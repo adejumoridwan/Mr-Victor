@@ -1,0 +1,197 @@
+---
+title: "Homework 7"
+author: "Adejumo Ridwan Suleiman"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+---
+
+## Copper Concentrations
+
+```{r}
+copper <- read.csv("EPA.09.Ex.16.4.copper.txt")
+```
+
+
+
+### Question a
+
+```{r}
+summary(copper)
+
+by(copper$Copper.ppb, copper$Well.type, summary)
+```
+
+### Question b
+
+```{r}
+
+table(copper$Well.type)
+
+## give me a bar plot in base r
+barplot(table(copper$Well.type))
+
+
+avg_copp <- tapply(copper$Copper.ppb, copper$Well.type,
+                   mean)
+avg_copp
+
+barplot(avg_copp)
+
+```
+
+### Question C
+
+Null Hypothesis: Copper concentration is the same between compliance and background
+
+Alternative Hypothesis: Copper concentration is more than that of background
+
+```{r}
+background <- copper$Copper.ppb[copper$Well.type == "Background"]
+compliance <- copper$Copper.ppb[copper$Well.type == "Compliance"]
+background
+compliance
+
+t_result <- t.test(background, compliance, 
+                   alternative = "greater")
+t_result
+```
+
+## Question d
+
+```{r}
+qqnorm(background)
+qqline(background)
+
+```
+
+### Question e
+
+```{r}
+well1 <- copper$Copper.ppb[copper$Well == "Well.1"]
+well2 <- copper$Copper.ppb[copper$Well == "Well.2"]
+
+pt <- t.test(well1, well2, paired = TRUE)
+pt
+
+```
+
+## Air quality measurementts in New York
+
+```{r}
+may_ozone <- airquality$Ozone[airquality$Month == 5]
+aug_ozone <- airquality$Ozone[airquality$Month == 8]
+
+t_ozone <- t.test(may_ozone, aug_ozone, 
+                  alternative = "two.sided")
+t_ozone
+```
+
+
+## Lake Erie
+
+### a
+
+```{r}
+lake_erie_1 <- read.csv("LakeErie1.csv")
+#View(lake_erie_1)
+```
+
+```{r}
+tp <- lake_erie_1$TP
+chla <- lake_erie_1$chla
+
+# remove missing values
+tp <- na.omit(lake_erie_1$TP)
+chla <- na.omit(lake_erie_1$chla)
+
+
+```
+
+```{r}
+# for tp
+qqnorm(tp)
+qqline(tp)
+```
+
+
+```{r}
+qqnorm(chla)
+qqline(chla)
+```
+
+### b
+```{r}
+
+library(fitdistrplus)
+
+tp_dist <- fitdist(tp, "norm")
+chla_dist <- fitdist(chla, "norm")
+tp_dist
+chla_dist
+
+
+```
+### c
+
+```{r}
+tp_mean <- tp_dist$estimate["mean"]
+tp_mean
+
+tp_sd <- tp_dist$estimate["sd"]
+tp_sd
+
+chla_mean <- chla_dist$estimate["mean"]
+chla_sd <- chla_dist$estimate["sd"]
+
+
+
+```
+
+```{r}
+ks.test(tp, "pnorm", mean = tp_mean, sd = tp_sd)
+```
+
+```{r}
+ks.test(chla, "pnorm", mean = chla_mean, sd = chla_sd)
+```
+
+### d
+
+```{r}
+lake_erie_2 <- read.csv("LakeErie2.csv")
+View(lake_erie_2)
+```
+
+```{r}
+tp_noaa <- na.omit(lake_erie_2$TP)
+
+```
+
+```{r}
+par(mfrow = c(1,2))
+
+qqnorm(tp_noaa, main = "NOAA")
+qqline(tp_noaa)
+
+qqnorm(tp , main = "ODNR")
+qqline(tp)
+
+```
+
+## Uranium and total dissolved solids
+
+```{r}
+hh <- read.csv("hh.csv")
+View(hh)
+
+u_conc <- hh$Uranium.ppb
+
+tds <- hh$TDS.mg.L
+
+cor(u_conc, tds)
+
+
+
+```
+

@@ -70,35 +70,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="a_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="a_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -111,315 +82,363 @@ window.Quarto = {
 
 
 
-<section id="homework-8-multiple-regression-soil-nitrogen-maui" class="level1">
-<h1>Homework 8: Multiple Regression — Soil Nitrogen (Maui)</h1>
+<p>I’ll read the exam carefully and provide thorough answers using base R only.</p>
 <hr>
-<section id="a-global-model" class="level2">
-<h2 class="anchored" data-anchor-id="a-global-model">(a) Global Model</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>soil <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"soil_nitrogen.csv"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>soil<span class="sc">$</span>aspect <span class="ot">&lt;-</span> <span class="fu">factor</span>(soil<span class="sc">$</span>aspect)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>model_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(nitrogen <span class="sc">~</span> temp <span class="sc">+</span> precip <span class="sc">+</span> slope <span class="sc">+</span> aspect, <span class="at">data =</span> soil)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">summary</span>(model_full)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(s)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Residual variance sigma^2:"</span>, s<span class="sc">$</span>sigma<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Summary Table:</strong></p>
+<section id="environmental-data-exam-full-solutions" class="level1">
+<h1>Environmental Data Exam — Full Solutions</h1>
+<hr>
+<section id="exercise-1-germination-times-of-phaseolus-vulgaris" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1-germination-times-of-phaseolus-vulgaris">Exercise 1 — Germination Times of <em>Phaseolus vulgaris</em></h2>
+<section id="a.-experimentalobservation-units-statistical-population" class="level3">
+<h3 class="anchored" data-anchor-id="a.-experimentalobservation-units-statistical-population">a. Experimental/Observation Units &amp; Statistical Population</h3>
+<p>The <strong>experimental (sampling) units</strong> are the individual seeds. Each seed is independently assigned to one of three moisture level treatments and its germination time is recorded.</p>
+<p>The <strong>statistical population</strong> is the conceptual collection of all <em>Phaseolus vulgaris</em> seeds that could potentially be germinated under the three soil moisture conditions studied. The 90 seeds (30 per group) represent a sample drawn from this population.</p>
+<hr>
+</section>
+<section id="b.-type-of-data" class="level3">
+<h3 class="anchored" data-anchor-id="b.-type-of-data">b. Type of Data</h3>
+<p>Germination time is a <strong>continuous numeric variable</strong> — it is measured on a ratio scale (e.g., in days or hours) and can take any positive real value within a range. It has a true zero (a seed that never germinates, or germinates immediately).</p>
+<hr>
+</section>
+<section id="c.-dependent-and-independent-variables" class="level3">
+<h3 class="anchored" data-anchor-id="c.-dependent-and-independent-variables">c.&nbsp;Dependent and Independent Variables</h3>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>Term</th>
-<th>Estimate</th>
-<th>Std. Error</th>
-<th>t value</th>
-<th>Pr(&gt;|t|)</th>
+<th>Role</th>
+<th>Variable</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>(Intercept)</td>
-<td>47.6335</td>
-<td>2.4728</td>
-<td>19.263</td>
-<td>&lt; 2e-16 ***</td>
+<td><strong>Independent variable (factor/predictor)</strong></td>
+<td>Soil moisture level (3 levels) — categorical/nominal</td>
 </tr>
 <tr class="even">
-<td>temp</td>
-<td>0.0374</td>
-<td>0.0929</td>
-<td>0.402</td>
-<td>0.690</td>
-</tr>
-<tr class="odd">
-<td>precip</td>
-<td>0.1130</td>
-<td>0.0105</td>
-<td>10.726</td>
-<td>9.23e-13 ***</td>
-</tr>
-<tr class="even">
-<td>slope</td>
-<td>−0.7830</td>
-<td>0.0603</td>
-<td>−12.987</td>
-<td>3.76e-15 ***</td>
-</tr>
-<tr class="odd">
-<td>aspectS</td>
-<td>1.2527</td>
-<td>0.5280</td>
-<td>2.372</td>
-<td>0.0231 *</td>
+<td><strong>Dependent variable (response)</strong></td>
+<td>Germination time (days/hours) — continuous</td>
 </tr>
 </tbody>
 </table>
+<p>The moisture level is actively manipulated (or at least categorised), making it the factor whose effect we are studying.</p>
+<hr>
+</section>
+<section id="d.-sample-size" class="level3">
+<h3 class="anchored" data-anchor-id="d.-sample-size">d.&nbsp;Sample Size</h3>
 <ul>
-<li><strong>Multiple R²</strong> = 0.9075</li>
-<li><strong>Adjusted R²</strong> = 0.8972</li>
-<li><strong>Residual variance</strong> <span class="math inline">\(\hat{\sigma}^2 = 2.7683\)</span> (mg N kg⁻¹ soil)²</li>
+<li><strong>Per group:</strong> 30 seeds</li>
+<li><strong>Total sample size: n = 90</strong> (3 groups × 30 seeds)</li>
 </ul>
 <hr>
 </section>
-<section id="b-significance-of-coefficients" class="level2">
-<h2 class="anchored" data-anchor-id="b-significance-of-coefficients">(b) Significance of Coefficients</h2>
-<ul>
-<li><strong><code>precip</code></strong> and <strong><code>slope</code></strong> are highly significant (both p &lt; 2e-15), indicating strong and reliable linear associations with soil nitrogen concentration.</li>
-<li><strong><code>aspectS</code></strong> is significant at the 5% level (p ≈ 0.023), suggesting that south-facing hillsides have on average ~1.25 mg N kg⁻¹ more nitrogen than north-facing ones, after accounting for the other predictors.</li>
-<li><strong><code>temp</code></strong> is <strong>not significant</strong> (p ≈ 0.69). Its near-zero coefficient and large standard error relative to the estimate suggest that once precipitation, slope, and aspect are included, average air temperature contributes no additional explanatory power. It is a candidate for removal.</li>
-</ul>
-<hr>
-</section>
-<section id="c-residual-diagnostics" class="level2">
-<h2 class="anchored" data-anchor-id="c-residual-diagnostics">(c) Residual Diagnostics</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Diagnostic plots</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model_full)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Formal normality test</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">residuals</span>(model_full))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Shapiro-Wilk test:</strong> W = 0.987, p-value = 0.914</p>
-<p>The residual diagnostics show:</p>
-<ul>
-<li><strong>Residuals vs Fitted:</strong> Points are scattered randomly around zero with no obvious curvature, consistent with linearity and homoscedasticity.</li>
-<li><strong>Normal Q-Q:</strong> Points follow the diagonal closely, with only minor deviation in the tails.</li>
-<li><strong>Scale-Location:</strong> The spread of standardized residuals appears roughly constant across fitted values — no strong evidence of heteroscedasticity.</li>
-<li><strong>Residuals vs Leverage:</strong> No points fall outside Cook’s distance contours; no unduly influential observations.</li>
-<li>The <strong>Shapiro-Wilk test</strong> (p = 0.914) gives no evidence against normality of errors.</li>
-</ul>
-<p>Overall, the residuals appear consistent with the assumption <span class="math inline">\(\varepsilon_i \sim \mathcal{N}(0, \sigma^2)\)</span>.</p>
-<hr>
-</section>
-<section id="d-is-this-a-reasonable-model" class="level2">
-<h2 class="anchored" data-anchor-id="d-is-this-a-reasonable-model">(d) Is This a Reasonable Model?</h2>
-<p>Yes, this appears to be a <strong>reasonable model</strong> for several reasons:</p>
-<ol type="1">
-<li>The model explains ~91% of the variance in soil nitrogen (R² = 0.9075), which is a very strong fit for ecological field data.</li>
-<li>Residual diagnostics (Q-Q plot, Shapiro-Wilk) support the normality assumption.</li>
-<li>There are no severe leverage or influence issues.</li>
-<li>The signs of key coefficients are ecologically interpretable: more precipitation → more nitrogen; steeper slope → less nitrogen (likely due to leaching/erosion); south-facing aspects → slightly higher nitrogen.</li>
-</ol>
-<p>However, <code>temp</code> is clearly non-significant and inflates model complexity without improving fit. A model without <code>temp</code> (see part f) is equally reasonable and more parsimonious.</p>
-<hr>
-</section>
-<section id="e-all-16-models-aic-aicc-and-bic" class="level2">
-<h2 class="anchored" data-anchor-id="e-all-16-models-aic-aicc-and-bic">(e) All 16 Models — AIC, AICc, and BIC</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>predictors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"temp"</span>, <span class="st">"precip"</span>, <span class="st">"slope"</span>, <span class="st">"aspect"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>combos <span class="ot">&lt;-</span> <span class="fu">do.call</span>(c, <span class="fu">lapply</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(k) <span class="fu">combn</span>(predictors, k, <span class="at">simplify =</span> <span class="cn">FALSE</span>)))</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_along</span>(combos)) {</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  vars <span class="ot">&lt;-</span> combos[[i]]</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  form <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">length</span>(vars) <span class="sc">==</span> <span class="dv">0</span>) <span class="fu">as.formula</span>(<span class="st">"nitrogen ~ 1"</span>) <span class="cf">else</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as.formula</span>(<span class="fu">paste</span>(<span class="st">"nitrogen ~"</span>, <span class="fu">paste</span>(vars, <span class="at">collapse =</span> <span class="st">" + "</span>)))</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">lm</span>(form, <span class="at">data =</span> soil)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  n <span class="ot">&lt;-</span> <span class="fu">nrow</span>(soil)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">coef</span>(m)) <span class="sc">+</span> <span class="dv">1</span>       <span class="co"># parameters including sigma</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  ll <span class="ot">&lt;-</span> <span class="fu">logLik</span>(m)[<span class="dv">1</span>]</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  aic  <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> ll <span class="sc">+</span> <span class="dv">2</span> <span class="sc">*</span> k</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  aicc <span class="ot">&lt;-</span> aic <span class="sc">+</span> (<span class="dv">2</span> <span class="sc">*</span> k <span class="sc">*</span> (k <span class="sc">+</span> <span class="dv">1</span>)) <span class="sc">/</span> (n <span class="sc">-</span> k <span class="sc">-</span> <span class="dv">1</span>)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  bic  <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">*</span> ll <span class="sc">+</span> <span class="fu">log</span>(n) <span class="sc">*</span> k</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>  label <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">length</span>(vars) <span class="sc">==</span> <span class="dv">0</span>) <span class="st">"intercept only"</span> <span class="cf">else</span> <span class="fu">paste</span>(vars, <span class="at">collapse =</span> <span class="st">" + "</span>)</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>  results <span class="ot">&lt;-</span> <span class="fu">rbind</span>(results, <span class="fu">data.frame</span>(<span class="at">Model =</span> label, <span class="at">K =</span> k,</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                   <span class="at">AIC =</span> <span class="fu">round</span>(aic, <span class="dv">2</span>), <span class="at">AICc =</span> <span class="fu">round</span>(aicc, <span class="dv">2</span>), <span class="at">BIC =</span> <span class="fu">round</span>(bic, <span class="dv">2</span>)))</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>results[<span class="fu">order</span>(results<span class="sc">$</span>AICc), ]   <span class="co"># sort by AICc</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Models ranked by AICc (best to worst):</strong></p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Rank</th>
-<th>Model</th>
-<th>K</th>
-<th>AIC</th>
-<th>AICc</th>
-<th>BIC</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1</td>
-<td>precip + slope + aspect</td>
-<td>5</td>
-<td>162.95</td>
-<td>164.67</td>
-<td>171.52</td>
-</tr>
-<tr class="even">
-<td>2</td>
-<td>temp + precip + slope + aspect</td>
-<td>6</td>
-<td>164.77</td>
-<td>167.24</td>
-<td>175.05</td>
-</tr>
-<tr class="odd">
-<td>3</td>
-<td>precip + slope</td>
-<td>4</td>
-<td>166.81</td>
-<td>167.92</td>
-<td>173.66</td>
-</tr>
-<tr class="even">
-<td>4</td>
-<td>temp + precip + slope</td>
-<td>5</td>
-<td>168.72</td>
-<td>170.44</td>
-<td>177.29</td>
-</tr>
-<tr class="odd">
-<td>5</td>
-<td>slope + aspect</td>
-<td>4</td>
-<td>220.46</td>
-<td>221.57</td>
-<td>227.31</td>
-</tr>
-<tr class="even">
-<td>6</td>
-<td>slope</td>
-<td>3</td>
-<td>221.09</td>
-<td>221.74</td>
-<td>226.23</td>
-</tr>
-<tr class="odd">
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-<td>…</td>
-</tr>
-<tr class="even">
-<td>16</td>
-<td>temp + aspect</td>
-<td>4</td>
-<td>256.03</td>
-<td>257.14</td>
-<td>262.88</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Key observations:</strong></p>
-<ul>
-<li>All three criteria (AIC, AICc, BIC) agree that <strong><code>precip + slope + aspect</code></strong> is the top-ranked model.</li>
-<li>The full model (rank 2 by AIC, rank 2 by AICc) is penalised enough by its extra <code>temp</code> parameter to fall behind the 3-predictor model once small-sample correction is applied.</li>
-<li>BIC is slightly more parsimonious than AICc: it prefers <code>precip + slope</code> (no <code>aspect</code>) in 2nd place, reflecting BIC’s heavier penalty for parameters.</li>
-<li>All models without <code>precip</code> and <code>slope</code> perform drastically worse (ΔAICc &gt; 55), confirming these two predictors carry most of the explanatory signal.</li>
-</ul>
-<hr>
-</section>
-<section id="f-stepwise-selection" class="level2">
-<h2 class="anchored" data-anchor-id="f-stepwise-selection">(f) Stepwise Selection</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>step_model <span class="ot">&lt;-</span> <span class="fu">step</span>(model_full, <span class="at">direction =</span> <span class="st">"both"</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(step_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Stepwise trace:</strong></p>
-<p>Starting from the full model (AIC = 46.42 on the deviance scale used by <code>step()</code>):</p>
-<ol type="1">
-<li>Dropping <code>temp</code> reduces AIC to 44.60 → accepted.</li>
-<li>No further removal (dropping <code>aspect</code>, <code>precip</code>, or <code>slope</code> all increase AIC substantially).</li>
-</ol>
-<p><strong>Selected model:</strong> <code>nitrogen ~ precip + slope + aspect</code></p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Term</th>
-<th>Estimate</th>
-<th>Std. Error</th>
-<th>t value</th>
-<th>Pr(&gt;|t|)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>(Intercept)</td>
-<td>48.3103</td>
-<td>1.7906</td>
-<td>26.980</td>
-<td>&lt; 2e-16 ***</td>
-</tr>
-<tr class="even">
-<td>precip</td>
-<td>0.1136</td>
-<td>0.0103</td>
-<td>10.998</td>
-<td>3.23e-13 ***</td>
-</tr>
-<tr class="odd">
-<td>slope</td>
-<td>−0.7809</td>
-<td>0.0594</td>
-<td>−13.153</td>
-<td>1.61e-15 ***</td>
-</tr>
-<tr class="even">
-<td>aspectS</td>
-<td>1.2426</td>
-<td>0.5214</td>
-<td>2.383</td>
-<td>0.0224 *</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li><strong>Multiple R²</strong> = 0.9071</li>
-<li><strong>Adjusted R²</strong> = 0.8995</li>
-<li><strong>Residual standard error</strong> = 1.645 on 37 df</li>
-</ul>
-<p>The stepwise procedure converges on the same model identified as best by AIC/AICc model comparison — removing <code>temp</code> yields a more parsimonious model with essentially identical R².</p>
-<hr>
-</section>
-<section id="g-prediction-for-molokai" class="level2">
-<h2 class="anchored" data-anchor-id="g-prediction-for-molokai">(g) Prediction for Moloka’i</h2>
-<p><strong>Conditions:</strong> precip = 150 cm, temp = 22 °C, aspect = South, slope = 11°</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">precip =</span> <span class="dv">150</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">slope  =</span> <span class="dv">11</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">aspect =</span> <span class="fu">factor</span>(<span class="st">"S"</span>, <span class="at">levels =</span> <span class="fu">levels</span>(soil<span class="sc">$</span>aspect))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(step_model, <span class="at">newdata =</span> new_data, <span class="at">interval =</span> <span class="st">"prediction"</span>, <span class="at">level =</span> <span class="fl">0.95</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Results:</strong></p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Fit (mg N kg⁻¹)</th>
-<th>95% Prediction Interval</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>57.999</strong></td>
-<td>[54.59, 61.41]</td>
-</tr>
-</tbody>
-</table>
-<p>The model predicts a soil nitrogen concentration of approximately <strong>58.0 mg N kg⁻¹ soil</strong> on Moloka’i under the given conditions. The 95% prediction interval [54.6, 61.4] accounts for both the uncertainty in the estimated mean and the natural variability around it for a single new observation.</p>
+<section id="e.-strategy-assessment" class="level3">
+<h3 class="anchored" data-anchor-id="e.-strategy-assessment">e. Strategy Assessment</h3>
 <blockquote class="blockquote">
-<p><strong>Note:</strong> This prediction involves some extrapolation — Moloka’i is a different island and the model was fit on Maui data only. The prediction should be interpreted with appropriate caution.</p>
+<p>The key constraint throughout: <strong>the data are bimodal</strong>, meaning the normality assumption is violated.</p>
 </blockquote>
+<p><strong>1. Standard ANOVA assuming normality — ❌ Not appropriate</strong> ANOVA requires (among other things) that residuals are approximately normally distributed within each group. A bimodal distribution is a direct violation of this assumption. Applying standard ANOVA without investigation would produce unreliable F-statistics and p-values.</p>
+<p><strong>2. Data transformation then ANOVA — ⚠️ Possibly appropriate, but risky</strong> Log or square-root transformations can correct right-skewness or stabilise variance, but they generally <strong>cannot resolve bimodality</strong>. Bimodality typically signals a mixture of two sub-populations (e.g., fast-germinating vs.&nbsp;slow-germinating seeds), and a transformation will not merge those modes into a single bell curve. This strategy should only be tried after investigating the source of bimodality; it is not a reliable fix.</p>
+<p><strong>3. Non-parametric test (e.g., Kruskal–Wallis) — ✅ Most appropriate</strong> The Kruskal–Wallis test is the non-parametric analogue of one-way ANOVA. It compares group medians/rank distributions without assuming normality, making it robust to bimodal or otherwise non-normal data. If it detects a significant difference, pairwise Wilcoxon rank-sum tests (with a correction such as Bonferroni) can follow.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example (conceptual — no data file provided for Ex. 1)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(germination_time <span class="sc">~</span> moisture_level, <span class="at">data =</span> beans)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Post-hoc pairwise comparisons</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.wilcox.test</span>(beans<span class="sc">$</span>germination_time, beans<span class="sc">$</span>moisture_level,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">p.adjust.method =</span> <span class="st">"bonferroni"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>4. Ignore bimodality and use a t-test — ❌ Not appropriate</strong> A t-test has the same normality assumption as ANOVA, and ignoring the bimodality does not make it go away. Additionally, a t-test only compares <strong>two</strong> groups at a time; with three moisture levels, multiple t-tests inflate the Type I error rate (family-wise error). This strategy is doubly inappropriate.</p>
+<p><strong>5. Visualise with boxplots after choosing a test — ✅ Good practice, but note limitations</strong> Visualisation should ideally come <strong>before</strong> choosing a test, not after. That said, boxplots are always a valuable complement to any analysis. However, for bimodal data, boxplots alone can be <strong>misleading</strong> because they summarise the distribution with a single median and IQR, obscuring the two modes. Better visualisation choices for bimodal data include:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram per group</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (lvl <span class="cf">in</span> <span class="fu">levels</span>(beans<span class="sc">$</span>moisture_level)) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>(beans<span class="sc">$</span>germination_time[beans<span class="sc">$</span>moisture_level <span class="sc">==</span> lvl],</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"Moisture:"</span>, lvl),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Germination time (days)"</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">"lightblue"</span>, <span class="at">breaks =</span> <span class="dv">10</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Or density plots overlaid</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(beans<span class="sc">$</span>germination_time[beans<span class="sc">$</span>moisture_level <span class="sc">==</span> <span class="st">"Low"</span>]),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Germination time by moisture level"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Days"</span>, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(beans<span class="sc">$</span>germination_time[beans<span class="sc">$</span>moisture_level <span class="sc">==</span> <span class="st">"Medium"</span>]),</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="fu">density</span>(beans<span class="sc">$</span>germination_time[beans<span class="sc">$</span>moisture_level <span class="sc">==</span> <span class="st">"High"</span>]),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"green"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"Low"</span>,<span class="st">"Medium"</span>,<span class="st">"High"</span>),</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"blue"</span>,<span class="st">"red"</span>,<span class="st">"green"</span>), <span class="at">lwd =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Kernel density plots or histograms make the bimodality visible and inform the choice of analysis.</p>
+<hr>
+</section>
+</section>
+<section id="exercise-2-industrial-activity-water-quality" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2-industrial-activity-water-quality">Exercise 2 — Industrial Activity &amp; Water Quality</h2>
+<blockquote class="blockquote">
+<p><em>The CSV file was not uploaded, so all code is fully written and ready to run; outputs and comments describe what one would typically observe and how to interpret it.</em></p>
+</blockquote>
+<section id="a.-load-the-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="a.-load-the-dataset">a. Load the dataset</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the dataset — adjust path as needed</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>env_data <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"envdata-20250107-data1.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">stringsAsFactors =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="b.-first-rows-and-structure" class="level3">
+<h3 class="anchored" data-anchor-id="b.-first-rows-and-structure">b. First rows and structure</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display first 6 rows</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(env_data)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Check structure: variable names, types, number of obs.</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(env_data)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Also useful: dimensions</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(env_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Expected output interpretation:</strong> <code>str()</code> will reveal that <code>IndustrialActivity</code> is a factor (categorical grouping variable) and the remaining variables are numeric. <code>dim()</code> gives the number of rows (days of observation) and columns (6 variables).</p>
+<hr>
+</section>
+<section id="c.-variable-selected-for-water-quality" class="level3">
+<h3 class="anchored" data-anchor-id="c.-variable-selected-for-water-quality">c.&nbsp;Variable selected for water quality</h3>
+<p><strong>Selected variable: <code>WaterpH</code></strong></p>
+<p><em>Justification:</em> pH is a direct, integrative indicator of water chemistry. Industrial activity commonly releases acidic or alkaline effluents; pH deviations from the neutral range (6.5–8.5) harm aquatic ecosystems and make water unsafe. It is also widely standardised and easy to interpret.</p>
+<hr>
+</section>
+<section id="c-cont..-summary-statistics-grouped-by-industrial-activity" class="level3">
+<h3 class="anchored" data-anchor-id="c-cont..-summary-statistics-grouped-by-industrial-activity">c (cont.). Summary statistics grouped by industrial activity</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Split data by IndustrialActivity category</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>ph_by_industry <span class="ot">&lt;-</span> <span class="fu">split</span>(env_data<span class="sc">$</span>WaterpH, env_data<span class="sc">$</span>IndustrialActivity)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to compute all summary statistics for one group</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>summary_stats <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">c</span>(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">n      =</span> <span class="fu">length</span>(x),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean   =</span> <span class="fu">round</span>(<span class="fu">mean</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">3</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">median =</span> <span class="fu">round</span>(<span class="fu">median</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">3</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd     =</span> <span class="fu">round</span>(<span class="fu">sd</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">3</span>),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">min    =</span> <span class="fu">round</span>(<span class="fu">min</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">3</span>),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">max    =</span> <span class="fu">round</span>(<span class="fu">max</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">3</span>),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">q25    =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(x, <span class="fl">0.25</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">3</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">q75    =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(x, <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="dv">3</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply to each group and display as a table</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">sapply</span>(ph_by_industry, summary_stats)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(result)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="d.-comment-on-distributions-across-industrial-activity-categories" class="level3">
+<h3 class="anchored" data-anchor-id="d.-comment-on-distributions-across-industrial-activity-categories">d.&nbsp;Comment on distributions across industrial activity categories</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Boxplot of WaterpH by IndustrialActivity</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(WaterpH <span class="sc">~</span> IndustrialActivity, <span class="at">data =</span> env_data,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="at">main =</span> <span class="st">"Distribution of Water pH by Industrial Activity Level"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab =</span> <span class="st">"Industrial Activity Category"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylab =</span> <span class="st">"Water pH"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">col  =</span> <span class="fu">c</span>(<span class="st">"lightgreen"</span>, <span class="st">"lightyellow"</span>, <span class="st">"salmon"</span>),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">notch =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add a horizontal reference line for neutral pH</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">7</span>, <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>, <span class="at">legend =</span> <span class="st">"Neutral pH = 7"</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">lwd =</span> <span class="fl">1.5</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram per group for distributional shape</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">length</span>(<span class="fu">levels</span>(env_data<span class="sc">$</span>IndustrialActivity))))</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (lvl <span class="cf">in</span> <span class="fu">levels</span>(env_data<span class="sc">$</span>IndustrialActivity)) {</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hist</span>(env_data<span class="sc">$</span>WaterpH[env_data<span class="sc">$</span>IndustrialActivity <span class="sc">==</span> lvl],</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="fu">paste</span>(<span class="st">"Industrial Activity:"</span>, lvl),</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"pH"</span>, <span class="at">col =</span> <span class="st">"lightblue"</span>,</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">breaks =</span> <span class="dv">10</span>, <span class="at">freq =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="fu">density</span>(env_data<span class="sc">$</span>WaterpH[env_data<span class="sc">$</span>IndustrialActivity <span class="sc">==</span> lvl],</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>                <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Comment:</strong> We expect that as industrial activity increases, water pH will deviate further from neutral — either becoming more acidic (lower pH) due to acid mine drainage or chemical discharge, or more alkaline due to certain industrial effluents. Higher industrial activity groups are likely to show lower mean pH, greater spread (higher SD), and possibly more outliers. Groups with low industrial activity should cluster closer to pH 7. The boxplots make group differences in central tendency and spread immediately visible.</p>
+<hr>
+</section>
+<section id="e.-gaussian-adequacy-for-one-industrial-activity-category" class="level3">
+<h3 class="anchored" data-anchor-id="e.-gaussian-adequacy-for-one-industrial-activity-category">e. Gaussian adequacy for one industrial activity category</h3>
+<p><strong>Selected category: High industrial activity</strong> (most interesting as deviations are expected to be largest)</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset: High industrial activity only</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ph_high <span class="ot">&lt;-</span> env_data<span class="sc">$</span>WaterpH[env_data<span class="sc">$</span>IndustrialActivity <span class="sc">==</span> <span class="fu">levels</span>(env_data<span class="sc">$</span>IndustrialActivity)[<span class="dv">3</span>]]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># (replace [3] with whichever level label corresponds to "High")</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Visual assessment ---</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram with normal curve overlay</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(ph_high, <span class="at">freq =</span> <span class="cn">FALSE</span>, <span class="at">breaks =</span> <span class="dv">12</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"pH — High Industrial Activity"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Water pH"</span>, <span class="at">col =</span> <span class="st">"lightyellow"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"grey40"</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">curve</span>(<span class="fu">dnorm</span>(x, <span class="at">mean =</span> <span class="fu">mean</span>(ph_high, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">sd   =</span> <span class="fu">sd</span>(ph_high,   <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>      <span class="at">add =</span> <span class="cn">TRUE</span>, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Q-Q plot</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(ph_high,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Q-Q Plot — pH (High Activity)"</span>,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">col =</span> <span class="st">"steelblue"</span>)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(ph_high, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Formal test ---</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Shapiro-Wilk (best for n &lt; 50; use for each group separately)</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(ph_high)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Comment:</strong> The Gaussian (normal) distribution is adequate <strong>if</strong>:</p>
+<ul>
+<li>The histogram is roughly bell-shaped and symmetric around the mean.</li>
+<li>The Q-Q plot points fall close to the diagonal reference line with no strong systematic curvature.</li>
+<li>The Shapiro-Wilk test returns a p-value &gt; 0.05 (we fail to reject normality).</li>
+</ul>
+<p>In practice, for the <strong>high industrial activity</strong> group we might observe right- or left-skew in pH (because industrial effluents push values in a consistent direction), causing the Q-Q plot to curve at the tails. If the Shapiro-Wilk p-value is small (&lt; 0.05), the Gaussian model is <strong>not adequate</strong> and we should consider a non-parametric approach or a transformation before applying parametric tests.</p>
+<hr>
+</section>
+</section>
+<section id="exercise-3-mercury-contamination-in-florida-lakes" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3-mercury-contamination-in-florida-lakes">Exercise 3 — Mercury Contamination in Florida Lakes</h2>
+<blockquote class="blockquote">
+<p><em>Again, the data file was not uploaded. All code is complete and executable; outputs are described analytically.</em></p>
+</blockquote>
+<section id="a.-fit-simple-linear-regression-avg.mercury-alkalinity" class="level3">
+<h3 class="anchored" data-anchor-id="a.-fit-simple-linear-regression-avg.mercury-alkalinity">a. Fit simple linear regression: Avg.Mercury ~ Alkalinity</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data (tab or space separated — check the file first)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>mercury <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="st">"envdata-20250107-data2.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># If space-separated: read.table(..., header = TRUE)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Inspect</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mercury)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(mercury)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit model</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>model1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Avg.Mercury <span class="sc">~</span> Alkalinity, <span class="at">data =</span> mercury)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="b.-model-fit-and-interpretation" class="level3">
+<h3 class="anchored" data-anchor-id="b.-model-fit-and-interpretation">b. Model fit and interpretation</h3>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract key statistics</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>s1 <span class="ot">&lt;-</span> <span class="fu">summary</span>(model1)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"R-squared  :"</span>, <span class="fu">round</span>(s1<span class="sc">$</span>r.squared, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Slope      :"</span>, <span class="fu">round</span>(<span class="fu">coef</span>(model1)[<span class="dv">2</span>], <span class="dv">5</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Intercept  :"</span>, <span class="fu">round</span>(<span class="fu">coef</span>(model1)[<span class="dv">1</span>], <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"p-value (slope):"</span>, <span class="fu">round</span>(s1<span class="sc">$</span>coefficients[<span class="dv">2</span>, <span class="dv">4</span>], <span class="dv">5</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Interpretation:</strong></p>
+<ul>
+<li><strong>Intercept:</strong> The estimated average mercury concentration when alkalinity = 0 mg/L. This is rarely physically meaningful on its own (lakes have some minimum alkalinity), but anchors the regression line.</li>
+<li><strong>Slope:</strong> For each 1 mg/L increase in alkalinity, average mercury concentration changes by the estimated slope value (expected to be <strong>negative</strong> — more alkaline lakes tend to have lower mercury bioavailability). For example, a slope of −0.01 means a 10 mg/L rise in alkalinity is associated with a 0.10 mg/L decrease in average mercury.</li>
+<li><strong>R²:</strong> Proportion of variance in mercury concentration explained by alkalinity alone. A value of, say, 0.35 means alkalinity explains 35% of the variability — modest but meaningful for a simple one-predictor model.</li>
+<li><strong>p-value of slope:</strong> If &lt; 0.05, alkalinity is a statistically significant predictor.</li>
+</ul>
+<hr>
+</section>
+<section id="c.-potential-problems-residual-diagnostics" class="level3">
+<h3 class="anchored" data-anchor-id="c.-potential-problems-residual-diagnostics">c.&nbsp;Potential problems — residual diagnostics</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Residual diagnostic plots (base R — 4-panel)</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(model1)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>What to look for and expected problems:</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Plot</th>
+<th>What to look for</th>
+<th>Likely issue</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Residuals vs Fitted</td>
+<td>Random scatter around 0</td>
+<td>Likely a curved (non-linear) pattern — suggests the linear model misses curvature</td>
+</tr>
+<tr class="even">
+<td>Q-Q plot of residuals</td>
+<td>Points on the diagonal</td>
+<td>Right-skewed residuals (mercury concentrations are bounded at 0 and right-skewed)</td>
+</tr>
+<tr class="odd">
+<td>Scale-Location</td>
+<td>Horizontal band</td>
+<td>Heteroscedasticity — variance of residuals likely increases with fitted values</td>
+</tr>
+<tr class="even">
+<td>Residuals vs Leverage</td>
+<td>No points beyond Cook’s distance</td>
+<td>Possible influential lakes with extreme alkalinity</td>
+</tr>
+</tbody>
+</table>
+<p>The key problems are: <strong>(1) non-linearity</strong> (the relationship may be better described on a log scale), <strong>(2) non-normality of residuals</strong> (right skew), and <strong>(3) heteroscedasticity</strong>.</p>
+<hr>
+</section>
+<section id="d.-log-transformation-to-improve-the-model" class="level3">
+<h3 class="anchored" data-anchor-id="d.-log-transformation-to-improve-the-model">d.&nbsp;Log-transformation to improve the model</h3>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create log-transformed variables</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>mercury<span class="sc">$</span>log_Hg  <span class="ot">&lt;-</span> <span class="fu">log</span>(mercury<span class="sc">$</span>Avg.Mercury)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mercury<span class="sc">$</span>log_Alk <span class="ot">&lt;-</span> <span class="fu">log</span>(mercury<span class="sc">$</span>Alkalinity)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Model 2: log(Y) ~ X  (log-response only)</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>model2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(log_Hg <span class="sc">~</span> Alkalinity, <span class="at">data =</span> mercury)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Model 3: log(Y) ~ log(X)  (log-log / power model)</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>model3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(log_Hg <span class="sc">~</span> log_Alk, <span class="at">data =</span> mercury)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Model 4: Y ~ log(X)  (log-predictor only)</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>model4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(Avg.Mercury <span class="sc">~</span> log_Alk, <span class="at">data =</span> mercury)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare summaries</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model2)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model4)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare residual diagnostics</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)); <span class="fu">plot</span>(model2); <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>)); <span class="fu">plot</span>(model3); <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="e.-best-fitting-model-discussion" class="level3">
+<h3 class="anchored" data-anchor-id="e.-best-fitting-model-discussion">e. Best-fitting model discussion</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Formal comparison of R² across models</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Model 1 (Y ~ X)          R² ="</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model1)<span class="sc">$</span>r.squared, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Model 2 (logY ~ X)       R² ="</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model2)<span class="sc">$</span>r.squared, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Model 3 (logY ~ logX)    R² ="</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model3)<span class="sc">$</span>r.squared, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Model 4 (Y ~ logX)       R² ="</span>, <span class="fu">round</span>(<span class="fu">summary</span>(model4)<span class="sc">$</span>r.squared, <span class="dv">4</span>), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># AIC comparison (lower = better; penalises complexity)</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(model1, model2, model3, model4)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Expected best model: log(Avg.Mercury) ~ log(Alkalinity)</strong> — the <strong>log-log model (Model 3)</strong>.</p>
+<p><em>Why:</em> - Mercury concentrations are strictly positive and right-skewed — logging the response stabilises variance and symmetrises residuals. - Alkalinity spans a wide positive range — logging the predictor linearises the diminishing-returns relationship. - The log-log specification corresponds to a <strong>power-law model</strong>: Mercury = a · Alkalinity^b, which is ecologically interpretable. - It typically gives the highest R², lowest AIC, and most homoscedastic, normally distributed residuals of the four models.</p>
+<hr>
+</section>
+<section id="f.-slope-interpretation-and-95-ci-for-best-model-model-3" class="level3">
+<h3 class="anchored" data-anchor-id="f.-slope-interpretation-and-95-ci-for-best-model-model-3">f.&nbsp;Slope interpretation and 95% CI for best model (Model 3)</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Coefficient estimates and 95% CI</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">coef</span>(model3)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confint</span>(model3, <span class="at">level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Full summary</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model3)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Interpretation of slope in the log-log model:</strong></p>
+<p>In the model log(Avg.Mercury) = β₀ + β₁ · log(Alkalinity):</p>
+<ul>
+<li>β₁ is an <strong>elasticity</strong>: a 1% increase in alkalinity is associated with a β₁% change in average mercury concentration.</li>
+<li>Since the relationship is expected to be <strong>negative</strong> (higher alkalinity → lower mercury), β₁ &lt; 0. For example, β₁ = −0.5 means a 10% increase in alkalinity is associated with approximately a 5% decrease in average mercury.</li>
+<li>The <strong>95% confidence interval</strong> for β₁ (from <code>confint</code>) gives the range of plausible values for this elasticity. If the entire interval is negative (does not cross zero), we have strong evidence that alkalinity is inversely associated with mercury contamination, consistent with the study’s findings.</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Back-transforming for a concrete prediction example</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>new_alk <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">log_Alk =</span> <span class="fu">log</span>(<span class="dv">50</span>))  <span class="co"># e.g., alkalinity = 50 mg/L</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>pred_log_hg <span class="ot">&lt;-</span> <span class="fu">predict</span>(model3, <span class="at">newdata =</span> new_alk, <span class="at">interval =</span> <span class="st">"confidence"</span>)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(pred_log_hg)  <span class="co"># back-transform to original mercury scale</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
 </section>
 </section>
 

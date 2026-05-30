@@ -1,18 +1,22 @@
 
 
-### Efficiency
+## Efficiency
 
-## Question 1
+### Question 1
+```{r}
+
 set.seed(43)
 
 rbeta(40, shape1 = 2, shape2 = 0.7)
 
 samples <- replicate(1000, rbeta(40, shape1 = 2, shape2 = 0.7))
+```
 
-samples
 
-## Question 2
 
+### Question 2
+
+```{r}
 add <- function(a, b){
   print(a + b)
 }
@@ -20,7 +24,7 @@ add <- function(a, b){
 add(2, 2)
 
 ## installing
-install.packages("fitdistrplus")
+#install.packages("fitdistrplus")
 
 ## load package
 library(fitdistrplus)
@@ -43,17 +47,24 @@ lines(density(ml_estimates[,1]))
 hist(ml_estimates[,2], prob = TRUE)
 
 lines(density(ml_estimates[,2]))
+```
 
-## Question 4
+
+### Question 4
+
+```{r}
 
 # alpha
 sd(ml_estimates[,1])
 
 # beta
 sd(ml_estimates[,2])
+```
+
 
 ## Question 5
 
+```{r}
 estbeta.mm <- function(y){
   m <- mean(y)
   v <- var(y)
@@ -72,21 +83,29 @@ se_mm_beta <- sd(mm_estimates[,2])
 
 se_mm_alpha
 se_mm_beta
+```
+
 
 ## The TcCB Data
 
-## Question 1
+### Question 1
 
+```{r}
 EPA.94b.tccb.df <- read.csv("EPA.94b.tccb.df.txt")
+```
 
-## Question 2
+### Question 2
 
+```{r}
 cleanup <- subset(EPA.94b.tccb.df, Area == "Cleanup")
 
 cleanup <- cleanup$TcCB
+```
 
-## Question 3
 
+### Question 3
+
+```{r}
 bc <- boxcox(cleanup ~ 1, lambda = seq(-2,2,by = 0.01))
 
 which.max(bc$y)
@@ -104,8 +123,12 @@ plot(density(cleanup_transformed),
 plot(density(cleanup), 
      col = "blue", 
      main = "Density of Transformed Cleanup Data")
+```
 
-## Question 4
+
+### Question 4
+
+```{r}
 
 library(fitdistrplus)
 
@@ -114,65 +137,92 @@ fit
 
 mean_estimate <- -0.9499
 sd_estimate <- 1.3837
+```
 
-## Question 5
+
+### Question 5
+
+```{r}
 
 q99_transformed <- qnorm(0.99, 
                          mean = mean_estimate,
                          sd = sd_estimate)
 q99_transformed
+```
 
-## Question 6
 
+### Question 6
+
+```{r}
 a <- exp(q99_transformed)
 a
+```
 
-## Question 7
 
+### Question 7
+
+```{r}
 p = 0.01
 
 pbinom(0, size = 3, prob = 0.01, lower.tail = FALSE)
+```
+
 
 ## Tropical Cyclones
 
-
+```{r}
 us <- read.table("US.txt")
 
 colnames(us) <- us[1,]
 us <- us[-1,]
+```
 
-## question 1
+### question 1
 
+```{r}
 hurricanes <- as.numeric(us$US)
 
 hist(hurricanes, prob = TRUE)
 
 # poisson distribution is used for rare events and also
 # count data
+```
 
+### question 2
+
+```{r}
 lambda <- mean(hurricanes)
 lambda
 
 ## lamba is the mean and also the variance of poisson
 ## distribution
+```
+
 
 ## Whales
 
+```{r}
 whales <- read.table("whales.txt")
 
 whales <- as.numeric(whales$V1)
+```
 
-## Question 1
 
+### Question 1
+
+```{r}
 hist(whales)
+```
 
-## Question 2
 
-## yes a gamma distribution is plausible because 
-## swimming can't be negative.
+### Question 2
 
-## Question 3
+Yes a gamma distribution is plausible because swimming can't be negative.
 
+
+### Question 3
+
+```{r}
 mean_bar <- mean(whales)
 s2 <- var(whales)
 
@@ -180,10 +230,12 @@ alpha_mom <- mean_bar^2/s2
 beta_mom <- mean_bar/s2
 alpha_mom
 beta_mom
+```
 
 
-## Question 4
+### Question 4
 
+```{r}
 ## maximum likelihood
 
 fit_gamma_ml <- fitdist(whales, "gamma")
@@ -193,8 +245,12 @@ alpha_ml <- 1.595511
 beta_ml <- 2.632771
 
 ## The values are not the same but different
+```
 
-## Question 5
+
+### Question 5
+
+```{r}
 
 hist(whales, prob = TRUE)
 
@@ -205,3 +261,6 @@ lines(x, dgamma(x, alpha_mom, rate = beta_mom),
 
 lines(x, dgamma(x, alpha_ml, rate = beta_ml),
       col = "red")
+
+```
+

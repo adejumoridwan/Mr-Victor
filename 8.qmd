@@ -1,0 +1,222 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+
+## a
+
+```{r}
+soil <- read.csv("soil_nitrogen.csv")
+
+soil$aspect <- factor(soil$aspect)
+
+model <- lm(nitrogen ~ temp + precip + slope + aspect,
+            data = soil)
+
+summary(model)
+
+```
+
+## c
+
+```{r}
+plot(model)
+```
+
+## d
+
+- The residuals are normally distributed
+- The Rsquared value is hight and explains most of the variation in the dependent variable.
+- Most of the factors are significant except for temperature.
+
+## e
+
+```{r}
+
+## install.packages("MuMIn)
+
+library(MuMIn)
+
+# intercept
+model1 <- lm(nitrogen ~ 1 , data = soil)
+print("model1")
+aic1 <- AIC(model1)
+aicc1 <- AICc(model1)
+bic1 <- BIC(model1)
+aic1
+aicc1
+bic1
+
+
+## intercept + temp
+model2 <- lm(nitrogen ~ temp , data = soil)
+print("model2")
+aic2 <- AIC(model2)
+aicc2 <- AICc(model2)
+bic2 <- BIC(model2)
+aic2
+aicc2
+bic2
+
+## intercept + slope
+model3 <- lm(nitrogen ~ slope , data = soil)
+print("model3")
+aic3 <- AIC(model3)
+aicc3 <- AICc(model3)
+bic3 <- BIC(model3)
+aic3
+aicc3
+bic3
+
+## intercept + prep
+model4 <- lm(nitrogen ~ precip , data = soil)
+print("model4")
+aic4 <- AIC(model4)
+aicc4 <- AICc(model4)
+bic4 <- BIC(model4)
+aic4
+aicc4
+bic4
+
+## intercept + aspect
+model5 <- lm(nitrogen ~ aspect , data = soil)
+print("model5")
+aic5 <- AIC(model5)
+aicc5 <- AICc(model5)
+bic5 <- BIC(model5)
+aic5
+aicc5
+bic5
+
+## intercept + temp + slope
+model6 <- lm(nitrogen ~ temp + slope , data = soil)
+print("model6")
+aic6 <- AIC(model6)
+aicc6 <- AICc(model6)
+bic6 <- BIC(model6)
+aic6
+aicc6
+bic6
+
+## intercept + temp + prep
+model7 <- lm(nitrogen ~ temp + precip , data = soil)
+print("model7")
+aic7 <- AIC(model7)
+aicc7 <- AICc(model7)
+bic7 <- BIC(model7)
+aic7
+aicc7
+bic7
+
+## intercept + temp + aspect
+model8 <- lm(nitrogen ~ temp + aspect , data = soil)
+print("model8")
+aic8 <- AIC(model8)
+aicc8 <- AICc(model8)
+bic8 <- BIC(model8)
+aic8
+aicc8
+bic8
+
+## intercept + slope + prep
+model9 <- lm(nitrogen ~ slope + precip , data = soil)
+print("model9")
+aic9 <- AIC(model9)
+aicc9 <- AICc(model9)
+bic9 <- BIC(model9)
+aic9
+aicc9
+bic9
+
+## intercept + slope + aspect
+model10 <- lm(nitrogen ~ slope + aspect , data = soil)
+print("model10")
+aic10 <- AIC(model10)
+aicc10 <- AICc(model10)
+bic10 <- BIC(model10)
+aic10
+aicc10
+bic10
+
+## intercept + prep + aspect
+model11 <- lm(nitrogen ~ precip + aspect , data = soil)
+print("model11")
+aic11 <- AIC(model11)
+aicc11 <- AICc(model11)
+bic11 <- BIC(model11)
+aic11
+aicc11
+bic11
+
+## intercept + temp + prep + slope
+model12 <- lm(nitrogen ~ slope + aspect , data = soil)
+print("model12")
+aic12 <- AIC(model12)
+aicc12 <- AICc(model12)
+bic12 <- BIC(model12)
+aic12
+aicc12
+bic12
+## intercept + prep + slope + aspect
+model13 <- lm(nitrogen ~ precip + slope + aspect , data = soil)
+print("model13")
+aic13 <- AIC(model13)
+aicc13 <- AICc(model13)
+bic13 <- BIC(model13)
+aic13
+aicc13
+bic13
+
+## intercept + temp + prep + aspect
+model14 <- lm(nitrogen ~ slope + aspect , data = soil)
+print("model14")
+aic14 <- AIC(model14)
+aicc14 <- AICc(model14)
+bic14 <- BIC(model14)
+aic14
+aicc14
+bic14
+
+## intercept + temp + slope + aspect
+model15 <- lm(nitrogen ~ slope + aspect , data = soil)
+print("model15")
+aic15 <- AIC(model15)
+aicc15 <- AICc(model15)
+bic15 <- BIC(model15)
+aic15
+aicc15
+bic15
+
+## intercept + temp + prep + slope + aspect
+model16 <- lm(nitrogen ~ slope + aspect , data = soil)
+print("model16")
+aic16 <- AIC(model16)
+aicc16 <- AICc(model16)
+bic16 <- BIC(model16)
+aic16
+aicc16
+bic16
+
+
+```
+
+
+## f
+
+```{r}
+step_model <- step(model, direction = "both")
+summary(step_model)
+
+```
+
+## g
+
+Y = Bo + B5X5 + B2X2 + B3X3 + B4X4
+
+```{r}
+Y = 47.633 + (0.03736*22) + (0.55302*550) + (-0.78304*55) + (5.25273*5)
+Y
+```
+Based on the model, the value of nitrogen concentration is 58.04725

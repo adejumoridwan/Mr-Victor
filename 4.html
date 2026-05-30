@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.29">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>quarto-inputf2f2584c83caf107</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="4_files/libs/clipboard/clipboard.min.js"></script>
+<script src="4_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="4_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="4_files/libs/quarto-html/popper.min.js"></script>
+<script src="4_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="4_files/libs/quarto-html/anchor.min.js"></script>
+<link href="4_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="4_files/libs/quarto-html/quarto-syntax-highlighting-0815c480559380816a4d1ea211a47e91.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="4_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="4_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="4_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="simulating-dice-rolls" class="level2">
+<h2 class="anchored" data-anchor-id="simulating-dice-rolls">Simulating Dice Rolls</h2>
+<section id="a" class="level3">
+<h3 class="anchored" data-anchor-id="a">a</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">45</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>rolls <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">6000</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(rolls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>rolls
+   1    2    3    4    5    6 
+1032  993 1034 1010  986  945 </code></pre>
+</div>
+</div>
+<p>###b</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># expectation is the average or mean in statistics</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># E(x) = total number of rolls/total number of die face</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># E(x) = 6000/6 = 1000</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># The expected value is 1000 which is close to what we</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># have on the frequency of the 6000 simulated dice rolls</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="c" class="level3">
+<h3 class="anchored" data-anchor-id="c">c</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># x &gt; 1030</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># n = 6000</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># p(1) = 1/6</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>p_more_1030 <span class="ot">&lt;-</span> <span class="fu">pbinom</span>(<span class="dv">1030</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                      <span class="at">size =</span> <span class="dv">6000</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">prob =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>p_more_1030</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1454537</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">45</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">10000</span>,<span class="fu">sum</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">6000</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">&gt;</span> <span class="dv">1030</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(sim)<span class="sc">/</span><span class="dv">10000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1487</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">6000</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="sc">==</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 981</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>, <span class="dv">6000</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>) <span class="sc">==</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 959</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="wood-frog-larval-abundance-in-vernal-pools" class="level2">
+<h2 class="anchored" data-anchor-id="wood-frog-larval-abundance-in-vernal-pools">Wood frog larval abundance in vernal pools</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>p <span class="ot">=</span> <span class="fl">0.3</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="a-1" class="level3">
+<h3 class="anchored" data-anchor-id="a-1">a</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dbinom</span>(<span class="dv">6</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.03675691</code></pre>
+</div>
+</div>
+</section>
+<section id="b" class="level3">
+<h3 class="anchored" data-anchor-id="b">b</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pbinom</span>(<span class="dv">2</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3827828</code></pre>
+</div>
+</div>
+</section>
+<section id="c-1" class="level3">
+<h3 class="anchored" data-anchor-id="c-1">c</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pbinom</span>(<span class="dv">4</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>, <span class="at">prob =</span> <span class="fl">0.3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1502683</code></pre>
+</div>
+</div>
+</section>
+<section id="d" class="level3">
+<h3 class="anchored" data-anchor-id="d">d</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">10</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, <span class="fu">dbinom</span>(x, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.3</span>), </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">col =</span> <span class="st">"red"</span>, </span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"No of sweeps with tadpoles"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Probability"</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Binomial PMF: p=0.3 vs p=0.5"</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(x, <span class="fu">dbinom</span>(x, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>), </span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>      <span class="at">type =</span> <span class="st">"b"</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>, <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"p=0.3"</span>,<span class="st">"p=0.5"</span>), </span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"red"</span>,<span class="st">"blue"</span>), <span class="at">lty =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="gamma-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="gamma-distribution">Gamma Distribution</h2>
+<section id="a-2" class="level3">
+<h3 class="anchored" data-anchor-id="a-2">a</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sample_a <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="dv">10</span>, <span class="at">shape =</span> <span class="dv">3</span>, <span class="at">scale =</span> <span class="dv">2</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>sample_a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  6.472957  2.628618  1.973382  4.141607  1.045183  7.831022  3.711707
+ [8] 10.203802  3.744015 13.190905</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(sample_a)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="b-1" class="level3">
+<h3 class="anchored" data-anchor-id="b-1">b</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>sample_b <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="dv">20</span>, <span class="at">shape =</span> <span class="dv">3</span>, <span class="at">scale =</span> <span class="dv">2</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>sample_b</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  8.642270  8.214372  3.832036  2.694994  7.583157  7.179117  6.537613
+ [8]  7.205557  6.168363 10.254773  6.925446  8.273957  2.793240  8.759041
+[15]  7.790924  3.802486  9.946344  3.075775 12.456139  7.618658</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(sample_b)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="c-2" class="level3">
+<h3 class="anchored" data-anchor-id="c-2">c</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>sample_c <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="dv">100</span>, <span class="at">shape =</span> <span class="dv">3</span>, <span class="at">scale =</span> <span class="dv">2</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>sample_c</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1]  4.4470087  6.3392290  3.1171273  0.3087052 18.3050411 10.2892987
+  [7] 11.1817437  4.1045669  8.5258405  7.0122387  3.0790206  1.2247356
+ [13]  4.0786312  2.3247325  2.7589327  4.9023000  2.5503265  4.2556453
+ [19]  2.1438337  9.0822973  0.5600965 11.7942382  6.8126694  7.2568141
+ [25] 12.0166676  4.7477227  2.3297922 12.8830416  4.8689574  5.5360207
+ [31] 12.4170558 15.6213092  4.1344928  1.2725662  2.1687629  2.1741921
+ [37]  8.8216937  3.5314652  6.3768733  9.2742930  1.8072745  2.8880901
+ [43]  7.4543134  7.2526139  6.0290045 12.8270201  5.6964932  4.0912485
+ [49]  3.6541376  3.3647502  5.3608609  8.9441885  1.0547473  4.7707886
+ [55] 10.7439160  3.6615523  5.3023610  6.1095792  1.0940612  1.5501745
+ [61]  6.2390839 14.6869256  7.7934673  2.9162660  2.4197987  7.4340084
+ [67] 10.9966193  3.1812593  7.1888286  6.5685249  2.1342332 11.4317810
+ [73]  6.9449386  4.5008250  4.6192792  3.9790211  6.7705094  0.8624818
+ [79]  5.0138163  3.1456983  9.0290268  5.1983588  9.8061019  3.4307839
+ [85]  5.0723706  5.3998506  0.6551284  9.0635315  5.0691620  2.6709256
+ [91]  1.2888704  4.5057718  2.5814784  2.3896203  2.0881495  7.5678331
+ [97]  1.0624354  7.8647502  2.4459082 12.8890453</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(sample_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="d-1" class="level3">
+<h3 class="anchored" data-anchor-id="d-1">d</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>sample_d <span class="ot">&lt;-</span> <span class="fu">rgamma</span>(<span class="dv">1000</span>, <span class="at">shape =</span> <span class="dv">3</span>, <span class="at">scale =</span> <span class="dv">2</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>sample_d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   [1]  4.9277416  5.1899835  1.9021020  2.9224442  7.8153587 10.6581135
+   [7]  1.7798407  3.9063372  7.4684159 16.1103011  4.0135910  2.8230410
+  [13] 10.1263993  4.7702957  1.5639549  4.8502189  6.8344817  6.2164402
+  [19]  3.6286434 21.1121610  9.9836104  5.0780501  1.8249304  3.9309731
+  [25]  6.1112981 11.3099764  2.9379485  8.9831193  2.5073341  4.6724582
+  [31]  5.2725918  6.0743426  2.4540063  7.2721541  5.5493053 13.0319761
+  [37]  5.4330042  2.9324986  3.4257384  2.0019504  5.9735743  4.5158558
+  [43]  3.2299706 12.0112620  5.2986187  7.8859570  1.9491990  8.0865075
+  [49]  4.0616294  7.3187900  8.1154061  6.1685047  8.1648742  5.2563961
+  [55]  4.5739664  3.6205053  7.4141784  5.8869508  5.9728517  1.4717355
+  [61]  1.1261881  1.9666790  8.9656340  3.8769728  1.8428999 11.0018934
+  [67] 10.4474478  3.5746800  6.2230784  5.8247693 10.5686527  2.2714452
+  [73]  4.5439161  8.4389925  5.2867098  6.2992579  3.2916949 10.0226189
+  [79] 12.9335990  3.3582087  1.8235704  8.2995843  5.7940020  3.1971039
+  [85]  7.7188103  4.2462199  2.4821121 12.0136226  4.1950296  6.8511412
+  [91]  2.2620584  8.8850650  6.1569979  6.7078523  4.3916118  5.4005168
+  [97]  9.8551437  2.8586053  7.9950177 10.2432164  1.1354991  6.3954378
+ [103]  4.1862154 10.5618535  8.9448215  4.6105463  4.6052695  2.7502141
+ [109]  4.1998661  4.0806032  7.1065070  7.0349673  1.5434924  6.1543413
+ [115]  2.9881088  2.9209376  6.3654917  5.8144985 11.3137509 15.8173691
+ [121]  5.8372958  8.0748613  4.4954234  2.0337769  1.4895931  5.5756912
+ [127] 12.7462426  4.6060035 11.6307082  6.4886332 13.2758161  2.5080712
+ [133]  7.9750325  3.3110303  4.4776226  4.1139603  9.6998768  6.9500746
+ [139]  6.7068708 10.4002911  5.1923102  6.4757428  6.9818208  2.8664761
+ [145]  3.3504439  9.3562162  3.0164185 12.8431932  9.4124524  5.7712743
+ [151]  5.0013108  3.7033116  2.4034683  2.6339781  6.5810331  1.6598949
+ [157]  6.1961225  2.5745885  3.8895546 13.0535451  5.3104619  8.2026829
+ [163]  6.2953580  7.7953171 12.4506819  6.6470611  3.0980908  5.2177523
+ [169]  5.7323254  8.2932121  3.2976836  3.9053687 16.5575940 11.4658489
+ [175]  7.5453414  5.4941016  8.7154325  5.1838460  5.4566798  7.5918860
+ [181]  3.3498810  6.0283607  3.8796476  6.7846696  5.4560131 10.9988998
+ [187]  1.6322509  4.9366144  7.6527422  2.6078887  5.8955702  3.2909346
+ [193]  4.4521435  6.0135356  2.7996574  2.4763490  7.6349312  5.1720040
+ [199]  5.9764925  4.5043281  3.4846969  5.0396622 12.6317724  4.3206833
+ [205]  4.5165836  5.7167740  5.5369047  3.1607577  3.8866738  8.1577840
+ [211]  3.4332379  5.2179969  2.7019046 13.4160000  7.9180428  8.0808276
+ [217]  7.7839209 13.2162509  7.1940163  7.8343932  8.1698692  8.2149243
+ [223]  3.2112052  4.7565523  7.3763646 12.2906770  1.6104576  3.8912058
+ [229]  7.1553779  7.2471008  7.4245065  8.0556267  7.7656743  1.8976464
+ [235]  9.7361108  4.8147700  4.1212725 16.2788038  5.0352751  2.5459039
+ [241]  3.5887604  5.8990460  8.4994645  8.9404684  2.1995463 14.8317402
+ [247] 11.7935047  3.6237116  2.9446702  9.2502862  2.3641636  1.2742287
+ [253]  4.9511711  5.1783294  3.7100025  4.7099703  9.5460757  5.4894520
+ [259]  6.0277245  9.7658177  5.3457688  5.3405735  3.4533854  4.9747977
+ [265]  8.2855320 14.6534642  3.0805568  2.1043685  8.6823499  3.9368346
+ [271]  5.9304346  9.1901440  2.5760024  4.0572424  8.7025533 11.8736270
+ [277]  6.7072206  0.6675131  3.8372040  2.5142150  1.6215339  2.5552712
+ [283]  3.9363041  6.5694994  4.7930383 12.0486425  3.9936393  2.0073344
+ [289]  2.3641576  8.7306228  8.6229639  4.6635350  4.6494247  4.7508670
+ [295] 13.7592425  4.2871859  4.3471671  2.4648516  4.3018489  3.7775599
+ [301]  4.2955583  8.2097480  4.6013691  9.2045452 10.4071920  3.2487630
+ [307]  5.7527684  1.9179120  6.6374750  2.8966236  2.7631509  9.2877669
+ [313]  7.5103453  3.6184797  0.6160995 16.7558805  4.4741471  8.0067495
+ [319]  9.0282179  5.5609614  4.7189651  5.4844153  8.7011945  7.8649032
+ [325]  5.3224983 13.9729230  3.1523594 11.7349783  1.3552876  9.9745062
+ [331]  3.8993346  1.6312636  3.9367345  5.0102431  3.1256310  2.8113144
+ [337]  7.4013521  1.5273402  9.5366319  2.2926969  7.8915240  3.6031750
+ [343] 11.0321533  4.1249567 11.8458259  4.6056296  5.8286644 13.2193241
+ [349]  4.6976827  9.4070441  3.1799539  2.8467202  3.7904718  6.0667947
+ [355] 10.5400180  4.5729016  5.7728877  1.3691660  0.4234088  3.0038414
+ [361]  1.3963840  9.7057241  4.5508568  4.5549777  3.1855273  9.4712207
+ [367]  3.9679498  9.5869731  1.9421838 10.7955417  6.0084757  4.9548748
+ [373] 11.5161895  6.3920374  8.0656713  2.7937346  1.4951911  5.9467668
+ [379]  1.8760536  2.6595317  1.7400389  1.9662104  8.6671416  7.1220561
+ [385]  1.1979878  4.7257349  7.4507863  3.8323048  6.4737732  2.7971274
+ [391]  5.1356963 14.1441711  4.5527913  4.2540567  3.0642122  7.9401803
+ [397]  2.3393912  3.6561460  5.1125774  8.4556930  7.1342285  7.9563499
+ [403]  3.7499803  4.0866906  1.7996957 13.6149631  2.7088334  4.5671970
+ [409]  1.9063536  8.5782527  5.9406169  6.0643510  4.2808106  5.0451027
+ [415]  2.2885374  5.0851156  2.7851103  4.2009189  3.6319495  7.3934405
+ [421]  3.7255824  4.2584499  2.6937071 10.3619950  9.0018401  3.1043421
+ [427] 10.4808420  7.3685507 12.3344140  8.3659292  8.4450835  4.7049801
+ [433]  3.2167507  4.4508204  2.8829972  6.7538769  6.2643076  2.3509792
+ [439]  2.1941002  2.1097291  4.2185099 10.1170729 11.4634264  2.8174579
+ [445]  7.3198263  3.4651832  2.6841449  1.8326135  5.4547981  3.6509690
+ [451]  5.3998626  4.9646140  5.9855769  8.3866943  9.2503974 11.4282775
+ [457]  9.5389834  2.3037997 18.2442424  8.5601736  6.1389342  8.5710045
+ [463]  6.1287632  2.5936210  7.5501896  5.0847183  8.3522743  8.8948446
+ [469]  0.5128094  2.7172149  3.5187754  2.9669661 16.3715507  9.2946260
+ [475]  3.8090213  2.5813112  2.0593381  4.8509428 10.8959059 17.0593883
+ [481]  3.1901167  9.4403763  4.8786245  3.6820311  3.8590163 10.9749617
+ [487]  7.5576346  1.7949132  5.2004646 11.3155680  6.3026377  4.9308400
+ [493] 14.2058029  5.8619599  1.1827587  9.2016334  5.4584599 20.7070784
+ [499]  3.3794320 13.2065427  2.4570249  3.0827063 11.4122688  9.4816680
+ [505]  6.2537926  7.4891553  9.9364708  7.3372262  0.7256331  4.1805588
+ [511]  8.1668505  3.6886867  1.9355877  3.3375100  3.5055706  2.5622719
+ [517] 10.2443259  0.9598186  6.3002481  6.3788040  2.6076492  5.0673494
+ [523]  2.7072547 13.4309262  9.6173547  3.2032339  3.9429956  4.4970381
+ [529]  2.1874792 11.5635727  5.1395573  7.5928150  9.2275993  3.6802796
+ [535]  3.3870987  7.4417553  8.3325275  7.1525654 11.2378996  5.7630976
+ [541]  5.0527412  9.1067372 13.5347707  6.1292126  6.8166395  7.8022235
+ [547]  9.0757017 16.0993409  1.9780738  3.1862844  4.8737582  8.0236250
+ [553]  6.9502632  4.9305102  7.3715617  6.5356563  3.1188383  9.9645961
+ [559]  6.8600218  3.5952294 12.1812186  5.2921550  6.1715372  4.9226509
+ [565]  9.5786203  3.0565899  2.1257538  7.7777626  6.6411831  3.8179068
+ [571]  7.4578196  7.1512057  8.3445680  3.0322548  8.7600631  4.9393893
+ [577] 23.1243469  8.8639733  3.5354120  5.7534234  1.9030139  2.2585646
+ [583]  5.9235005  7.2389846  6.3530310  4.5050090  1.8585112  7.3375437
+ [589]  9.8541140  2.1803857  2.9428924  6.5120534  9.2367484  5.0353769
+ [595]  6.6894206  7.0985104  5.9739953  3.1037352  3.1802603  4.8551898
+ [601]  2.6465933  5.7473910 11.8696658  6.0445672 11.3419919  6.4202485
+ [607]  6.3509282 11.8154419  3.2570132 12.1489601  3.5329846  9.3991797
+ [613]  7.6284875  1.1779210  0.9948764  4.9302067  6.4265145 14.7549787
+ [619]  6.1305597  6.3211815  3.4992077 10.5381312  5.3025773  2.8795838
+ [625] 12.3005573  8.7068440  7.2460416  2.4759468  5.0280111  6.1299702
+ [631]  5.6386490  7.3671484  6.3755851  8.5957383  7.3647741  2.8917935
+ [637]  4.1844522  9.6896588  2.2736637  2.3611561  0.8051982 10.6912121
+ [643]  4.3780449  6.4544248  0.9789661 10.4620298  1.3708785  2.4015243
+ [649]  6.9187596  3.5386569  5.8938715 14.2982825  0.5260346  8.2778345
+ [655]  7.0607935  5.0278756  2.9422570  8.4991523  7.3422640  5.7860575
+ [661]  1.1699250  6.0116529  6.5278950  5.6762793  3.9194682  2.3855495
+ [667]  1.4843081 11.8625557  6.9490462  4.4700297  3.8445227 11.4460772
+ [673]  6.7059988  7.7426674  6.1367760  8.2380990  9.1374548  7.3593483
+ [679]  3.3536745  1.1869084  8.6740751  5.3324338  7.3195028  2.8649482
+ [685]  5.5095683  5.2853478  5.0974431  6.6831135  1.2248192  5.6197610
+ [691]  2.1131360  9.7241686  1.2440213 12.8676724  2.3198576 13.3046832
+ [697]  8.8721337  4.6032896  0.8413599 14.2270023  2.4688009 10.2167907
+ [703] 11.0133728  6.3030357  7.2771107  7.4251980  3.8915081  4.2686058
+ [709]  6.2642690  8.2890499  4.6763139  1.9270346  3.3553901  7.9515852
+ [715]  2.7584963  3.2122382  4.0936778  6.4343999  4.9575405 15.4141721
+ [721]  5.1463654  8.2073908  6.2919215  7.9279478 10.7279691  8.3246826
+ [727]  2.4897996  3.3139951  2.1691412 10.1521584  6.1032955  8.5735155
+ [733]  2.3699778  2.9716733 13.7887796  6.7289453  3.2452806 10.2830338
+ [739]  5.5814649  2.0764658 15.6569470  3.0517660  6.2359043  1.5733085
+ [745]  5.8320937  7.6323473  5.3461676  1.9599502  6.0388818 10.6903014
+ [751]  4.5822219  1.1745549 10.6030608  1.6751831  3.3105025 10.7331794
+ [757]  3.2027841  5.7302379  4.7112712  3.4186515  1.4522592  6.2165362
+ [763]  4.3145153  6.6333208  3.2654294 19.4486876  5.3792808  5.5771399
+ [769]  1.8465489  3.8371307  5.1012561  7.7532080  6.4062774  8.1465992
+ [775]  9.5777642 10.1258691  5.9121533  4.3464356  4.3614588  6.4175546
+ [781]  2.1068070  3.2581899  2.6450222  9.4239262 15.9704372  2.6858201
+ [787] 10.7407495  6.2442384  6.7990372  7.6091630  3.7595180 12.9787665
+ [793]  1.6922229  5.6301523  6.0107079  9.9800781  4.2238547  4.2202432
+ [799]  2.6174015  8.3060782  8.2481008 13.5619392  3.2260177 17.8370371
+ [805] 10.1502495 10.8683191  3.1028714  2.7765468  3.3839155  4.1759743
+ [811]  8.9618833  3.0149416  3.0945488  9.1082219  4.3458205  5.4374527
+ [817]  5.8279077 18.9359847  5.0205383  1.9312148  7.7702759  1.3245852
+ [823]  7.2922465  9.1338655  9.7340053  4.9267447  6.1246842  2.4357077
+ [829]  4.5999734  1.1966494 13.5727629  3.2125511  4.8176579  4.1004453
+ [835]  6.9887293  3.3153844  3.6552596  1.9280199 10.7334057  1.9882751
+ [841]  2.7404322  8.6428120  6.4071802  6.3814346  4.4257295  8.6818610
+ [847] 15.0711859  4.9607229  1.7716452  3.4373777  5.0955921  3.4081607
+ [853]  3.9830022  7.6651822  3.9351972  1.3830661 11.6472355  3.2520711
+ [859]  2.9556407  2.1642431  0.7967141 13.8629624  7.7218302  9.9213554
+ [865]  4.4729268  3.8389781  4.1968386  2.2990535  5.6034324  9.6451014
+ [871]  2.8573212  5.6743685  2.1045521  4.8035946  8.1342117  2.3705498
+ [877]  3.0858569  7.2621644  6.8705961  6.0521742  8.0355099  4.5056412
+ [883]  4.2918884  3.0984919  5.8262319  6.4497499  3.5577309  8.4591712
+ [889]  2.3905314  6.7172453 18.7236187  9.1683034 10.4117690  2.1896512
+ [895]  4.1376697  4.1031296  3.0478956  5.4897983  8.3017385  1.8573540
+ [901]  3.3551325  9.9686164  2.6039786  6.9484387  3.9014241  3.1205543
+ [907]  3.8809317  4.6330312 10.9305822  4.3681421  4.8860766  6.6504452
+ [913]  4.7210977 10.3264834  2.0574045  1.2444220  9.3675041  8.7350248
+ [919]  1.3877980  3.6531904  7.3826854  4.8962689  4.3773035  4.4102098
+ [925]  9.9397336  7.3423912  7.9642122  3.6598193 11.1508928  2.7652808
+ [931]  5.9457058  4.0075096  9.5160638  7.7874803 13.6402753 11.4769703
+ [937]  3.6081657  7.6973610  3.5356194  6.1907692 15.7004412  1.9674330
+ [943]  8.4337901  5.7593042  6.2871552  3.7305215  3.3358729  3.2154215
+ [949] 15.5350328  6.7263765 14.2946931  0.7913834  5.4141601  4.4475887
+ [955]  1.8882244  8.4493825  9.3804287  7.4688734  3.7437141  3.6058504
+ [961]  5.7710576  6.4450959 23.1208683  7.4958413  3.7712302  7.5068970
+ [967]  6.1645247  2.3377568  2.3476464  2.7536226 15.0645973  7.6316485
+ [973]  2.5559401  6.7497755 10.5277922  9.5311215  1.8372693  8.4885206
+ [979]  5.1239763  2.4141813  1.9305211  3.9176818  3.3341995  1.0332564
+ [985]  1.3875498  6.6126469  3.5107163  2.2667876  9.6624123  3.0833496
+ [991]  1.7512639 11.4677746  4.9944483  4.7900105  2.4384557  5.3233732
+ [997]  6.0811645  6.0652547  3.3406984  5.6534930</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(sample_d)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">999</span>, <span class="fu">rgamma</span>(<span class="dv">1000</span>, <span class="at">shape =</span> <span class="dv">3</span>, <span class="at">scale =</span> <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="arsenic" class="level2">
+<h2 class="anchored" data-anchor-id="arsenic">Arsenic</h2>
+<section id="a-3" class="level3">
+<h3 class="anchored" data-anchor-id="a-3">a</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Expectation in statistics means "mean"</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="co"># In the normal distribution the mean = median = mode</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>mean <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>s_d <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a><span class="co"># X ~ N(mu, sigma^2)</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a><span class="co"># SE = sigma^2/n</span></span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="co"># X ~ N(5, 1/4)</span></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a><span class="co"># X ~ N(5, 0.25)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="b-2" class="level3">
+<h3 class="anchored" data-anchor-id="b-2">b</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">7</span>, <span class="at">mean =</span> <span class="dv">5</span>, <span class="at">sd =</span> <span class="dv">1</span>, </span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.02275013</code></pre>
+</div>
+</div>
+</section>
+<section id="c-3" class="level3">
+<h3 class="anchored" data-anchor-id="c-3">c</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">7</span>, <span class="at">mean =</span> <span class="dv">5</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="fl">0.25</span>), </span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>      <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.167124e-05</code></pre>
+</div>
+</div>
+</section>
+<section id="d-2" class="level3">
+<h3 class="anchored" data-anchor-id="d-2">d</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="fu">pnorm</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">5</span>, <span class="at">sd =</span> <span class="dv">1</span>, </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">lower.tail =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"blue"</span>, <span class="at">type =</span> <span class="st">"l"</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="fu">pnorm</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">5</span>, <span class="at">sd =</span> <span class="fl">0.5</span>, </span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lower.tail =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="groundwater" class="level2">
+<h2 class="anchored" data-anchor-id="groundwater">Groundwater</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>mean <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>s_d <span class="ot">&lt;-</span> <span class="dv">5</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pnorm</span>(<span class="dv">30</span>, <span class="at">mean =</span> <span class="dv">20</span>, <span class="at">sd =</span> <span class="dv">1</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 7.619853e-24</code></pre>
+</div>
+</div>
+</section>
+<section id="regulation" class="level2">
+<h2 class="anchored" data-anchor-id="regulation">Regulation</h2>
+<section id="a-4" class="level3">
+<h3 class="anchored" data-anchor-id="a-4">a</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Regulation</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">365</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">365</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co"># For binomial distribution: Mean = np, SD = np(1-p)</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>expectation <span class="ot">&lt;-</span> n<span class="sc">*</span>p</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>expectation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+</section>
+<section id="b-3" class="level3">
+<h3 class="anchored" data-anchor-id="b-3">b</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Yes the distribution of emissions satisfy the regulation?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="c-4" class="level3">
+<h3 class="anchored" data-anchor-id="c-4">c</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="dv">2</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">365</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">365</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="fu">pbinom</span>(<span class="dv">1</span>, <span class="at">size =</span> n, <span class="at">prob =</span> p, <span class="at">lower.tail =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2642409</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="poisson-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="poisson-distribution">Poisson Distribution</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The only parameter of a poisson distribution "lambda"</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="co"># lambda = np</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>lambda <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">1</span>, <span class="at">lambda =</span> <span class="dv">1</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2642411</code></pre>
+</div>
+</div>
+</section>
+<section id="uniform-and-beta-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="uniform-and-beta-distribution">Uniform and Beta Distribution</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="fu">dbeta</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>,<span class="at">shape1 =</span> <span class="dv">1</span>, <span class="at">shape2 =</span> <span class="dv">1</span>), </span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">col =</span> <span class="st">"blue"</span>)</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="fu">dunif</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>), <span class="at">col =</span> <span class="st">"red"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="4_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="exponential-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="exponential-distribution">Exponential Distribution</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># a</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co"># P(Y = 0.5) = 0</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="co">#b</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="fu">pexp</span>(<span class="dv">1</span>, <span class="at">rate =</span> <span class="dv">2</span>, <span class="at">lower.tail =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1353353</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co">#c</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Undefined because -1 is less than our range which is [0,infiniti]</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="co">#d</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Undefined because 0.2 is less than 0.7</span></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="co">#c</span></span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a><span class="fu">pexp</span>(<span class="fl">0.6</span>, <span class="at">rate =</span> <span class="dv">2</span>) <span class="sc">-</span> <span class="fu">pexp</span>(<span class="fl">0.1</span>, <span class="at">rate =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.5175365</code></pre>
+</div>
+</div>
+</section>
+<section id="species-dispersal" class="level2">
+<h2 class="anchored" data-anchor-id="species-dispersal">Species Dispersal</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dgeom</span>(<span class="dv">2</span>, <span class="at">prob =</span> <span class="fl">0.17</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.117113</code></pre>
+</div>
+</div>
+</section>
+<section id="glaucouse-winged-gull" class="level2">
+<h2 class="anchored" data-anchor-id="glaucouse-winged-gull">Glaucouse winged gull</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dnbinom</span>(<span class="dv">1</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">prob =</span> <span class="fl">0.76</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.3160627</code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -193,43 +193,51 @@ lines(0:10, pnorm(0:10, mean = 5, sd = 0.5,
 ```
 
 
-
-
-
-
-
 ## Groundwater
 
-
+```{r}
 mean <- 20
 s_d <- 5
 
 pnorm(30, mean = 20, sd = 1, lower.tail = FALSE)
+```
 
-#a
+
+## Regulation
+
+### a
+```{r}
+
 ## Regulation
 
 n <- 365
 p <- 1/365
 
-
 # For binomial distribution: Mean = np, SD = np(1-p)
 expectation <- n*p
 expectation
+```
 
-#b
+
+### b
+
+```{r}
 # Yes the distribution of emissions satisfy the regulation?
+```
 
-#c
+### c
+```{r}
 x <- 2
 n <- 365
 p <- 1/365
 
 pbinom(1, size = n, prob = p, lower.tail = F)
+```
 
 
 ## Poisson Distribution
 
+```{r}
 # The only parameter of a poisson distribution "lambda"
 # lambda = np
 
@@ -237,18 +245,25 @@ lambda <- 1
 
 
 ppois(1, lambda = 1, lower.tail = FALSE)
+```
+
 
 ## Uniform and Beta Distribution
 
+```{r}
 plot(0:1, dbeta(0:1,shape1 = 1, shape2 = 1), 
      type = "l", col = "blue")
 
 
 lines(0:1, dunif(0:1), col = "red")
+```
+
+
+
 
 ## Exponential Distribution
 
-
+```{r}
 # a
 # P(Y = 0.5) = 0
 
@@ -265,17 +280,29 @@ pexp(1, rate = 2, lower.tail = FALSE)
 
 #c
 pexp(0.6, rate = 2) - pexp(0.1, rate = 2)
+```
+
+
 
 
 ## Species Dispersal
 
+
+```{r}
 dgeom(2, prob = 0.17)
+
+```
+
+
 
 
 ## Glaucouse winged gull
 
-
+```{r}
 dnbinom(1, size = 3, prob = 0.76)
+```
+
+
 
 
 
