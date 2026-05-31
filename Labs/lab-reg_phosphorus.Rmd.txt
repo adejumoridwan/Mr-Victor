@@ -1,0 +1,115 @@
+---
+title: "Phosphorus data"
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    theme: united
+    highlight: tango
+    toc: true
+---
+
+```{r setup1, echo=FALSE, eval=FALSE}
+knitr::opts_knit$set(root.dir ="~/Documents/teaching/envdata/labs/data")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+# Reading the data
+
+```{r}
+trees<-read.csv("phosphor.csv")
+trees
+```
+
+
+```{r}
+is.factor(trees$variety)
+```
+We convert the character variable to a factor variable
+```{r}
+trees$variety<-as.factor(trees$variety)
+```
+
+check the levels
+
+```{r}
+levels(trees$variety)
+```
+
+```{r}
+plot(phosphor~variety,data=trees)
+```
+# Full model: estimation
+
+
+$$Y_i=\beta_1x_{i1}+\beta_2x_{i2}+\beta_3x_{i3}+\varepsilon_i$$
+
+
+```{r}
+fit.tmp<-lm(phosphor~variety-1,data=trees)
+summary(fit.tmp)
+```
+
+Estimated mean levels for each variety
+```{r}
+coefficients(fit.tmp)
+```
+
+We calculate the mean of each group
+ 
+```{r}
+aggregate(phosphor ~ variety,FUN = mean,data = trees)
+```
+
+# Full model: alternative formulation estimation
+
+$$Y_i=\beta_0+\beta_2x_{i2}+\beta_3x_{i3}+\varepsilon_i$$
+
+```{r}
+fit<-lm(phosphor~variety,data=trees)
+summary(fit)
+```
+
+Estimated coefficients
+```{r}
+coefficients(fit)
+```
+
+Estimated mean levels for each variety
+```{r}
+coefficients(fit)+c(0,rep(coefficients(fit)[1],times=2))
+```
+
+
+
+# Reduced model estimation
+
+```{r}
+fit0<-lm(phosphor~1,data = trees)
+summary(fit0)
+```
+
+```{r}
+plot(phosphor~variety,data=trees)
+abline(h=mean(trees$phosphor))
+mean(trees$phosphor)
+```
+
+# Anova F-test
+
+```{r}
+anova(fit0,fit)
+```
+
+same result using
+
+
+```{r}
+anova(fit0,fit.tmp)
+```
+

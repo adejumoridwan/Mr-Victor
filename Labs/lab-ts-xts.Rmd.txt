@@ -1,0 +1,425 @@
+---
+title: "Lab: time series objects in R"
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    theme: united
+    highlight: tango
+    toc: true
+---
+ 
+```{r setup1, echo=FALSE, eval=FALSE}
+knitr::opts_knit$set(root.dir ="~/Documents/teaching/envdata/labs/data")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+
+# Representing regularly spaced data as `ts/mts` objects
+
+Time series in R can be represented with an object of class `ts`. We shall learn how `ts` works with an artificial time series simulated from the model
+$$
+X_t=10+\frac{1}{4} t +\epsilon_t, \quad t=1, ..., 20
+$$
+where $\epsilon_t$ is a standard normal white noise process. In R we can simulate a realization of the above model $x_1, ..., x_{20}$ with the following commands:  
+```{r }
+tm <- 1:20 ## set "time"
+tm
+set.seed(318) ## random generator seed
+x <- 10 + 0.25 * tm + rnorm(20) ## simulated series
+x
+```
+
+
+```{r }
+plot(x)
+```
+
+
+```{r }
+y <- ts(x) ## specify the `ts' class
+y
+```
+
+The vector `y` is an object of class `ts`:
+```{r }
+class(y)  
+is.ts(y)  
+```
+Plot of the time series:
+```{r fig.height=3, fig.width=4}
+plot(y)
+```
+
+Now, suppose that the artificial time series has an annual frequency and that it starts from $1977$:
+```{r }
+y <- ts(x, start = 1977)
+y
+```
+
+The plotted series becomes:
+```{r fig.height=3, fig.width=4}
+plot(y)
+```
+
+We can also set the end of the series: 
+```{r }
+ts(x, end = 1996)
+```
+or both `start` and `end`:
+```{r }
+ts(x, start = 1977, end = 1996)
+ts(x, start = 1977, end = 1986)
+ts(x, start = 1977, end = 2003)
+```
+
+Note the dangerous behaviour of R when the observations are not enough to complete the series (third example): The observations are recycled!
+
+# First operations on time series #
+
+It is possible to modify singular or groups of observations:
+```{r }
+z <- y
+z[3] <- 0
+z
+z[z > 14] <- 5
+z
+z[c(7, 12)] <- -100
+z
+```
+
+Missing values are denoted with `NA` (not available):
+```{r fig.height=3, fig.width=4}
+z <- y
+z[3:5] <- NA
+z
+plot(z)
+```
+ 
+Functions can be applied to a time series of class `ts`:
+```{r }
+10 * y + 100
+log(y)
+mean(y)
+var(y)
+length(y)
+range(y)
+c(min(y), max(y))
+which(y == max(y))
+```
+
+
+# Handling time #
+Function `time` returns the measurement times (*i.e.*, the times at which observations are sampled):
+```{r }
+time(y)
+```
+
+Function `window` allows to extract  subseries of  observations:
+```{r }
+window(y, start = 1990)
+window(y, end = 1983)
+window(y, start = 1984, end = 1986)
+window(y, start = 1970, end = 2003)
+window(y, start = 1970, end = 2003, extend = TRUE)
+```
+
+The last two examples show that `window` does not extend the series to fulfill the window dimensions, except when
+option `extend = TRUE` is given.  
+
+
+
+# Seasonal time series #
+
+We consider now another artificial time series simulated from model
+$$
+Y_t=5\cos(2\pi t/12)+\epsilon_t, \quad t=1, ..., 60
+$$
+where again $\epsilon_t$ is a standard normal white noise. We further assume that measurement times correspond to months since 1977. Next lines simulate a realization from the above model:
+```{r }
+tm <- 1:60
+x <- 5 * cos(2*pi*tm/12) + rnorm(60)
+```
+
+Since this is a monthly time series, we need to set this information in `ts` using argument `frequency`:
+```{r fig.height=3, fig.width=4}
+ym <- ts(x, start = 1977, frequency = 12) ## frequency = 12!
+ym
+time(ym)
+plot(ym, xlab = 'year')
+```
+
+R has automatically assumed that the first observation corresponds to January of the starting year. We can modify the starting year through option `start`:
+```{r }
+ym <- ts(x, start = c(1977, 5), frequency = 12) ## start in May 1977
+ym
+time(ym)
+```
+
+Consistently, functions `start` and `end` return both the year and the month: 
+```{r }
+start(ym)
+end(ym)
+```
+Behavior of `window` with the monthly series:  
+```{r }
+window(ym, start = 1978)
+window(ym, start = c(1978, 9))
+window(ym, end = c(1978, 9))
+window(ym, start = c(1978, 5), end = c(1978, 9))
+```
+Finally, to extract all the July observations of `ym`, we can use the argument `deltat = 1`:
+```{r }
+window(ym, start = c(1977, 7), deltat = 1)
+```
+
+# Manipulating ts objects 
+
+Some common manipulations of time series data involve lags and differences using the functions `lag()` and `diff()`. For example, to lag `ym` by one time period use 
+```{r eval=FALSE}
+lag(ym)
+```
+To lag the price data by 12 periods use 
+```{r eval=FALSE}
+lag(ym,k =12)
+```
+
+The `lag()` function shifts the time index back by an amount $k$. To shift the time index forward set $k$ to a negative number 
+```{r eval=FALSE}
+lag(ym,k =-1)
+lag(ym,k= -12)
+```
+
+To compute the first difference in prices use 
+```{r eval=FALSE}
+diff(ym)
+```
+Notice that application of `diff` is equivalent to
+```{r eval=FALSE}
+ym-lag(ym,k=-1)
+```
+To compute a 12 lag difference (annual difference for monthly data) use
+```{r eval=FALSE}
+diff(ym,lag=12)
+```
+ which is equivalent to using  
+```{r eval=FALSE}
+ym-lag(ym,k=-12)
+```
+
+# Yearly time series 
+
+```{r echo=FALSE}
+temp <- scan("globtemp.txt")
+```
+Read the global warning temperature data from file `globtemp.txt`:
+```{r eval=FALSE}
+temp <- scan("globtemp.txt")
+```
+First look at the data:
+```{r }
+head(temp)
+summary(temp)
+```
+Scatterplot:
+```{r fig=TRUE}
+plot(temp)
+```
+
+
+Transform `temp` to an object of class `ts`:
+```{r }
+temp.ts <- ts(temp, start = 1856, frequency = 1)
+class(temp)
+class(temp.ts)
+head(time(temp))
+head(time(temp.ts))
+```
+Plot the series:
+```{r fig=TRUE}
+plot(temp.ts, ylab = "temperature anomalies")
+abline(h = 0, col = "red", lty = "dashed")
+```
+
+# Monthly time series
+
+
+Read the Monte Cimone $\text{CO}_2$ series from file `mtcimone.txt`:
+
+```{r }
+cimone <- scan("mtcimone.txt")
+```
+Transform the series in an `ts` object and plot
+```{r fig=TRUE}
+cimone.ts <- ts(cimone, start = c(1979, 3), frequency = 12)
+head(cimone.ts)
+head(time(cimone.ts))
+plot(cimone.ts, ylab = expression(CO[2]))
+```
+
+# Multivariate time series 
+
+```{r echo=FALSE}
+fish.data <- read.csv("fish_data.csv", header = TRUE)
+```
+Read the data in the spreadsheet `fish_data.csv`:
+```{r eval=FALSE}
+fish.data <- read.csv("fish_data.csv", header = TRUE)
+```
+Visualize the data:
+```{r }
+head(fish.data)
+summary(fish.data)
+```
+Bivariate time series plot:
+```{r fig=TRUE}
+fish.ts <- ts(fish.data[, -c(1, 2)], start = 1950, frequency = 12)
+plot(fish.ts, main = "Fish data", yax.flip = TRUE)
+```
+
+
+# Daily time series: the xts package 
+
+
+We shall consider a dataset on daily Precipitation in De Bilt
+Amount is in 0.1 mm (-1 for <0.05 mm)
+
+```{r }
+debilt<-read.table("KNMI_20160831.txt",header = FALSE,skip=12,sep=",",na.strings = "")
+names(debilt)<-c("STN","YYYYMMDD","RH")
+head(debilt)
+```
+
+We transfor the censored data
+
+```{r}
+censored<-debilt$RH == -1
+debilt$RH[censored]<-0.5
+```
+
+
+The data have a daily frequency that cannot be handle by class `ts`. We consider, instead, function `xts` (`eXtensible Time Series') available in the library of the same name:
+
+```{r eval=FALSE}
+install.packages("xts") ## only the first time!
+```
+We can now load the library: 
+```{r }
+library(xts)
+```
+The first step is to specify the time series dates as an `Date` object:
+
+```{r}
+days <- seq(from = as.Date("1901-01-01"), length.out = nrow(debilt), by = "day")
+head(days)
+```
+
+
+or 
+
+```{r}
+days<-as.Date(as.character(debilt$YYYYMMDD),format="%Y%m%d")
+```
+
+
+
+Then, we can set the `xts` object:
+
+
+
+```{r }
+rainfall <-  xts(debilt$RH, order.by = days, frequency = 7)
+```
+
+
+The `by` argument can be used also to create series with period week, month, etc.).
+
+
+Plot of the time series:
+```{r fig=TRUE}
+plot(rainfall, main = "Rainfall at De Bilt")
+```
+
+Function `window` can be used as in `ts` for plotting subseries, for example:
+```{r fig=TRUE}
+plot(window(rainfall, start = as.Date("1973-01-01"), end = as.Date("1973-12-31")), main = "Rainfall at De Bild in 1973")
+```
+
+Extracting the entire month of July 1973 - without having to manually identify the index positions or match the underlying index type
+```{r }
+rainfall['1973-07']
+```
+
+
+# Flexibility of `xts` 
+
+We can transform previously constructed `ts` series in `xts` using function `as.xts`:
+```{r fig=TRUE}
+cimone.xts <- as.xts(cimone.ts)
+plot(cimone.xts)
+```
+
+... or with a better title and other features.
+
+```{r fig=TRUE}
+plot(cimone.xts,main = bquote(CO[2] ~ "at Cimone Mountain"),col = "darkblue",
+     grid.col = "lightgrey",yaxis.right = FALSE)
+```
+
+Labels on xy-axes are difficult to manage. Here a customized plot using `zoo` package.
+
+```{r fig=TRUE}
+zoo::plot.zoo(cimone.xts,main = bquote(CO[2] ~ "at Cimone Mountain"),ylab=bquote(CO[2]))
+grid()
+```
+
+Multiple time series
+
+```{r fig=TRUE}
+fish.xts <- as.xts(fish.ts)
+plot(fish.xts,multi.panel=TRUE,yaxis.same=FALSE,main = "Fish data", col=c("red", "green"))
+```
+
+
+```{r}
+layout(matrix(1:2, 1, 2))
+plot(fish.xts,multi.panel=1,yaxis.same=FALSE,main = "Fish data", col=c(2, 4))
+```
+
+
+# Useful functions
+
+Package `xts` contains several useful functions for computations with time series, some examples:
+
+```{r }
+nyears(cimone.xts)
+nmonths(cimone.xts)
+cimone.yearly <- apply.yearly(cimone.xts, mean, na.rm = TRUE)
+head(cimone.yearly)
+```
+Compare the original series with the series of the quarterly averages
+```{r fig=TRUE}
+par(mfrow = c(2, 1))
+plot(cimone.xts, main = "Original data")
+plot(cimone.yearly, main = "Yearly averages")
+```
+
+
+Other functions: `apply.daily`,`apply.weekly`, `apply.monthly`, `apply.quarterly`.
+
+
+A more general function is `enppoints`
+
+
+```{r}
+ep<-endpoints(cimone.xts,on="years")
+yh<-period.apply(cimone.xts, INDEX = ep, FUN = colMeans,na.rm=TRUE)
+head(yh)
+```
+
+Valid values for the argument `on` include: “us” (microseconds), “microseconds”, “ms” (milliseconds), “milliseconds”, “secs” (seconds), “seconds”, “mins” (minutes), “minutes”, “hours”, “days”, “weeks”, “months”, “quarters”, and “years”.

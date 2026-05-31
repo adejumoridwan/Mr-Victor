@@ -1,0 +1,212 @@
+---
+title: "Lab:  regression model for time series analysis"
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    theme: united
+    highlight: tango
+    toc: true
+---
+
+```{r setup1, echo=FALSE, eval=FALSE}
+knitr::opts_knit$set(root.dir ="~/Documents/teaching/envdata/labs/data")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+# Noaa data
+
+```{r}
+noaa.dat<-read.csv("1880-2016.csv",skip=3)
+noaa.ts<-ts(noaa.dat$Value,start=1880)
+plot(noaa.ts)
+```
+
+```{r}
+tt<-time(noaa.ts)
+tt<-as.numeric(tt)
+fit.2<-lm(noaa.ts~tt+I(tt^2))
+plot(noaa.ts)
+lines(tt,predict(fit.2),col="red")
+fit.4<-lm(noaa.ts~poly(tt,4,raw=TRUE))
+lines(tt,predict(fit.4),col="blue")
+```
+
+```{r}
+summary(fit.2)
+summary(fit.4)
+anova(fit.2,fit.4)
+AIC(fit.2)
+AIC(fit.4)
+```
+
+
+# Recife data
+
+```{r}
+recife<-ts(scan("recife.txt"),start = c(1953,1),frequency = 12)
+plot(recife)
+```
+
+```{r}
+monthplot(recife)
+```
+
+```{r}
+library(xts)
+recife.xts<-as.xts(recife)
+months<-cycle(recife.xts)
+fac<-as.factor(months)
+fac
+fit.s<-lm(recife~fac)
+plot(recife)
+tt<-as.numeric(time(recife))
+lines(tt,predict(fit.s),col="red")
+```
+
+
+
+
+# Harmonic regression
+
+We need to install the package `forecast`
+
+
+```{r eval=FALSE}
+install.packages("forecast")
+```
+
+```{r}
+library(forecast)
+```
+
+Example with one harmonic (i.e. $K=1$, in the slides)
+
+```{r}
+plot(recife,ylab='Temperature (degree C)',main='Recife, Brazil Temperature Data')
+grid(lty=1)
+K<-1
+h1 <- fourier(recife, K = K)
+fit.h1<-lm(recife~h1)
+pred.h1<-predict(fit.h1)
+lines(as.numeric(time(recife)),predict(fit.s),col=5)
+lines(as.numeric(time(recife)),pred.h1,col=K+1,lwd=2,lty=2)
+legend("bottomright",legend = c("Dummies","Harmonic"),lwd=2,col=c(5,2),lty=2)
+```
+
+Example with two and three harmonics $K=2,3$
+
+```{r}
+K<-2
+h2 <- fourier(recife, K = K)
+fit.h2<-lm(recife~h2)
+pred.h2<-predict(fit.h2)
+K<-3
+h3 <- fourier(recife, K = K)
+fit.h3<-lm(recife~h3)
+pred.h3<-predict(fit.h3)
+```
+
+Plot of the results
+
+```{r}
+plot(recife,ylab='Temperature (degree C)',main='Recife, Brazil Temperature Data',ylim=(range(recife)+c(-2.5,1.5)))
+lines(as.numeric(time(recife)),pred.h1,col=2,lwd=2,lty=2)
+lines(as.numeric(time(recife)),pred.h2,col=3,lwd=2,lty=2)
+lines(as.numeric(time(recife)),pred.h3,col=4,lwd=2,lty=2)
+legend("bottomright",legend = c("K=1","K=2","K=3"),lwd=2,col=c(2,3,4),lty=2)
+```
+
+
+
+
+
+# Time series decomposition: Keeling curve
+
+See https://www.esrl.noaa.gov/gmd/ccgg/trends where you can download the data directly
+
+
+```{r eval=FALSE}
+keeling<-read.table("https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.txt",skip = 42)
+head(keeling)
+keeling.ts<-ts(keeling[,4],start = c(1958,3),frequency = 12)
+plot(keeling.ts)
+```
+
+Alternatively 
+
+```{r }
+keeling<-read.table("co2_mm_mlo.txt",skip = 42)
+head(keeling)
+keeling.ts<-ts(keeling[,4],start = c(1958,3),frequency = 12)
+plot(keeling.ts)
+```
+
+```{r}
+keeling.xts<-as.xts(keeling.ts)
+months<-cycle(keeling.ts)
+fac<-as.factor(months)
+tt<-as.numeric(time(keeling.ts))
+tt2<-tt^2
+fit.s<-lm(keeling.ts~tt+tt2+C(fac,sum))
+beta<-coef(fit.s)
+mt<-beta[1]+beta[2]*tt+beta[3]*tt2
+res<-resid(fit.s)
+st<-keeling.ts-mt-res
+d<-ts(cbind(keeling.ts,mt,st,res),start = start(keeling.xts),frequency = frequency(keeling.xts))
+plot(d,main="Decomposition")
+```
+
+
+```{r}
+K<-3
+h<-fourier(keeling.ts, K = K)
+fit.h<-lm(keeling.ts~tt+tt2+h)
+beta<-coef(fit.h)
+mt<-beta[1]+beta[2]*tt+beta[3]*tt2
+res<-resid(fit.h)
+st<-keeling.ts-mt-res
+d<-ts(cbind(keeling.ts,mt,st,res),start = start(keeling.xts),frequency = frequency(keeling.xts))
+plot(d,main="Decomposition with harmonics")
+```
+
+# An epidemiological example
+
+We study the possible effects of temperature and pollution on weekly mortality in Los Angeles County. 
+
+
+```{r}
+LA<-read.csv("LA.csv")
+LA.ts<-ts(LA,start =c(1970,1),end=c(1979,40),frequency = 52)
+```
+
+```{r}
+plot(LA.ts)
+```
+
+
+```{r}
+pairs(LA)
+```
+ 
+
+```{r}
+plot(LA$tempr, LA$tempr^2) # collinear 
+a<-cor(LA$tempr, LA$tempr^2) 
+temp <- LA$tempr - mean(LA$tempr) 
+plot(temp, temp^2) # not collinear 
+b<-cor(temp, temp^2)  
+```
+
+```{r}
+temp2<-temp^2
+trend <- time(LA.ts) # time is trend 
+fit <- lm(cmort~ trend + temp + temp2 + part,data = LA) 
+summary(fit) # regression results 
+
+```

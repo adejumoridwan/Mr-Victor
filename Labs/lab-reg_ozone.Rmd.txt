@@ -1,0 +1,90 @@
+---
+title: 'Ozone: an example of regression modelling'
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    theme: united
+    highlight: tango
+    toc: true
+---  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+  
+# Importing the data
+
+```{r }
+ozone<-read.table("ozone.txt",header=TRUE)
+plot(ozone,pch=20,col=4)
+grid(lty=1)
+```
+
+# Fitting a linear model
+
+```{r }
+fit <- lm(Ozone~Solar+Wind+Temp+Day, data=ozone)
+summary(fit)
+```
+
+
+# Residual analysis
+
+```{r }
+plot(fitted(fit),resid(fit),pch=20,col=4)
+grid(lty=1)
+```
+
+# Confidence intervals for the estimates
+
+```{r }
+Days <- data.frame(Solar=c(180,180), Wind=c(5,15), Temp=c(90,70), Day=c(274,274)) 
+predict(fit, Days, interval="confidence")
+```
+
+# Prediction intervals
+
+```{r }
+predict(fit, Days, interval="prediction")
+```
+
+
+# Transformation of the response
+
+```{r}
+fit.log <- lm(log(Ozone)~Solar+Wind+Temp+Day,data=ozone)
+summary(fit.log)
+```
+
+Model can be reduced
+
+```{r}
+fit.log.2 <- lm(log(Ozone)~Solar+Wind+Temp,data=ozone)
+summary(fit.log.2)
+```
+
+
+```{r }
+plot(fitted(fit.log.2),resid(fit.log.2),pch=20,col=4)
+grid(lty=1)
+```
+
+
+
+```{r }
+pred.log.2<-predict(fit.log.2, Days,interval="confidence")
+pred.log.2
+```
+
+Estimates and confidence intervals  on the original scale
+
+```{r }
+pred<-exp(pred.log.2)
+pred
+```
+
+
+

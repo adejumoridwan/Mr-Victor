@@ -1,0 +1,399 @@
+---
+title: 'Lab 5: Hypothesis testing'
+author: "Carlo Gaetan"
+output:
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    toc: yes
+    toc_float: yes 
+  pdf_document:
+    fig_height: 5
+    fig_width: 7
+---
+
+# Basel temperature data
+
+We read the data
+
+```{r eval=FALSE}
+temperature.basel<-read.table("basel-temperatures.txt",header=TRUE)
+```
+Two-side alternative
+```{r eval=FALSE}
+y<-temperature.basel$degrees
+t.test(y,mu=2,alternative = "two.sided")
+```
+
+One-side alternative
+
+```{r eval=FALSE}
+t.test(y,mu=2,alternative = "less")
+```
+
+
+# Saplings in a Finnish forest
+
+We need to install the package `spatstat` for getting the data.
+
+The dataset `finpines` record the locations of 126 pine saplings in a Finnish forest, their heights and their diameters.
+
+
+
+
+Quadrat counts 
+
+```{r eval=FALSE}
+quadrat<-read.table("quadratcounts.txt",header = TRUE)
+y<-quadrat$counts
+```
+
+
+Empirical distribution
+```{r eval=FALSE}
+n<-length(y)
+plot(table(y)/n,ylab="Relative frequency",xlab="count",col=4)
+
+```
+
+
+
+Is it the mean of the number of trees in a quadrat equal to 3 ?
+
+We start by fitting a Poisson distribution
+```{r eval=FALSE}
+library(fitdistrplus)
+fit<-fitdist(y,distr = "pois")
+fit
+```
+
+
+```{r eval=FALSE}
+plot(fit)
+```
+
+Test by z-statistics and p-value
+```{r eval=FALSE}
+lambda.0<-3
+lambda.hat<-fit$estimate[1]
+se.lambda.hat<-fit$sd[1]
+z<-(lambda.hat-lambda.0)/se.lambda.hat
+poss<-pnorm(z)
+
+```
+
+P-value is `r ` 
+
+# Geneva rainfall data
+
+We read the data
+
+```{r eval=FALSE}
+rainfall<-read.table("geneva-rainfall.txt",header=TRUE)
+```
+We define the two periods
+```{r eval=FALSE}
+per1 <- (rainfall[,"year"] <= 1980)
+per2 <- !per1
+```
+
+
+
+Plot the original time series. Is there visual evidence of a shift?
+```{r eval=FALSE}
+plot(x=rainfall[per1,"year"],y=rainfall[per1,"Geneva"],xlim=range(rainfall[,"year"]),ylim=range(rainfall[,"Geneva"]),col="red",pch=20,cex=2,
+xlab="year",ylab="mm")
+points(x=rainfall[per2,"year"],y=rainfall[per2,"Geneva"],col="blue",pch=20,cex=2) 
+abline(v=1980)
+title("Original Measurements")
+```
+
+
+```{r eval=FALSE}
+ylim<-range(rainfall[,"Geneva"])
+x<-rainfall[per1,"Geneva"]
+y<-rainfall[per2,"Geneva"]
+boxplot(x, main="Rainfall",xlim=c(0,3),ylim=ylim,col="red")
+boxplot(y,add = TRUE,at = 2,ylim=ylim,col="blue")
+```
+
+Welch's two-sided test
+```{r eval=FALSE}
+tt<-t.test(x=x,y=y,alternative="two.sided")
+tt
+```
+
+Pooled variance two-sided test
+```{r eval=FALSE}
+tt.pooled<-t.test(x=x,y=y,alternative="two.sided",var.equal=TRUE)
+tt.pooled
+```
+Wilcox-Mann-Whitney test
+
+```{r eval=FALSE}
+tt.w<-wilcox.test(x=x,y=y,alternative="two.sided")
+tt.w
+```
+
+# Jura data
+We read the data
+
+
+```{r eval=FALSE}
+jura<-read.csv("juraset.csv",dec = ",")
+```
+
+
+
+We transform the string variables into factor (categorical) variables
+```{r eval=FALSE}
+Rocktype<-as.factor(jura$Rock)
+levels(Rocktype)<-c("Argovian", "Kimmeridgian", "Portlandian", "Quaternary", "Sequanian")
+LandUse<-as.factor(jura$Land)
+levels(LandUse)<-c("Forest", "Meadow", "Pasture", "Tillage")
+```
+
+```{r eval=FALSE}
+attach(jura)
+plot(Ni~Rocktype,main="Nickel content",cex.lab=1.5,col="lightblue")
+```
+
+Calculate the mean of each group
+
+```{r eval=FALSE}
+aggregate(Ni ~ Rocktype,   FUN = mean)
+```
+
+Calculate the standard deviation of each group
+
+```{r eval=FALSE}
+aggregate(Ni ~ Rocktype,   FUN = sd)
+```
+
+
+
+Anova table
+```{r eval=FALSE}
+summary(aov(Ni~Rocktype))
+```
+
+
+
+# Albudeite data
+
+
+
+```{r eval=FALSE}
+Albudeite<-read.table("silt.txt",header=FALSE)
+```
+
+
+```{r eval=FALSE}
+names(Albudeite)<-c("silt","site")
+attach(Albudeite)
+boxplot(silt~site,ylab="Silt percentage")
+```
+
+
+
+
+```{r eval=FALSE}
+summary(aov(silt~site))
+kruskal.test(silt~site)
+```
+
+
+
+# Goodnes-of-fit tests
+
+## Simulated example
+
+```{r eval=FALSE}
+set.seed(19)
+y<-rnorm(50)
+plot(ecdf(y),main="",verticals=FALSE)
+curve(pnorm(x),from=min(y),to=max(y),add=TRUE,lwd =2,col=2)
+
+
+set.seed(23)
+y<-rgamma(100,shape =2, scale=3)
+plot(ecdf(y),main="",verticals=FALSE)
+curve(pgamma(x,shape =2, scale=3),
+   from=min(y),to=max(y),add=TRUE,lwd =2,col="red")
+curve(pgamma(x,shape =2, scale=4),
+   from=min(y),to=max(y),add=TRUE,lwd =2,col="blue")
+```
+
+
+## Kolmogorov-Smirnov test
+```{r eval=FALSE}
+ks.test(y, "pgamma", shape=2, scale=3)
+ks.test(y, "pgamma", shape=2, scale=4)
+```
+
+## Anderson-Darling test
+
+We install the required package
+```{r eval=FALSE}
+install.packages("goftest")
+```
+
+```{r eval=FALSE}
+library(goftest)
+ad.test(y,"pgamma",shape=2, scale=3)
+ad.test(y, "pgamma", shape=2, scale=4)
+```
+
+## Real data example: rainfall in Basel
+
+
+```{r eval=FALSE}
+rainfall.basel<-read.table("basel-rainfall.txt",header=TRUE)
+```
+
+We fit two distributions
+```{r eval=FALSE}
+library(fitdistrplus)
+y<-rainfall.basel$mm
+fit.gauss<-fitdist(y,distr = "norm")
+fit.gamma<-fitdist(y,distr = "gamma")
+```
+```{r eval=FALSE}
+gofstat(list(fit.gauss,fit.gamma))
+```
+Gamma distribution has better fit
+
+# Kola data
+
+
+```{r eval=FALSE}
+chorizon<-read.csv("chorizon.csv")
+```
+
+```{r eval=FALSE}
+Be<-chorizon[,"Be"]
+Sr<-chorizon[,"Sr"]
+plot(Be, Sr,
+xlab="Be in C-horizon [mg/kg]",ylab="Sr in C-horizon [mg/kg]", cex.lab=1.2, pch=3, cex=0.7)
+```
+
+
+
+```{r eval=FALSE}
+par(mfrow=c(1,2))
+hist(Sr,xlab="Sr in C-horizon [mg/kg]",freq=FALSE)
+hist(Sr,xlab="Sr in C-horizon [mg/kg]",freq=FALSE)
+par(mfrow=c(1,1))
+```
+
+
+
+
+
+```{r eval=FALSE}
+plot(Be, Sr,xlab="Be in C-horizon [mg/kg]",
+     ylab="Sr in C-horizon [mg/kg]")
+```
+
+Pearson correlation 
+```{r eval=FALSE}
+cor((Be), (Sr))
+```
+
+
+
+
+```{r eval=FALSE}
+par(mfrow=c(2,1))
+hist(log10(Sr),xlab="Sr",freq=FALSE)
+hist(log10(Be),xlab="Be",freq=FALSE)
+par(mfrow=c(1,1))
+```
+
+```{r eval=FALSE}
+plot(log10(Be), log10(Sr))
+```
+```{r eval=FALSE}
+cor.test(log10(Be),log10(Sr),
+         alternative = "two.sided", method = "pearson")
+```
+
+
+```{r eval=FALSE}
+plot(rank(Be), rank(Sr),
+xlab="rank of Be in C-horizon",ylab="rank of Sr in C-horizon")
+```
+
+
+
+
+
+```{r eval=FALSE}
+cor((Be), (Sr),method="spearman")
+```
+
+```{r eval=FALSE}
+cor.test(log10(Be),log10(Sr),
+         alternative = "two.sided", method = "spearman")
+```
+
+
+
+
+
+```{r eval=FALSE}
+cor.test(log10(Be),log10(Sr),
+         alternative = "two.sided",method = "kendall")
+
+```
+
+```{r eval=FALSE}
+x<-chorizon[,c("Ca","Cu","Mg","Na","P","Sr","Zn")] 
+print(round(cor(log10(x),method="spearman"),4))
+```
+
+
+
+
+# Oak data
+
+
+```{r eval=FALSE}
+oak<-read.table("oak.txt",header=TRUE)
+```
+
+```{r eval=FALSE}
+Species<-as.factor(oak$Species)
+Neighbor<-as.factor(oak$Neighbor)
+table(Species,Neighbor)
+```
+
+
+```{r eval=FALSE}
+proportions(table(Species,Neighbor))
+```
+
+
+
+```{r eval=FALSE}
+proportions(table(Species,Neighbor),margin=2)
+plot(Species~Neighbor)
+```
+```{r eval=FALSE}
+proportions(table(Species,Neighbor),margin=1)
+plot(Neighbor~Species)
+```
+
+Test for independence
+
+```{r eval=FALSE}
+chisq.test(Species,Neighbor)
+```
+
+
+
+
+
+
+
+

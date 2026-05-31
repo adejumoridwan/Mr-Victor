@@ -1,0 +1,53 @@
+---
+title: "F-test example"
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    theme: united
+    highlight: tango
+    toc: true
+---  
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+
+# Reading the data
+
+```{r}
+artic<-read.table("N_09_area_v2_data.txt",header=TRUE)
+attach(artic)
+```
+
+
+
+# Fitting the full model
+
+```{r}
+full<-lm(extent~year+I(year^2))
+```
+
+
+# Fitting the reduced model
+
+```{r}
+reduced<-lm(extent~1)
+```
+
+
+# Is the sea-ice extent  varying with the respect to the time ?
+
+
+We will consider a $F$-test
+
+```{r}
+anova(reduced,full)
+```
+
+# Conclusion
+
+p-value indicates that time has a significant influence.

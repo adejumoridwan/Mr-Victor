@@ -1,0 +1,66 @@
+---
+title: "Lab Regression Crab"
+format: html
+editor: visual
+---
+
+```{r}
+crabs <- read.csv("../dioxin2.csv")
+head(crabs)
+View(crabs)
+```
+
+```{r}
+summary(crabs)
+```
+
+```{r}
+crabs$Site <- as.factor(crabs$Site)
+summary(crabs)
+```
+
+```{r}
+plot(TEQ ~ Year, data = crabs)
+```
+
+```{r}
+fit.tmp <- lm(TEQ ~ Year, data = crabs)
+plot(fit.tmp)
+```
+
+```{r}
+MASS::boxcox(TEQ~Year,data=crabs)
+
+# library(MASS)
+# boxcox(TEQ ~ Year, data = crabs)
+```
+
+```{r}
+crabs$logTEQ <- log(crabs$TEQ)
+plot(logTEQ ~ Year, data = crabs)
+
+```
+
+```{r}
+fit <- lm(logTEQ ~ Year, data = crabs)
+summary(fit)
+
+fit2 <-lm(logTEQ ~ Year + Site, data = crabs)
+summary(fit2)
+```
+
+```{r}
+anova(fit, fit2)
+```
+
+```{r}
+# linear regression with year and site as predictors
+fit3<-lm(logTEQ ~ Year + Site + Year*Site, 
+         data = crabs)
+summary(fit3)
+
+```
+```{r}
+anova(fit2, fit3)
+```
+

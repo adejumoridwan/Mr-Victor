@@ -1,0 +1,179 @@
+---
+title: "Crab data"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+  pdf_document: 
+    toc: yes
+---
+
+
+```{r setup1, echo=FALSE, eval=FALSE}
+knitr::opts_knit$set(root.dir ="~/Documents/teaching/envdata/labs/data")
+```
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+# Introduction
+
+
+-  An unfortunate byproduct of pulp-and-paper production used to be dioxins (Credits for this example: C. J. Schwarz).
+-  This material was discharged into waterways with the pulp-and-paper effluent where it bioaccumulated in living organisms such a crabs.
+-  Newer processes have eliminated this by product, but the dioxins in the organisms takes a long time to degrade.
+-  For monitoring purpose, each year four crabs are captured from two monitoring stations which are situated quite a distance apart on the same inlet where the pulp mill was located.
+-  The liver is excised and the livers from all four crabs are composited together into a single sample.
+-  The dioxins levels in this composite sample is measured.
+-    As there are many different forms of dioxins with different toxicities, a summary measure, called the Total Equivalent Dose (TEQ) is computed from the sample.
+
+## Scientific questions: 
+
+- Is the rate of decline the same for both sites ?
+-  Did the sites have the same initial concentration ?
+
+
+# Reading the data
+
+```{r}
+crabs<-read.csv("dioxin2.csv")
+head(crabs)
+```
+
+
+```{r}
+summary(crabs)
+crabs$Site<-as.factor(crabs$Site)
+summary(crabs)
+```
+
+# Non linear relation ?
+
+```{r}
+plot(TEQ~Year,data=crabs,pch=20)
+```
+
+```{r}
+fit.tmp<-lm(TEQ~Year,data=crabs)
+plot(fit.tmp,which=c(1,2))
+```
+
+
+
+```{r}
+MASS::boxcox(TEQ~Year,data=crabs)
+```
+
+
+
+```{r}
+crabs$logTEQ<-log(crabs$TEQ)
+```
+
+
+```{r}
+plot(logTEQ~Year,data=crabs,pch=20)
+```
+
+
+
+```{r}
+plot(logTEQ~Year,data=crabs)
+attach(crabs)
+points(Year[Site =="a"],logTEQ[Site =="a"],pch=20,col="red")
+points(Year[Site =="b"],logTEQ[Site =="b"],pch=20,col="blue")
+legend("topright",legend=c("Site a","Site b"),pch=20,col=c("red","blue"))
+```
+
+```{r}
+fit<-lm(logTEQ~Year)
+summary(fit)
+```
+
+```{r}
+plot(logTEQ~Year,data=crabs)
+points(Year[Site =="a"],logTEQ[Site =="a"],pch=20,col="red")
+points(Year[Site =="b"],logTEQ[Site =="b"],pch=20,col="blue")
+legend("topright",legend=c("Site a","Site b"),pch=20,col=c("red","blue"))
+abline(fit)
+```
+
+# Analysis of residuals
+
+```{r}
+plot(fit,which=c(1,2))
+```
+
+
+```{r}
+yhat<-fitted(fit)
+res<-resid(fit)
+plot(res~yhat)
+abline(h=0,col=2,lty=2)
+points(yhat[Site =="a"],res[Site =="a"],pch=20,col="red")
+points(yhat[Site =="b"],res[Site =="b"],pch=20,col="blue")
+legend("topright",legend=c("Site a","Site b"),pch=20,col=c("red","blue"))
+```
+
+# ANCOVA models
+
+```{r}
+fit2<-lm(logTEQ~Year+Site)
+summary(fit2)
+```
+
+
+```{r}
+anova(fit,fit2)
+```
+
+
+```{r}
+plot(logTEQ~Year,data=crabs)
+points(Year[Site =="a"],logTEQ[Site =="a"],pch=20,col="red")
+points(Year[Site =="b"],logTEQ[Site =="b"],pch=20,col="blue")
+abline(coef(fit2)[1],coef(fit2)[2],col="red")
+abline(coef(fit2)[1]+coef(fit2)[3],coef(fit2)[2],col="blue")
+```
+
+A better pattern in the residuals
+
+```{r}
+yhat2<-fitted(fit)
+res2<-resid(fit2)
+plot(res2~yhat2)
+abline(h=0,col=2,lty=2)
+points(yhat2[Site =="a"],res2[Site =="a"],pch=20,col="red")
+points(yhat2[Site =="b"],res2[Site =="b"],pch=20,col="blue")
+legend("topright",legend=c("Site a","Site b"),pch=20,col=c("red","blue"))
+```
+
+```{r}
+fit3<-lm(logTEQ~Year+Site+Year*Site)
+summary(fit3)
+```
+
+Equivalent specification
+
+```{r}
+lm(logTEQ~Year+Site+Year*Site)
+lm(logTEQ~Year*Site)
+lm(logTEQ~Year+Site+Year:Site)
+```
+
+
+
+```{r}
+plot(logTEQ~Year,data=crabs)
+points(Year[Site =="a"],logTEQ[Site =="a"],pch=20,col="red")
+points(Year[Site =="b"],logTEQ[Site =="b"],pch=20,col="blue")
+abline(coef(fit3)[1],coef(fit3)[2],col="red")
+abline(coef(fit3)[1]+coef(fit3)[3],coef(fit3)[2]+coef(fit3)[4],col="blue")
+```
+
+```{r}
+anova(fit2,fit3)
+```
+

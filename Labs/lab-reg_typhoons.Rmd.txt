@@ -1,0 +1,303 @@
+---
+title: "Typhoons: an example of stepwise selection"
+author: "Carlo Gaetan"
+output:
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    fig_height: 5
+    fig_width: 7
+---  
+  
+**Credits:**  I have adapted an example from Richard Chandler.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+# Introduction 
+		
+We shall consider tropical storms in the North-West Pacific Ocean, 
+		for each year between 1959 and 2000. 
+It is well known that the state of El Nino is related to tropical storm activity 	in the North-West Pacific the following year. 		
+
+Data in the dataset `typhoons.txt` 
+
+- `Typhoons` are events with a maximum windspeed over 64 knots; 
+-  `N3.mxx` Nino 3 anomalies for each month (`xx`)	from the previous year,
+
+
+
+
+# Reading  the dataset
+
+```{r}
+alldata<-read.table("typhoons.txt",header = TRUE)
+```
+		
+
+# Exploratory analysis: summary statistics and visualizing data
+
+```{r}
+table(alldata$Typhoons)
+summary(alldata$Typhoons)
+```
+
+
+
+
+```{r}
+
+par(mfrow=c(1,3),pty='s')
+for (i in 1:12){
+  plot(alldata$Typhoons,alldata[,i+2],ylab="Number of typhoons", xlab="Nino (degrees C)",cex=1.3,pch=20,col=4)
+ct<-cor.test(alldata$Typhoons,alldata[,i+2])
+r<-ct$estimate
+p.value<-ct$p.value
+title(main=paste(month.name[i],"\n cor =",round(r,2),", p-value =", round(p.value,3)))
+}
+```
+
+
+
+
+```{r}
+round(cor(alldata)[2,-1],4)
+```
+
+```{r}
+plot(Typhoons~N3.m09,data=alldata)
+```
+
+# Should a linear model on the original data correct ?
+
+```{r}
+fit<-lm(Typhoons~N3.m09,data=alldata)
+```
+
+Fitted model 
+```{r}
+plot(Typhoons~N3.m09,data=alldata,col=4,pch=20,cex.lab=1.5)
+lines(alldata$N3.m09,fitted(fit),col=2)
+```
+
+
+Analysis of residuals
+
+```{r}
+plot(fit,which = 1,sub.caption = "",cex.lab=1.5)
+```
+
+```{r}
+plot(fit,which = 2,cex.lab=1.5)
+```
+
+```{r}
+plot(fit,which = 3,cex.lab=1.5)
+```
+
+Variability of residuals depends on the regressor.
+
+
+# Transforming the dependent variable ?
+
+
+```{r}
+library(MASS)
+boxcox(Typhoons~N3.m09,data=alldata)
+```
+
+
+```{r}
+attach(alldata)
+hist(Typhoons)
+hist(sqrt(Typhoons))
+Typhoons.sqrt<-sqrt(Typhoons)
+```
+
+# A first linear model
+
+The month (September) with the higher absolute correlation is chosen as the predictor variable.
+
+```{r}
+fit.2<-lm(Typhoons.sqrt~N3.m09)
+summary(fit.2)
+```
+We look at the IC
+
+```{r}
+AIC(fit.2)
+BIC(fit.2)
+```
+
+Analysis of residuals
+
+```{r}
+plot(fit.2,which = 1,sub.caption = "",cex.lab=1.5)
+```
+
+```{r}
+plot(fit.2,which = 2,cex.lab=1.5)
+```
+
+```{r}
+plot(fit.2,which = 3,cex.lab=1.5)
+```
+
+
+## Technical note
+
+The log-likelihood and hence the AIC/BIC is only defined up to an additive constant. Different constants have conventionally been used for different purposes and so `extractAIC` and `AIC` may give different values 
+
+```{r}
+k <- 2
+AIC(fit.2, k = k)
+extractAIC(fit.2, k = k)[2]
+```
+
+```{r}
+BIC(fit.2)
+```
+
+is equivalent to 
+
+```{r}
+k <- log(length(Typhoons.sqrt))
+AIC(fit.2, k = k)
+extractAIC(fit.2, k = k)[2]
+```
+
+The additive constant for AIC
+```{r}
+k <- 2
+AIC(fit.2, k = k) - extractAIC(fit.2, k = k)[2]
+```
+
+The additive constant for BIC
+```{r}
+k <- log(length(Typhoons.sqrt))
+AIC(fit.2, k = k) - extractAIC(fit.2, k = k)[2]
+
+```
+
+
+# Stepwise selection
+
+## Forward selection by means of AIC
+
+The full model
+```{r}
+fit.full<-lm(Typhoons.sqrt~.,data=alldata[,-(1:2)])
+summary(fit.full)
+extractAIC(fit.full)[2]
+```
+
+The null model i.e. the model with the only constant
+
+$$
+Y_i=\beta_0+\varepsilon_i
+$$
+
+```{r}
+fit.null<-lm(Typhoons.sqrt~1)
+summary(fit.null)
+extractAIC(fit.null)[2]
+```
+
+
+```{r}
+k <- 2
+step(fit.null,scope=list(lower=fit.null,upper=fit.full), direction="forward",k=k,trace=1)
+```
+
+
+The first argument is an object representing a model of  class `lm`.  This is used as the initial model in the stepwise search.
+
+The set of models searched is determined by the `scope` argument. 
+
+$k$ 	the multiple of the number of regression parameters used for the penalty.
+
+-  $k=2$: AIC
+-  $k=\log(n)$: BIC ($n$ number of observations) 
+## Backward selection by means of AIC
+
+```{r}
+step(fit.full,scope=list(lower=fit.null,upper=fit.full),
+                         direction="backward",k=k,trace=1)
+```
+
+## Bidirectional selection (stepwise) by means of AIC
+
+Stepwise selection (or sequential replacement), which is a combination of forward and backward selections. You start with no predictors, then sequentially add the most contributive predictors (like forward selection). After adding each new variable, remove any variables that no longer provide an improvement in the model fit (like backward selection).
+
+
+
+```{r}
+fit.start<-lm(Typhoons.sqrt~N3.m05+N3.m08+N3.m12)
+```
+
+```{r}
+step(fit.start,scope=list(lower=fit.null,upper=fit.full),
+                         direction="both",k=k,trace=1)
+```
+
+## Bidirectional selection (stepwise) by means of AIC
+
+
+```{r}
+k <- 2
+```
+
+```{r}
+step.aic<-step(fit.start,scope=list(lower=fit.null,upper=fit.full),
+                         direction="both",k=k,trace=1)
+```
+
+Analysis of residuals
+
+```{r}
+plot(step.aic,which = 1,sub.caption = "",cex.lab=1.5)
+```
+
+```{r}
+plot(step.aic,which = 2,cex.lab=1.5)
+```
+
+```{r}
+plot(step.aic,which = 3,cex.lab=1.5)
+```
+
+
+
+## Bidirectional selection (stepwise) by means of BIC
+
+
+```{r}
+k <- log(length(Typhoons.sqrt))
+```
+
+More penalty !
+
+```{r}
+step.bic<-step(fit.start,scope=list(lower=fit.null,upper=fit.full),
+                         direction="both",k=k,trace=1)
+```
+
+Analysis of residuals
+
+```{r}
+plot(step.bic,which = 1,sub.caption = "",cex.lab=1.5)
+```
+
+```{r}
+plot(step.bic,which = 2,cex.lab=1.5)
+```
+
+```{r}
+plot(step.bic,which = 3,cex.lab=1.5)
+```
+
+

@@ -1,0 +1,113 @@
+---
+title: 'Change point analysis: Nenana'
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup1, echo=FALSE, eval=FALSE}
+knitr::opts_knit$set(root.dir ="~/Documents/teaching/envdata/labs/data")
+```
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE, fig.align = "center")
+```
+
+# Reading the data
+
+```{r}
+nenana<-read.csv("nenana.csv")
+plot(Julian.Date~Year,data=nenana,pch=20)
+grid()
+```
+
+# Simple linear model
+
+```{r}
+fit<-lm(Julian.Date~Year,data=nenana)
+summary(fit)
+plot(Julian.Date~Year,data=nenana,pch=20)
+grid()
+abline(fit)
+```
+
+Residuals
+
+```{r}
+plot(fit,which=1,pch=20)
+```
+```{r}
+res<-resid(fit)
+attach(nenana)
+plot(res~Year,pch=20)
+a<-smooth.spline(Year,res)
+lines(a,col="red")
+grid()
+```
+
+# Model with changepoint
+
+
+```{r}
+changepoint<-1970
+nenana$cp1970<-pmax(0,nenana$Year-changepoint)
+fit.c<-lm(Julian.Date~Year+cp1970,data=nenana)
+summary(fit.c)
+```
+
+Residuals
+
+```{r}
+res<-resid(fit.c)
+plot(res~Year,pch=20)
+a<-smooth.spline(Year,res)
+lines(a,col="red")
+grid()
+```
+
+```{r}
+plot(Julian.Date~Year,data=nenana,pch=20)
+abline(fit)
+lines(nenana$Year,predict(fit.c),col="red")
+grid()
+```
+
+
+
+# Second model with changepoint
+
+No influence with of the time before 1970 ?
+
+```{r}
+fit.c2<-lm(Julian.Date~cp1970,data=nenana)
+summary(fit.c2)
+```
+
+
+```{r}
+plot(Julian.Date~Year,data=nenana,pch=20)
+abline(fit)
+lines(nenana$Year,predict(fit.c),col="red")
+lines(nenana$Year,predict(fit.c2),col="blue")
+```
+
+Residual analysis
+
+
+```{r}
+res<-resid(fit.c2)
+plot(res~Year,pch=20)
+a<-smooth.spline(Year,res)
+lines(a,col="red")
+grid()
+```
+
+
+```{r}
+qqnorm(res)
+qqline(res,col="red")
+```
+

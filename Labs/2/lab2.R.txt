@@ -1,0 +1,164 @@
+
+
+Co2Dataset<-read.table("temp_co2_data.txt",header = TRUE)
+
+hist(Co2Dataset$CO2)
+
+hist(Co2Dataset$CO2,freq = FALSE)
+
+attach(Co2Dataset)
+
+head(datasets::CO2)
+
+hist(CO2,freq = FALSE,breaks=12)
+
+par(mfrow=c(1,2))
+hist(CO2,freq = FALSE)
+lines(density(CO2))
+hist(CO2,freq = FALSE)
+lines(density(CO2,bw=20))
+par(mfrow=c(1,1))
+
+plot(ecdf(CO2), main="CO2")
+
+boxplot(CO2)
+
+mean(CO2)
+median(CO2)
+quantile(CO2,prob=c(0.25,0.5,0.75))
+
+sd(CO2)
+var(CO2)
+IQR(CO2)
+
+m<-mean(CO2)
+mean((CO2-m)^3)/sd(CO2)^3
+
+skewness<-function(x){
+  m<-mean(x)
+  s<-sd(x)
+  sk<-mean((x-m)^3)/s^3
+  return(sk)
+}
+skewness(CO2)
+
+summary(Co2Dataset)
+
+# apply(X, MARGIN, FUN)
+
+apply(Co2Dataset,2,mean)
+
+pupae <- read.csv("pupae.csv")
+head(pupae)
+str(pupae)
+
+
+summary(pupae)
+
+pupae$T_treatment<-as.factor(pupae$T_treatment)
+pupae$CO2_treatment<-as.factor(pupae$CO2_treatment)
+pupae$Gender<-as.factor(pupae$Gender)
+
+summary(pupae)
+
+pupae <- read.csv("pupae.csv",stringsAsFactors = TRUE)
+is.factor(pupae$T_treatment)
+
+
+str(pupae)
+
+pupae$CO2_treatment<-as.factor(pupae$CO2_treatment)
+pupae$Gender<-as.factor(pupae$Gender)
+
+table(pupae$CO2_treatment)
+
+# tapply(X, INDEX, FUN = NULL)
+
+tapply(pupae$PupalWeight,pupae$CO2_treatment, mean)
+
+summary(airquality)
+
+airquality.new<-na.omit(airquality)
+head(airquality)
+
+mean(airquality$Ozone)
+mean(airquality$Ozone,na.rm = TRUE)
+
+sel<-is.na(airquality$Ozone)
+airquality.new<-airquality
+airquality.new$Ozone[sel]<-mean(airquality$Ozone,na.rm = TRUE)
+head(airquality.new)
+
+boxcox<-function(x,lambda=0)
+{
+  if (lambda != 0.0)
+  {
+    val<-(x^lambda-1)/lambda
+  } else {
+    val<-log(x)
+  }
+  return(val)
+}
+
+par(mfrow=c(1,2))
+hist(airquality$Ozone,freq=FALSE,xlab="ppb",main="Original data")
+hist(boxcox(airquality$Ozone,0),freq=FALSE,xlab="log(ppb)",main="Transformed data")
+par(mfrow=c(1,1))
+
+par(mfrow=c(1,2))
+boxplot(airquality$Ozone,ylab="ppb")
+boxplot(boxcox(airquality$Ozone,0),ylab="log(ppb)")
+par(mfrow=c(1,1))
+
+MASS::boxcox(airquality$Ozone~1)
+
+y<-scale(CO2,center = TRUE, scale = FALSE)
+mean(y)
+sd(y)
+y<-scale(CO2,center = TRUE, scale = TRUE)
+mean(y)
+sd(y)
+
+plot(CO2,Temp,pch=20)
+
+plot(Temp~CO2,pch=20,main="Temperture vs CO2")
+
+cor(CO2,Temp)
+
+pairs(Co2Dataset)
+
+cor(CO2,Temp,method="spearman")
+
+cor(CO2,Temp,method="kendall")
+
+cor(Co2Dataset)
+
+apply(is.na(airquality),2,sum)
+
+cor(airquality, use = "everything")
+
+cor(airquality, use = "complete.obs")
+
+cor(na.omit(airquality),use = "everything")
+
+cor(airquality,use = "pairwise.complete.obs")
+
+# install.packages("ellipse")
+
+library(ellipse)
+plotcorr(cor(airquality[,1:4], use="complete.obs"))
+
+plot(pupae$PupalWeight~pupae$CO2_treatment)
+
+plot(PupalWeight~CO2_treatment,data = pupae)
+
+table(pupae$CO2_treatment,pupae$Gender)
+
+table(pupae$CO2_treatment,pupae$Gender)/nrow(pupae)
+
+plot(CO2_treatment~Gender,data = pupae)
+
+plot(CO2_treatment~Gender,data = pupae,col=c("red","blue"))
+
+plot(Ozone~Solar.R,data=airquality)
+coplot(Ozone~Solar.R|Temp,data=airquality,panel=panel.smooth)

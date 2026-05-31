@@ -1,0 +1,273 @@
+---
+title: "Lab: Simple and multiple regression"
+author: "Carlo Gaetan"
+output:
+  html_document:
+    fig_height: 5
+    fig_width: 7
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    fig_height: 5
+    fig_width: 7
+---  
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,fig.align = "center")
+```
+
+  
+# Reading the data...   
+
+```{r eval=FALSE}
+artic<-read.table("N_09_area_v2_data.txt",header=TRUE)
+attach(artic)
+```
+
+# Plot of the data
+
+```{r eval=FALSE}
+plot(year,extent,col=4,pch=20)
+grid()
+```
+
+# Fitting the (simple) linear model
+
+## Syntax
+
+```{r eval=FALSE}
+fit.1<-lm(extent~year)
+```
+
+
+## Output
+We take a look to the estimates
+
+```{r eval=FALSE}
+fit.1
+```
+
+A more detailed summary
+
+```{r eval=FALSE}
+summary(fit.1)
+```
+
+the coefficient estimates 
+
+```{r eval=FALSE}
+coefficients(fit.1)
+```
+
+the standard deviation estimate
+
+```{r eval=FALSE}
+summary(fit.1)$sigma
+```
+
+the fitted/predicted values
+```{r eval=FALSE}
+yhat<-fitted(fit.1)
+```
+
+Plotting the fitted values
+
+```{r eval=FALSE}
+plot(year,extent,pch=20,col=4)
+grid()
+lines(year,yhat,col=2)
+```
+
+## Residuals and their properties
+
+We look at the residuals
+```{r eval=FALSE}
+r<-residuals(fit.1)
+```
+and we plot them with respect to the `year` variable
+
+```{r eval=FALSE}
+plot(year,r,pch=20,col=4)
+grid()
+```
+
+
+
+# Homework
+
+Source: Excerpt from  materials of ES 714, Spring 2005 a course taught by  Thaddeus Tarpey
+
+The population of the shrimp-like crustacean called Diporeia has been virtually wiped out in large areas of the lakes. The cause of this elimination is thought to be due to the relatively recent introduction of the Zebra mussel into these lakes. In studying this problem 
+[Nalepa et al. (2000)](https://deepblue.lib.umich.edu/bitstream/handle/2027.42/73108/j.1365-2427.2000.00530.x.pdf?sequence=1&isAllowed=y)  examine the effect of the depth (in meters) of water in southern Lake Michigan where the Diporeia were found on the dry weight (in mg) of this crustacean. 
+
+Nalepa, T., Hartson, D., Buchanan, J., Covaletto, J., Lang, G., and Lozano, S. (2000), "Spatial variation in density, mean size and physio- logical condition of holartic amphipod *Diporeia* spp. in Lake Michigan," Freshwater Biology, 43, 107–119.
+
+The data are contained in the dataset `zebra_mussel.txt`
+
+You need to write a brief report for a journal article that cannot exceed a half page in length. 
+
+1. The report should provide a one or two sentence introduction to the problem, give the equation of the least squares regression line.   
+
+2. Provide a plot of the data along with the fitted regression line (the written portion of the report must not exceed a half-page).
+
+
+# Multiple linear model 
+
+Syntax 
+
+```{r eval=FALSE}
+lm(y~x1+x2)
+```
+
+We want to add  a new predictor `year^2` to our simple linear regression model.
+
+First example
+
+
+```{r eval=FALSE}
+brad.pitt<-year^2
+fit.2<-lm(extent~year+brad.pitt)
+fit.2
+```
+2. Second example
+
+```{r eval=FALSE}
+fit.3<-lm(extent~year+I(year^2))
+fit.3
+```
+
+We plot the fitted model
+
+```{r eval=FALSE}
+plot(year,extent,pch=20,col=4)
+grid()
+lines(year,fitted(fit.1),col=2)
+lines(year,fitted(fit.2),col=1)
+legend("bottomleft",legend = c("linear","quadratic"),
+col=c(2,1),lty=1)
+```
+
+
+We plot the residuals
+```{r eval=FALSE}
+par(mfrow=c(1,2))
+plot(year,residuals(fit.1),pch=20,col=2, ylab="residuals", main="Linear model")
+grid()
+plot(year,residuals(fit.2),ylim=range(residuals(fit.1)),pch=20,col=4, ylab="residuals",main="Quadratic model")
+grid()
+par(mfrow=c(1,1))
+```
+
+
+# Properties of the residuals
+
+1. The mean of residuals is always zero.
+```{r eval=FALSE}
+r<-residuals(fit.2)
+mean(r)
+```
+
+
+**Warning:** It is a property of the estimation method.
+
+```{r eval=FALSE}
+mean(residuals(fit.1))
+```
+
+2. The  residuals are always uncorrelated with the fitted values.
+```{r eval=FALSE}
+yhat<-fitted(fit.2)
+cor(r,yhat)
+```
+
+3. The  residuals are always uncorrelated with the predictors. 
+```{r eval=FALSE}
+cor(r,year)
+cor(r,year^2)
+```
+
+$R^2$
+
+```{r eval=FALSE}
+ssres<-sum(r^2)
+sstot<-sum((extent-mean(extent))^2)
+r2<-1-ssres/sstot
+r2
+```
+
+or exploiting the `summary` command
+
+```{r eval=FALSE}
+summary(fit.2)$r.squared
+```
+
+$R^2$ of the previous model
+```{r eval=FALSE}
+summary(fit.1)$r.squared
+```
+
+
+
+
+
+
+
+## $R^2$ is always increasing:  a simulated example
+
+We create a new variable `z` 
+
+```{r eval=FALSE}
+set.seed(13)
+n<-length(extent)
+z<-4*rnorm(n)
+plot(z,extent,pch=20,col=4,main="Scatteplot against a simulated variable")
+grid()
+```
+
+The correlation, `cor(z,extent)`, is weak. 
+
+We fit a model with this new variable `z` 
+```{r eval=FALSE}
+fit.sim<-lm(extent~year+I(year^2)+z)
+```
+
+Comarison of the $R^2$ for the different models
+
+```{r eval=FALSE}
+summary(fit.1)$r.squared
+summary(fit.2)$r.squared
+summary(fit.sim)$r.squared
+```
+
+
+# adjusted-$R^2$
+
+```{r eval=FALSE}
+summary(fit.1)$adj.r.squared
+summary(fit.2)$adj.r.squared
+summary(fit.sim)$adj.r.squared
+```
+
+
+
+# Information criteria
+
+## AIC
+
+```{r eval=FALSE}
+AIC(fit.1)
+AIC(fit.2)
+AIC(fit.sim)
+```
+
+## BIC
+```{r eval=FALSE}
+BIC(fit.1)
+BIC(fit.2)
+BIC(fit.sim)
+```
+
+# Conclusions
+
+According the information criteria we select model `fit.2`

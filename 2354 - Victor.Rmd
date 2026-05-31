@@ -1,0 +1,148 @@
+---
+title: "Enviromental data Exam"
+author: "Name / Matricola"
+date: "7 January 2025"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+
+
+
+# Preamble 
+
+## Instructions
+
+
+**Please read the following carefully. **
+
+
+- The exam is 120 minutes long.
+
+- Only material on the course's Moodle page may be used as a aid.  You may not use your own annotations or other sources. 
+
+- Regarding the use of AI applications like ChatGPT and similar tools, please note that they are considered unauthorized aids. 
+
+- If a student attempts to influence the outcome of an examination by using unauthorized aids, the examination will be graded "unsatisfactory". This determination will be made by the examiner, documented, and reported to the graduate program director, who is responsible for applying university regulations in such cases.
+
+## Examination delivery
+
+You  edit the Rmarkdown file directly and submit the edited file via Moodle
+
+Remember to **always** comment on your work. A solution with a simple list of commands will not be accepted.
+
+
+# Exercise 1
+
+
+The germination times of *Phaseolus vulgaris* (common bean) seeds are to be compared under three different soil moisture levels. Thirty seeds are tested at each moisture level (for a total of 90 seeds). Suppose the resulting data on germination times exhibits a **bimodal distribution**. 
+
+1. Define the experimental or observation units (i.e., sampling units) that might comprise the statistical population. 
+
+b. Determine the ``type`` of data represented (i.e., continuous, discrete, categorical, etc.).
+
+c. Determine which are the dependent and independent variables (if any).
+
+d. Determine what is the sample size.
+
+e. Indicate whether the following strategies make sense for analyzing the data
+
+      1. Perform a standard ANOVA test, assuming normality across the groups.
+      2. Transform the data (e.g., logarithmic or square root transformation) to approximate normality, and then apply ANOVA.  
+      3. Use a non-parametric test, to compare the groups without assuming normality.  
+      4. Ignore the bimodal nature of the data and use a t-test for pairwise comparisons.  
+      5. Visualize the data using boxplots to better understand group differences after choosing a statistical test.  
+
+
+
+
+# Exercise 2
+
+
+You are tasked with analyzing environmental data to investigate the impact of industrial activity on water quality.
+
+The file `envdata-20250107-data1.csv`  contains
+
+1. `Temperature`: Daily average temperature (°C).
+2. `Precipitation (mm)`: Daily precipitation levels (mm).
+3. `IndustrialActivity`: Scale measuring industrial activity in the region  categorized into groups.
+4. `WaterpH`: Measure of water acidity/alkalinity
+5. `NitrateLevels` Concentration of nitrates in water  (mg/L).
+6. `PhosphateLevels`: Concentration of phosphates in water (mg/L).
+
+
+Questions
+
+
+a. Load the  dataset
+
+```{r}
+# Your code
+```
+
+b. Display the first few rows and check the structure of the dataset.
+
+```{r}
+# Your code
+```
+
+c. Select one variable for representing the water quality
+
+
+```
+Your choice
+```
+
+c. Calculate summary statistics (mean, median, min, max, etc.)  of the variable that you have selected grouped by industrial activity.
+
+```{r}
+# Your code
+```
+
+
+d. Comment the distributions of the variable  across industrial activity categories.
+
+```{r}
+# Your code
+```
+
+```
+Your comment
+```
+
+e. Select one category of the industrial activity and discuss if the Gaussian distribution is an adequate model for interpreting the variability of the water quality
+
+
+```{r}
+# Your code
+```
+
+```
+Your comment
+```
+
+
+# Exercise 3
+
+
+ Mercury contamination of edible freshwater fish poses a direct threat to our health. Largemouth bass (fishes) were studied in 53 Florida lakes to examine the factors that influence the level of mercury contamination. Water samples were collected from the surface of the middle of each lake in August 1990 and then again in March 1991. The pH level, the amount of chlorophyll, calcium, and alkalinity were measured in each sample. The average of the August and March values were used in the analysis.
+ 
+ Next, a sample of fish was taken from each lake with sample sizes ranging from 4–44 fish, each used to measure a mercury concentration and the average concentration is reported (see file data `envdata-20250107data2.txt`)
+ 
+ 
+The authors of the study  indicated that alkalinity is the best predictor of the average mercury concentration and a linear model was suggested. 
+
+a. Fit a simple linear regression model using the average mercury concentration (`Avg.Mercury`) as the response and alkalinity (`Alkalinity`) as the predictor.
+
+b. Discuss the model fit and interpret the estimated slope parameter and $R^2$ value in the context of the problem. 
+
+c. Discuss any potential problems with the model (Hint: look at the residual plots!).
+
+d. Use a log-transformation on one or both of the variables to see if the model in a. can be improved. 
+
+e. Discuss the “best” fitting model (including why you think it’s the best). 
+
+f. Interpret the slope of your chosen model and provide a 95% confidence interval for it
+

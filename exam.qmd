@@ -1,0 +1,37 @@
+---
+title: "Exam"
+format: html
+editor: visual
+---
+
+## Exercise 1
+
+### a
+
+Each of the individual common bean seed is the sampling unit.
+
+### b
+
+The germination times is continuous.
+
+### c
+
+- Dependent variables is germination times
+
+- Independent variable is the moisture level
+
+### d
+
+The sample size is 90 seeds
+
+### e
+
+1. We can't use ANOVA test because the data is bimodal and not normally distributed.
+
+2. Yes we can, due to the transformation which makes the data normally distributed.
+
+3. Kruskal wallis test can be used since it is the non-parametric counterpart of the ANOVA test.
+
+4. You can't use t-test because the data has three group levels.
+
+5. Yes you can visualize the data using boxplots to better understand group differences after choosing a statistical test. 

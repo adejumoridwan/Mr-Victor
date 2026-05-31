@@ -1,0 +1,129 @@
+site <- c( "Const","ESan", "Aqu")
+longitude <- c( -111.675, -110.3686, -110.1043)
+latitude <- c(25.0247, 24.45879, 23.2855)
+
+sites <- data.frame( Site = site,
+                     Longitude = longitude,
+                     Latitude = latitude )
+
+head(sites)
+str(sites)
+
+summary(sites)
+
+Samples <- read.csv("arapat.csv")
+
+
+# Samples<- read.csv(file.choose())
+
+url <- "https://raw.githubusercontent.com/dyerlab/ENVS-Lectures/master/data/arapat.csv"
+
+# Samples <- read.csv(url)
+
+nrow(Samples)
+ncol(Samples)
+
+dim(Samples)
+
+names(Samples)
+
+Samples[10,1]
+
+Samples$Stratum[10]
+
+head(Samples)
+
+tail(Samples, n=4)
+
+Samples$Stratum[10] <- "San Francisquito"
+head(Samples, n=10)
+
+# Samples <- read.csv(url, stringAsFactors=FALSE)
+
+Samples
+x <- Samples[1:3, 1]
+x
+class(x)
+
+x1 <- Samples[1:3,1, drop=FALSE]
+x1
+class(x1)
+
+y <- Samples[1,1:3]
+y
+class(y)
+
+Samplenew<-Samples[Samples$Longitude < -112,]
+Samplenew
+
+health <- data.frame("age" = c(32, 24, 43, 19, 43),
+                     "height" = c(1.75, 1.65, 1.50, 1.92, 1.80),
+                     "weight" = c(70, 65, 62, 79, 85))
+health
+
+# Calculate bmi
+health$weight / health$height ^ 2
+
+with(health, height / weight ^ 2)
+
+Samples$ID <- 1:nrow(Samples)
+summary(Samples)
+
+names(Samples)
+
+Samples <- rbind(Samples,list("Los Cabos",-109.7124, 23.0799, 40))
+tail(Samples)
+
+moresites <- data.frame(ID = 41:42,Stratum = c("Los Barriles","Comondu"),
+                        Longitude = c(-109.7026, -111.8442), 
+                        Latitude = c(23.6811, 26.0708))
+names(moresites)
+
+Samples <- rbind(Samples, moresites)
+tail(Samples)
+
+Samples$ID <- NULL
+summary(Samples)
+
+Samples <- Samples[ -42:-40, ]
+summary(Samples)
+
+ pupae <- read.csv("pupae.csv")
+ names(pupae)
+
+
+subset(x=pupae,subset = T_treatment == "ambient" & CO2_treatment == 280)
+
+subset(x=pupae,subset = T_treatment == "ambient" & CO2_treatment == 280,
+       select = c("Gender","PupalWeight"))
+
+# # General structure of aggregate()
+# aggregate(formula = dv ~ iv, # dv is the data, iv is the group
+#           FUN = fun, # The function you want to apply
+#           data = df) # The dataframe object containing dv and iv
+
+mean(pupae$PupalWeight[pupae$T_treatment  == "ambient"])
+mean(pupae$PupalWeight[pupae$T_treatment  == "elevated"])
+
+# Calculate the mean weight for each value of T_treatment
+aggregate(PupalWeight ~ T_treatment,  # DV is weight, IV is treatment
+          FUN = mean,               # Calculate the mean of each group
+          data = pupae)       # dataframe is ChickWeight
+
+dfr <- data.frame(x=1:3, y=2:4)
+
+write.csv(dfr,"somedata.csv", row.names=FALSE)
+
+
+cols<-c('year','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec')
+nina34 <-read.table("nina34.data",skip=1,col.names=cols,nrows = 68)
+head(nina34)
+
+
+# data()
+
+# ?airquality
+
+data("airquality")
+
+head(airquality)

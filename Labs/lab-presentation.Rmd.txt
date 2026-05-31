@@ -1,0 +1,51 @@
+---
+title: "Carlo's day"
+author: "Carlo Gaetan"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  beamer_presentation: default
+  ioslides_presentation: default
+---
+  
+# In the morning
+  
+## Getting up
+  
+- Turn off alarm
+- Get out of bed
+
+## Breakfast
+
+- Eat eggs
+- Drink coffee
+
+
+## A new slide with figures and bullet list  
+
+```{r, cars, fig.cap="This is the caption", echo=FALSE,fig.align='center',fig.height=3,fig.width=4}
+plot(cars)
+```
+
+* Cars example
+* Positive relation
+
+# In the afternoon
+
+---
+
+A new slide without title
+
+
+# In the evening
+
+## Dinner
+
+- Eat spaghetti
+- Drink wine
+
+
+
+## Going to sleep
+
+- Get in bed
+- Count sheep

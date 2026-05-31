@@ -1,0 +1,81 @@
+# install.packages("fitdistrplus")
+
+library(fitdistrplus)
+
+# help(package="fitdistrplus")
+
+n<-200
+y<-rnorm(n,mean = 5, sd = sqrt(2))
+
+
+plotdist(y, histo = TRUE, demp = TRUE)
+
+fit.n  <- fitdist(y, distr = "norm")
+fit.g  <- fitdist(y, distr = "gamma")
+
+fit.gm  <- fitdist(y, distr = "gamma",method = "mme")
+
+summary(fit.g)
+
+summary(fit.gm)
+
+par(mfrow=c(2,2))
+plot.legend <- c("Gaussian", "Gamma")
+estimated.model<-list(fit.n,fit.g)
+denscomp(estimated.model, legendtext = plot.legend,fitcol=c(2,4))
+cdfcomp (estimated.model, legendtext = plot.legend,fitcol=c(2,4))
+qqcomp  (estimated.model, legendtext = plot.legend,fitcol=c(2,4))
+ppcomp  (estimated.model, legendtext = plot.legend,fitcol=c(2,4))
+par(mfrow=c(1,1))
+
+gofstat(estimated.model, fitnames = plot.legend)
+
+basel<-read.table(file="data/basel-rainfall.txt",header=TRUE)
+y<-basel$mm
+
+# basel<-read.table(file="basel-rainfall.txt",header=TRUE)
+# y<-basel$mm
+plotdist(y, histo = TRUE, demp = TRUE)
+
+fit.n  <- fitdist(y, distr = "norm")
+fit.g  <- fitdist(y, distr = "gamma")
+fit.ln <- fitdist(y, distr = "lnorm")
+
+par(mfrow=c(2,2))
+plot.legend <- c("Gaussian", "Gamma","Log-Normal")
+estimated.model<-list(fit.n, fit.g,fit.ln)
+denscomp(estimated.model, legendtext = plot.legend,fitcol=c(2,3,4))
+cdfcomp (estimated.model, legendtext = plot.legend,fitcol=c(2,3,4))
+qqcomp  (estimated.model, legendtext = plot.legend,fitcol=c(2,3,4))
+ppcomp  (estimated.model, legendtext = plot.legend,fitcol=c(2,3,4))
+par(mfrow=c(1,1))
+
+gofstat(estimated.model, fitnames = plot.legend)
+
+quantile(fit.g,probs=0.4)
+
+qgamma(0.4,shape =fit.g$estimate[1],rate =fit.g$estimate[2])
+
+quantile(y,probs=0.4)
+
+alpha<-0.05
+q<-qnorm(1-alpha/2)
+std.alpha<-fit.g$sd[1]
+alpha.hat<-fit.g$estimate[1]
+c(alpha.hat-q*std.alpha,alpha.hat+q*std.alpha)
+std.rate<-fit.g$sd[2]
+rate.hat<-fit.g$estimate[2]
+c(rate.hat-q*std.rate,rate.hat+q*std.rate)
+
+
+ests.np <- bootdist(fit.g, niter = 1000,bootmethod = "nonparam")
+summary(ests.np)
+
+ests.p <- bootdist(fit.g, niter = 1000,bootmethod = "param")
+summary(ests.p)
+
+qgamma(0.99,shape = fit.g$estimate[1],rate = fit.g$estimate[2])
+
+quantile(ests.np, probs=0.99, CI.level = 0.95) 
+
+quantile(ests.p, probs=0.99, CI.level = 0.95) 

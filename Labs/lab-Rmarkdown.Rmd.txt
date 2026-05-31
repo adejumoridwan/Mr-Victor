@@ -1,0 +1,206 @@
+---
+title: "My report"
+author: "Carlo Gaetan"
+date: "November 2025"
+output:
+  html_document:
+    toc: yes
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Introduction
+
+This is my first sentence.
+I'm *Carlo* **Gaetan**, `Ca' Foscari University of Venice` [link to my university](https://www.unive.it)
+
+## Subsection 
+
+### Header 3
+
+#### Header 4
+
+##### Header 5
+
+# R code 
+
+```{r}
+1+2
+```
+
+```{r echo=FALSE}
+1+4
+```
+
+```{r echo=FALSE}
+x<-cos(4)
+```
+
+# Graphics
+
+```{r}
+plot(airquality)
+```
+
+```{r echo=FALSE}
+plot(co2)
+```
+
+
+```{r eval=FALSE}
+plot(cars)
+```
+
+Resizing and centering a plot
+
+```{r echo=FALSE,fig.height=3,fig.width=4,fig.align='center'}
+plot(airquality$Ozone~airquality$Wind)
+```
+
+
+
+
+
+# Table using `kable`
+
+```{r echo=FALSE}
+knitr::kable(airquality[1:5,])
+```
+
+```{r echo=FALSE}
+knitr::kable(summary(airquality[,1:4]))
+```
+
+# Inline  R code
+
+According my dataset the mean of the wind speed is `r round(mean(airquality$Wind),3)`  and the mean of Ozone is 
+`r round(mean(airquality$Ozone,na.rm=TRUE),3)`
+
+# Bullet lists
+
+* This is my first item
+* This is my second item
+  + sub-bullet
+
+
+# Numbered lists
+
+1. My first line 
+2. My second line 
+3. This is important
+4. Ops... my third line
+    a. Letter
+3. Numeration doesn't matter
+    4. ops...
+    3. ops
+    
+    
+# Mathematical expression
+
+The mean of variable $X$. Consider a dataset 
+$x_1,x_2,...,x_n$
+
+$X^2$
+
+$X_i$
+
+$\sum_{i=1}^{n} x_i$
+
+$$
+f(y;\theta)=\frac{1}{ \sqrt{2\pi\sigma^2} }
+\exp\left\{-\left(\frac{y-\mu}{\sigma}\right)^2\right\}
+$$
+
+
+## Images
+
+Images begin with an exclamation mark, then the text to use if the
+image can't be displayed, then either the file address of the image
+(in the same directory as your document) or a URL.  Here an 
+example for an image in the directory.
+
+
+<center>
+![](unive-logo.jpg){width="30%"}
+</center>
+
+and an example with a URL 
+
+
+<center>
+![A remote image](https://vignette.wikia.nocookie.net/universeconquest/images/e/e6/Sample.jpg/revision/latest?cb=20171003194302){width="30%"}
+</center>
+
+
+## Printing your report for submitting 
+
+- The default R Markdown output format is [HTML](http://www.simplehtmlguide.com/whatishtml.php). To generate an HTML document, simply click on the **Knit** button (you might need to first select the **Knit to HTML** option on the pull down menu associated with the **Knit** button); next, click on the **Open in Browser** button in the viewer that opens (this will open the document in your web browser); finally, print your document using your web browser's print facilities (this HTML document will remain in your working directory)
+
+- If you have Microsoft Word installed on your system you can pull down the menu associated with the **Knit** button and select the **Knit to Word** option and, if all goes well, you will be presented with a Word document that you can print using Word's print facilities (this Word document will remain in your working directory)
+
+
+# PDF generation
+
+If you want to produce PDF, you need to have LaTeX installed on your computer. How you actually do this depends on the precise kind of computer. 
+
+
+- [MikTex](https://miktex.org/download) (Windows) Download the "net installer" and choose complete installation (Large file!).
+
+- [MacTex](https://tug.org/mactex/mactex-download.html) (Mac).
+
+- [TexLive](https://www.tug.org/texlive/acquire-netinstall.html) (Linux): Download install-tl-unx.tar.gz  and run `install-tl` but probably your favourite distribution contains the package !
+
+
+For R Markdown users who have not installed LaTeX before, we recommend that you install [TinyTeX](https://yihui.name/tinytex/): 
+
+```{r eval=FALSE}
+install.packages("tinytex") 
+tinytex::install_tinytex() # install TinyTeX
+```
+
+ TinyTeX is a lightweight, portable, cross-platform, and easy-to-maintain La-TeX distribution. The R companion package `tinytex` can help you automatically install missing LaTeX packages when compiling LaTeX or R Markdown documents to PDF, and also ensures a LaTeX document is compiled for the correct number of times to resolve all cross-references. 
+ 
+To create a PDF document from R Markdown, you specify the `pdf_document` output format in the YAML metadata
+
+```
+---
+title: "My first Rmd document"
+author: "Myself"
+date: "today"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: true
+---    
+```
+
+
+
+# Learning Markdown
+
+The basic syntax of Markdown and derivatives  is extremely easy to learn. Rather
+than providing another introduction on this topic, here are some useful sites for learning Markdown:
+
++ [The Guide from the author of Knitr](https://yihui.org/knitr/)
++ [Markdown Intro on GitHub](https://guides.github.com/features/mastering-markdown/)
++ [Markdown Cheet Sheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
++ [Markdown Basics from RStudio](http://rmarkdown.rstudio.com/authoring_basics.html) 
++ [R Markdown Cheat Sheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/rmarkdown.pdf)
+
++ [R Markdown Cookbook](https://bookdown.org/yihui/rmarkdown-cookbook/)
+
+# Without Rstudio
+
+
+To compile this file without Rstudio, open R and run these commands:
+
+```{r eval=FALSE}
+library(knitr)
+knit('lab-Rmarkdown.Rmd')
+```
