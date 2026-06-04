@@ -35,3 +35,28 @@ The sample size is 90 seeds
 4. You can't use t-test because the data has three group levels.
 
 5. Yes you can visualize the data using boxplots to better understand group differences after choosing a statistical test. 
+
+## Exercise 2
+
+## a
+
+```{r}
+
+df1 <- read.csv("envdata-20250107data1.csv")
+View(df1)
+```
+
+## b
+```{r}
+head(df1)
+
+str(df1)
+```
+
+### c
+
+WaterPH because water with high acidity or alkalinity can be harmful for consumption making it a key measurement to measure water PH level.
+
+### d
+
+

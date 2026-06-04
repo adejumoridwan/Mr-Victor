@@ -55,6 +55,38 @@ e. Indicate whether the following strategies make sense for analyzing the data
       4. Ignore the bimodal nature of the data and use a t-test for pairwise comparisons.  
       5. Visualize the data using boxplots to better understand group differences after choosing a statistical test.  
 
+### Solutions
+
+
+### a
+
+Each of the individual common bean seed is the sampling unit.
+
+### b
+
+The germination times is continuous.
+
+### c
+
+- Dependent variables is germination times
+
+- Independent variable is the moisture level
+
+### d
+
+The sample size is 90 seeds
+
+### e
+
+1. We can't use ANOVA test because the data is bimodal and not normally distributed.
+
+2. Yes we can, due to the transformation which makes the data normally distributed.
+
+3. Kruskal wallis test can be used since it is the non-parametric counterpart of the ANOVA test.
+
+4. You can't use t-test because the data has three group levels.
+
+5. Yes you can visualize the data using boxplots to better understand group differences after choosing a statistical test. 
 
 # Exercise 2
 
@@ -77,33 +109,43 @@ Questions
 a. Load the  dataset
 
 ```{r}
-# Your code
+df1 <- read.csv("envdata-20250107data1.csv")
+
 ```
 
 b. Display the first few rows and check the structure of the dataset.
 
 ```{r}
-# Your code
+head(df1)
+
+str(df1)
 ```
 
 c. Select one variable for representing the water quality
 
 
 ```
-Your choice
+WaterPH
 ```
 
-c. Calculate summary statistics (mean, median, min, max, etc.)  of the variable that you have selected grouped by industrial activity.
+d. Calculate summary statistics (mean, median, min, max, etc.)  of the variable that you have selected grouped by industrial activity.
 
 ```{r}
-# Your code
+ph_by_industry <- split(df1$WaterpH, df1$IndustrialActivity)
+ph_by_industry
+
+summary(df1)
+
+sapply(ph_by_industry, summary)
+
+
 ```
 
 
-d. Comment the distributions of the variable  across industrial activity categories.
+e. Comment the distributions of the variable  across industrial activity categories.
 
 ```{r}
-# Your code
+boxplot(WaterPH ~ IndustrialActivity, data = df1)
 ```
 
 ```
