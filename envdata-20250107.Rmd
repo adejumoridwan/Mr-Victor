@@ -145,23 +145,48 @@ sapply(ph_by_industry, summary)
 e. Comment the distributions of the variable  across industrial activity categories.
 
 ```{r}
-boxplot(WaterPH ~ IndustrialActivity, data = df1)
-```
+boxplot(WaterpH ~ IndustrialActivity, data = df1)
+
+par(mfrow = c(1,3))
+
+# high
+hist(ph_by_industry$High, prob = TRUE,
+     main = "High Industrial Activity",
+     xlab = "High")
+lines(density(ph_by_industry$High))
+# low
+hist(ph_by_industry$Low, prob = TRUE)
+lines(density(ph_by_industry$Low))
+# medium
+hist(ph_by_industry$Medium, prob = TRUE)
+lines(density(ph_by_industry$Medium))
+
+
 
 ```
-Your comment
-```
 
-e. Select one category of the industrial activity and discuss if the Gaussian distribution is an adequate model for interpreting the variability of the water quality
+
+
+The industrial activity of medium is normally distributed compared to the other industrial activities.
+
+f. Select one category of the industrial activity and discuss if the Gaussian distribution is an adequate model for interpreting the variability of the water quality
+
+```{r}
+hist(ph_by_industry$Medium, prob = TRUE)
+lines(density(ph_by_industry$Medium))
+```
 
 
 ```{r}
-# Your code
+qqnorm(ph_by_industry$Medium)
+qqline(ph_by_industry$Medium)
 ```
 
-```
-Your comment
-```
+Yes the category medium industrial activity follows a gaussian distribution due to the following reasons:
+
+- The histogram and density potray a bell shaped.
+- The points on the qqplot are approximately linear.
+
 
 
 # Exercise 3
@@ -174,9 +199,32 @@ Your comment
  
 The authors of the study  indicated that alkalinity is the best predictor of the average mercury concentration and a linear model was suggested. 
 
+```{r}
+mercury <- read.table("envdata-20250107data2.txt")
+View(mercury)
+```
+
+```{r}
+colnames(mercury) <- mercury[1,]
+mercury <- mercury[-1,]
+
+mercury$Avg.Mercury <- as.numeric(mercury$Avg.Mercury)
+mercury$Alkalinity <- as.numeric(mercury$Alkalinity)
+
+```
+
+
 a. Fit a simple linear regression model using the average mercury concentration (`Avg.Mercury`) as the response and alkalinity (`Alkalinity`) as the predictor.
 
+```{r}
+model <- lm(Avg.Mercury ~ Alkalinity, data = mercury)
+summary(model)
+```
+
+
 b. Discuss the model fit and interpret the estimated slope parameter and $R^2$ value in the context of the problem. 
+
+The independent variable Alkalinity is significant, and as the alkalinity increase by a unit the mercury concentration decreases by 0.005302. The independent variable alkalinity explains 34% of the variation in the dependent variable average mercury concentration. If alkalinity is 0 the mercury concentration is the value of the intercept which is 0.726140.
 
 c. Discuss any potential problems with the model (Hint: look at the residual plots!).
 
