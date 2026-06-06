@@ -201,7 +201,6 @@ The authors of the study  indicated that alkalinity is the best predictor of the
 
 ```{r}
 mercury <- read.table("envdata-20250107data2.txt")
-View(mercury)
 ```
 
 ```{r}
@@ -210,6 +209,8 @@ mercury <- mercury[-1,]
 
 mercury$Avg.Mercury <- as.numeric(mercury$Avg.Mercury)
 mercury$Alkalinity <- as.numeric(mercury$Alkalinity)
+mercury$Calcium <- as.numeric(mercury$Calcium)
+mercury$Chlorophyll <- as.numeric(mercury$Chlorophyll)
 
 ```
 
@@ -222,15 +223,71 @@ summary(model)
 ```
 
 
+
 b. Discuss the model fit and interpret the estimated slope parameter and $R^2$ value in the context of the problem. 
 
 The independent variable Alkalinity is significant, and as the alkalinity increase by a unit the mercury concentration decreases by 0.005302. The independent variable alkalinity explains 34% of the variation in the dependent variable average mercury concentration. If alkalinity is 0 the mercury concentration is the value of the intercept which is 0.726140.
 
 c. Discuss any potential problems with the model (Hint: look at the residual plots!).
 
-d. Use a log-transformation on one or both of the variables to see if the model in a. can be improved. 
+```{r}
+plot(model)
+```
+- The residulas/fitted shows a curved pattern suggesting that the linear model is not appropriate for the data.
+
+- Points on the qq plot on the do not exihibit a straight line meaning the data violates the assumptions of normal distribution.
+
+d. Use a log-transformation on one or both of the variables to see if the model in a. can be improved.
+
+```{r}
+mercury$LogAvgMercury <- log(mercury$Avg.Mercury)
+
+mercury$LogAlkalinity <- log(mercury$Alkalinity)
+
+# model 2 log mercury and log alkalinity
+model2 <- lm(LogAvgMercury ~ LogAlkalinity, 
+             data = mercury)
+
+summary(model2)
+
+# model 3 log mercury and alkalinity
+model3 <- lm(LogAvgMercury ~ Alkalinity, 
+             data = mercury)
+summary(model3)
+
+# model 4 avg mercury and log alkalinity
+model4 <- lm(Avg.Mercury ~ LogAlkalinity,
+             data = mercury)
+summary(model4)
+
+
+
+```
+
+```{r}
+AIC(model, model2, model3, model4)
+BIC(model, model2, model3, model4)
+```
+
 
 e. Discuss the “best” fitting model (including why you think it’s the best). 
 
+```{r}
+hist(mercury$Alkalinity, prob = TRUE)
+lines(density(mercury$Alkalinity))
+
+hist(mercury$LogAlkalinity, prob = TRUE)
+lines(density(mercury$LogAlkalinity))
+```
+
+Alkalinity is rightly skewed, but logging makes the variable symmetric and diminishes the skewness.The model also has the highest AIC and an r-squared value bigger than the initial model.
+
 f. Interpret the slope of your chosen model and provide a 95% confidence interval for it
+
+```{r}
+coef(model4)
+```
+```{r}
+confint(model4, level = 0.95)
+```
 
