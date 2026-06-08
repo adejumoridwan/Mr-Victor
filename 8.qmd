@@ -1,9 +1,8 @@
 ---
-title: "Untitled"
+title: "Homework 8"
 format: html
 editor: visual
 ---
-
 
 ## a
 
@@ -27,9 +26,9 @@ plot(model)
 
 ## d
 
-- The residuals are normally distributed
-- The Rsquared value is hight and explains most of the variation in the dependent variable.
-- Most of the factors are significant except for temperature.
+-   The residuals are normally distributed
+-   The Rsquared value is hight and explains most of the variation in the dependent variable.
+-   Most of the factors are significant except for temperature.
 
 ## e
 
@@ -202,7 +201,6 @@ bic16
 
 ```
 
-
 ## f
 
 ```{r}
@@ -219,4 +217,5 @@ Y = Bo + B5X5 + B2X2 + B3X3 + B4X4
 Y = 47.633 + (0.03736*22) + (0.55302*550) + (-0.78304*55) + (5.25273*5)
 Y
 ```
+
 Based on the model, the value of nitrogen concentration is 58.04725
